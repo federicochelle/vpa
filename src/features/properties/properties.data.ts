@@ -1,6 +1,10 @@
 import "server-only";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseServerActionClient,
+  createSupabaseServerClient,
+  createSupabaseServerComponentClient,
+} from "@/lib/supabase/server";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type { Property } from "@/types/property";
 import { mapPropertyRow } from "@/features/properties/property-mappers";
@@ -8,6 +12,11 @@ import type { Database } from "@/lib/supabase/types";
 
 type PropertyInsert = Database["public"]["Tables"]["properties"]["Insert"];
 type PropertyUpdate = Database["public"]["Tables"]["properties"]["Update"];
+type PropertyFeatureInsert = Database["public"]["Tables"]["property_features"]["Insert"];
+type PropertyCoverImageRow = Pick<
+  Database["public"]["Tables"]["property_images"]["Row"],
+  "id" | "property_id" | "url" | "is_cover" | "sort_order" | "created_at"
+>;
 
 export interface SupabaseActionError {
   code: string | null;
@@ -76,6 +85,95 @@ function formatError(error: {
   };
 }
 
+function selectPropertyCoverImages(
+  properties: Property[],
+  imageRows: PropertyCoverImageRow[],
+): Property[] {
+  const coverByPropertyId = new Map<string, string>();
+
+  for (const image of imageRows) {
+    if (!coverByPropertyId.has(image.property_id)) {
+      coverByPropertyId.set(image.property_id, image.url);
+    }
+  }
+
+  return properties.map((property) => ({
+    ...property,
+    image: coverByPropertyId.get(property.id) ?? null,
+  }));
+}
+
+async function attachPropertyCoverImages(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  properties: Property[],
+): Promise<PropertiesReadResult> {
+  if (properties.length === 0) {
+    return {
+      ok: true,
+      data: properties,
+      error: null,
+    };
+  }
+
+  const propertyIds = properties.map((property) => property.id);
+  const { data, error } = await supabase
+    .from("property_images")
+    .select("property_id, url, is_cover, sort_order, created_at, id")
+    .in("property_id", propertyIds)
+    .order("property_id", { ascending: true })
+    .order("is_cover", { ascending: false })
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (error) {
+    return {
+      ok: false,
+      data: [],
+      error: formatError(error),
+    };
+  }
+
+  return {
+    ok: true,
+    data: selectPropertyCoverImages(properties, data),
+    error: null,
+  };
+}
+
+async function resolveUniquePropertySlug(
+  slug: string,
+  options?: { excludeId?: string },
+) {
+  const supabase = await createSupabaseServerActionClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("id, slug")
+    .ilike("slug", `${slug}%`);
+
+  if (error) {
+    throw error;
+  }
+
+  const takenSlugs = new Set(
+    data
+      .filter((row) => row.id !== options?.excludeId)
+      .map((row) => row.slug),
+  );
+
+  if (!takenSlugs.has(slug)) {
+    return slug;
+  }
+
+  let suffix = 2;
+
+  while (takenSlugs.has(`${slug}-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${slug}-${suffix}`;
+}
+
 function toPropertyPayload(
   input: PropertyMutationInput,
 ): Database["public"]["Tables"]["properties"]["Row"] {
@@ -112,6 +210,12 @@ function toPropertyPayload(
 }
 
 async function readPublishedProperties(): Promise<PropertiesReadResult> {
+  return readPublishedPropertiesByOperation();
+}
+
+async function readPublishedPropertiesByOperation(
+  operationType?: Property["operationType"],
+): Promise<PropertiesReadResult> {
   if (!hasSupabaseEnv()) {
     return {
       ok: false,
@@ -127,13 +231,19 @@ async function readPublishedProperties(): Promise<PropertiesReadResult> {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("properties")
     .select("*")
     .eq("published", true)
     .eq("status", "published")
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
+
+  if (operationType) {
+    query = query.eq("operation_type", operationType);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return {
@@ -143,18 +253,25 @@ async function readPublishedProperties(): Promise<PropertiesReadResult> {
     };
   }
 
-  return {
-    ok: true,
-    data: data.map(mapPropertyRow),
-    error: null,
-  };
+  return attachPropertyCoverImages(supabase, data.map(mapPropertyRow));
 }
 
 export async function listPublishedProperties(): Promise<Property[]> {
   const result = await readPublishedProperties();
 
   if (!result.ok) {
-    console.error("Error listing published properties", result.error);
+    return [];
+  }
+
+  return result.data;
+}
+
+export async function listPublishedPropertiesByOperation(
+  operationType: Property["operationType"],
+): Promise<Property[]> {
+  const result = await readPublishedPropertiesByOperation(operationType);
+
+  if (!result.ok) {
     return [];
   }
 
@@ -288,8 +405,59 @@ export async function getAdminPropertyById(id: string): Promise<PropertyReadResu
   };
 }
 
+export async function getPropertyFeatureIds(propertyId: string): Promise<string[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("property_features")
+    .select("feature_id")
+    .eq("property_id", propertyId);
+
+  if (error) {
+    console.error("Error fetching property features", formatError(error));
+    return [];
+  }
+
+  return data.map((row) => row.feature_id);
+}
+
+async function syncPropertyFeatures(propertyId: string, featureIds: string[]) {
+  const supabase = await createSupabaseServerActionClient();
+  const { error: deleteError } = await supabase
+    .from("property_features")
+    .delete()
+    .eq("property_id", propertyId);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+
+  const uniqueFeatureIds = Array.from(new Set(featureIds));
+
+  if (uniqueFeatureIds.length === 0) {
+    return;
+  }
+
+  const payload: PropertyFeatureInsert[] = uniqueFeatureIds.map((featureId) => ({
+    property_id: propertyId,
+    feature_id: featureId,
+  }));
+
+  const { error: insertError } = await supabase
+    .from("property_features")
+    .insert(payload);
+
+  if (insertError) {
+    throw insertError;
+  }
+}
+
 export async function createProperty(
   input: PropertyMutationInput,
+  featureIds: string[] = [],
 ): Promise<PropertyWriteResult> {
   if (!hasSupabaseEnv()) {
     return {
@@ -305,8 +473,25 @@ export async function createProperty(
     };
   }
 
-  const supabase = await createSupabaseServerClient();
-  const payload = toPropertyPayload(input);
+  const supabase = await createSupabaseServerActionClient();
+  let uniqueSlug = input.slug;
+
+  try {
+    uniqueSlug = await resolveUniquePropertySlug(input.slug);
+  } catch (error) {
+    return {
+      ok: false,
+      data: null,
+      error: formatError(error as SupabaseActionError),
+    };
+  }
+
+  const payload = toPropertyPayload({
+    ...input,
+    published: true,
+    slug: uniqueSlug,
+    status: "published",
+  });
   const insertPayload: PropertyInsert = {
     title: payload.title,
     slug: payload.slug,
@@ -348,6 +533,18 @@ export async function createProperty(
     };
   }
 
+  if (data?.id) {
+    try {
+      await syncPropertyFeatures(data.id, featureIds);
+    } catch (featureError) {
+      return {
+        ok: false,
+        data: null,
+        error: formatError(featureError as SupabaseActionError),
+      };
+    }
+  }
+
   return {
     ok: true,
     data: data ? mapPropertyRow(data) : null,
@@ -358,6 +555,7 @@ export async function createProperty(
 export async function updateProperty(
   id: string,
   input: PropertyMutationInput,
+  featureIds: string[] = [],
 ): Promise<PropertyWriteResult> {
   if (!hasSupabaseEnv()) {
     return {
@@ -373,8 +571,48 @@ export async function updateProperty(
     };
   }
 
-  const supabase = await createSupabaseServerClient();
-  const payload = toPropertyPayload(input);
+  const supabase = await createSupabaseServerActionClient();
+  let uniqueSlug = input.slug;
+
+  try {
+    uniqueSlug = await resolveUniquePropertySlug(input.slug, { excludeId: id });
+  } catch (error) {
+    return {
+      ok: false,
+      data: null,
+      error: formatError(error as SupabaseActionError),
+    };
+  }
+
+  const existingPropertyResult = await getAdminPropertyById(id);
+
+  if (!existingPropertyResult.ok) {
+    return {
+      ok: false,
+      data: null,
+      error: existingPropertyResult.error,
+    };
+  }
+
+  if (!existingPropertyResult.data) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "No se encontró la propiedad a actualizar.",
+      },
+    };
+  }
+
+  const payload = toPropertyPayload({
+    ...input,
+    published: existingPropertyResult.data.published ?? false,
+    slug: uniqueSlug,
+    status: existingPropertyResult.data.status ?? "draft",
+  });
   const updatePayload: PropertyUpdate = {
     title: payload.title,
     slug: payload.slug,
@@ -415,6 +653,18 @@ export async function updateProperty(
       data: null,
       error: formatError(error),
     };
+  }
+
+  if (data?.id) {
+    try {
+      await syncPropertyFeatures(data.id, featureIds);
+    } catch (featureError) {
+      return {
+        ok: false,
+        data: null,
+        error: formatError(featureError as SupabaseActionError),
+      };
+    }
   }
 
   return {

@@ -38,12 +38,15 @@ export type Database = {
           created_at: string;
           email: string;
           id: string;
+          kind: "property" | "project" | "project_unit" | "general";
           message: string;
           name: string;
           phone: string | null;
           project_id: string | null;
           project_unit_id: string | null;
           property_id: string | null;
+          origin_path: string | null;
+          related_title: string | null;
           source: string | null;
           status: "new" | "contacted" | "closed";
         };
@@ -51,12 +54,15 @@ export type Database = {
           created_at?: string;
           email: string;
           id?: string;
+          kind: "property" | "project" | "project_unit" | "general";
           message: string;
           name: string;
           phone?: string | null;
           project_id?: string | null;
           project_unit_id?: string | null;
           property_id?: string | null;
+          origin_path?: string | null;
+          related_title?: string | null;
           source?: string | null;
           status?: "new" | "contacted" | "closed";
         };
@@ -64,12 +70,15 @@ export type Database = {
           created_at?: string;
           email?: string;
           id?: string;
+          kind?: "property" | "project" | "project_unit" | "general";
           message?: string;
           name?: string;
           phone?: string | null;
           project_id?: string | null;
           project_unit_id?: string | null;
           property_id?: string | null;
+          origin_path?: string | null;
+          related_title?: string | null;
           source?: string | null;
           status?: "new" | "contacted" | "closed";
         };
@@ -132,6 +141,21 @@ export type Database = {
           public_id?: string | null;
           sort_order?: number;
           url?: string;
+        };
+        Relationships: [];
+      };
+      project_features: {
+        Row: {
+          feature_id: string;
+          project_id: string;
+        };
+        Insert: {
+          feature_id: string;
+          project_id: string;
+        };
+        Update: {
+          feature_id?: string;
+          project_id?: string;
         };
         Relationships: [];
       };

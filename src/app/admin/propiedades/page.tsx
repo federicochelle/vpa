@@ -1,13 +1,16 @@
 import Link from "next/link";
-import { PageIntro } from "@/components/layout/page-intro";
+import { Plus } from "lucide-react";
 import { Notice } from "@/components/ui/notice";
+import { SuccessModal } from "@/components/ui/success-modal";
 import { AdminPropertiesTable } from "@/features/properties/admin-properties-table";
 import { listAdminProperties } from "@/features/properties/properties.data";
 
 interface AdminPropertiesPageProps {
   searchParams: Promise<{
+    created?: string;
     error?: string;
     success?: string;
+    updated?: string;
   }>;
 }
 
@@ -19,20 +22,25 @@ export default async function AdminPropertiesPage({
 
   return (
     <>
-      <PageIntro
-        eyebrow="Admin propiedades"
-        title="Gestion real de propiedades"
-        description="Listado conectado a Supabase. Sin autenticacion, las escrituras pueden quedar bloqueadas por RLS."
+      {params.created ? <SuccessModal message={params.created} /> : null}
+      {params.updated ? (
+        <SuccessModal
+          message={params.updated}
+          title="Propiedad actualizada"
+        />
+      ) : null}
+      <AdminPropertiesTable
         actions={
           <Link
-            className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-strong"
             href="/admin/propiedades/nueva"
           >
-            Nueva propiedad
+            <Plus className="h-4 w-4 stroke-[2.4] text-white" />
+            <span className="text-white">Nueva propiedad</span>
           </Link>
         }
-      />
-      <div className="space-y-6">
+        properties={result.data}
+      >
         {params.success ? <Notice message={params.success} tone="success" /> : null}
         {params.error ? <Notice message={params.error} tone="error" /> : null}
         {!result.ok && result.error ? (
@@ -41,8 +49,7 @@ export default async function AdminPropertiesPage({
             tone="error"
           />
         ) : null}
-        <AdminPropertiesTable properties={result.data} />
-      </div>
+      </AdminPropertiesTable>
     </>
   );
 }

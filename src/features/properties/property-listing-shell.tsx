@@ -6,17 +6,27 @@ import type { Property } from "@/types/property";
 
 interface PropertyListingShellProps {
   properties: Property[];
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  detailBasePath?: string;
 }
 
-export function PropertyListingShell({ properties }: PropertyListingShellProps) {
+export function PropertyListingShell({
+  properties,
+  eyebrow = "Propiedades",
+  title = "Base de catalogo inmobiliario",
+  description = "Ruta preparada para encabezado, filtros, resultados, grilla de propiedades y paginacion.",
+  detailBasePath = "/comprar",
+}: PropertyListingShellProps) {
   return (
     <div className="shell section-gap pt-0">
       <div className="grid gap-8">
         <section className="panel p-6 sm:p-8">
           <SectionHeading
-            eyebrow="Filtros"
-            title="Encabezado, filtros y resultados listos para conectar catalogo real"
-            description="La pagina queda preparada para combinar filtros, listado de resultados, grilla de propiedades y paginacion."
+            eyebrow={eyebrow}
+            title={title}
+            description={description}
           />
           <div className="mt-8 grid gap-4 lg:grid-cols-5">
             {["Operacion", "Tipo", "Barrio", "Dormitorios", "Precio"].map((item) => (
@@ -42,7 +52,7 @@ export function PropertyListingShell({ properties }: PropertyListingShellProps) 
             {properties.length > 0 ? (
               <div className="grid gap-6">
                 {properties.map((property) => (
-                  <Link key={property.id} href={`/propiedades/${property.slug}`}>
+                  <Link key={property.id} href={`${detailBasePath}/${property.slug}`}>
                     <PropertyCard property={property} />
                   </Link>
                 ))}

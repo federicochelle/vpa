@@ -1,9 +1,8 @@
 import type { Currency } from "@/types/property";
 
 export type ConstructionStatus =
-  | "planning"
-  | "pre-sale"
-  | "under-construction"
+  | "planned"
+  | "under_construction"
   | "finished";
 
 export type ProjectUnitStatus = "available" | "reserved" | "sold";
@@ -13,15 +12,32 @@ export interface Project {
   slug: string;
   name: string;
   description: string | null;
+  address: string | null;
+  city: string | null;
+  department: string | null;
   neighborhood: string | null;
   developerName: string | null;
   constructionStatus: ConstructionStatus | null;
   estimatedDeliveryDate: string | null;
-  startingPrice: number | null;
-  currency: Currency | null;
+  latitude: number | null;
+  longitude: number | null;
   image: string | null;
   featured: boolean;
+  published: boolean;
   isInvestmentOpportunity: boolean;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface ProjectImage {
+  id: string;
+  projectId: string;
+  url: string;
+  publicId: string | null;
+  sortOrder: number;
+  isCover: boolean;
+  altText: string | null;
+  createdAt: string;
 }
 
 export interface ProjectUnit {

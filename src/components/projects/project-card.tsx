@@ -1,4 +1,4 @@
-import { CalendarClock, MapPin, Wallet } from "lucide-react";
+import { CalendarClock, MapPin, Sparkles } from "lucide-react";
 import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
@@ -22,17 +22,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="grid gap-3 text-sm text-muted">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
-              {project.neighborhood ?? "Ubicacion pendiente"}
+              {[project.neighborhood, project.city].filter(Boolean).join(", ") ||
+                "Ubicación pendiente"}
             </div>
             <div className="flex items-center gap-2">
               <CalendarClock className="h-4 w-4 text-primary" />
               {project.estimatedDeliveryDate ?? "Entrega pendiente"}
             </div>
             <div className="flex items-center gap-2">
-              <Wallet className="h-4 w-4 text-primary" />
-              {project.currency && project.startingPrice
-                ? `Desde ${project.currency} ${project.startingPrice}`
-                : "Precio inicial pendiente"}
+              <Sparkles className="h-4 w-4 text-primary" />
+              {project.featured
+                ? "Proyecto destacado"
+                : project.isInvestmentOpportunity
+                  ? "Oportunidad de inversión"
+                  : "Proyecto disponible"}
             </div>
           </div>
         </div>

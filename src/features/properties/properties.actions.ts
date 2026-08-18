@@ -8,122 +8,45 @@ import {
   deleteProperty,
   setPropertyPublished,
   updateProperty,
-  type PropertyMutationInput,
   type SupabaseActionError,
 } from "@/features/properties/properties.data";
-
-function toNullableString(value: FormDataEntryValue | null) {
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
-function toRequiredString(value: FormDataEntryValue | null, fallback = "") {
-  if (typeof value !== "string") {
-    return fallback;
-  }
-
-  return value.trim();
-}
-
-function toNullableNumber(value: FormDataEntryValue | null) {
-  if (typeof value !== "string" || value.trim() === "") {
-    return null;
-  }
-
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function toBoolean(value: FormDataEntryValue | null) {
-  return value === "on";
-}
-
-function slugify(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import {
+  buildPropertyInput,
+  toPropertyErrorMessage as toErrorMessageFromForm,
+  toStringArray as toStringArrayFromForm,
+} from "@/features/properties/properties.form";
 
 function toErrorMessage(error: SupabaseActionError | null, fallback: string) {
-  if (!error) {
-    return fallback;
-  }
-
-  return error.message;
-}
-
-function buildPropertyInput(formData: FormData): PropertyMutationInput {
-  const title = toRequiredString(formData.get("title"));
-  const slug = slugify(toRequiredString(formData.get("slug")) || title);
-  const published = toBoolean(formData.get("published"));
-  const rawStatus = toRequiredString(formData.get("status"), "draft");
-  const status =
-    published && rawStatus === "draft"
-      ? "published"
-      : (rawStatus as PropertyMutationInput["status"]);
-
-  return {
-    title,
-    slug,
-    operationType: toRequiredString(formData.get("operationType"), "sale") as PropertyMutationInput["operationType"],
-    propertyType: toRequiredString(formData.get("propertyType"), "other"),
-    status,
-    published,
-    featured: toBoolean(formData.get("featured")),
-    price: toNullableNumber(formData.get("price")),
-    currency: (toNullableString(formData.get("currency")) as PropertyMutationInput["currency"]) ?? null,
-    bedrooms: toNullableNumber(formData.get("bedrooms")),
-    bathrooms: toNullableNumber(formData.get("bathrooms")),
-    garages: toNullableNumber(formData.get("garages")),
-    builtArea: toNullableNumber(formData.get("builtArea")),
-    totalArea: toNullableNumber(formData.get("totalArea")),
-    landArea: toNullableNumber(formData.get("landArea")),
-    description: toNullableString(formData.get("description")),
-    address: toNullableString(formData.get("address")),
-    neighborhood: toNullableString(formData.get("neighborhood")),
-    city: toNullableString(formData.get("city")),
-    department: toNullableString(formData.get("department")),
-    latitude: toNullableNumber(formData.get("latitude")),
-    longitude: toNullableNumber(formData.get("longitude")),
-    expenses: toNullableNumber(formData.get("expenses")),
-    constructionYear: toNullableNumber(formData.get("constructionYear")),
-    investmentOpportunity: toBoolean(formData.get("investmentOpportunity")),
-  };
+  return toErrorMessageFromForm(error, fallback);
 }
 
 export async function createPropertyAction(formData: FormData) {
   await requireAdminSession();
-  const result = await createProperty(buildPropertyInput(formData));
+  const featureIds = toStringArrayFromForm(formData.getAll("featureIds"));
+  const result = await createProperty(buildPropertyInput(formData), featureIds);
 
   if (!result.ok || !result.data) {
+    const message = result.error?.message;
     redirect(
-      `/admin/propiedades/nueva?error=${encodeURIComponent(
-        toErrorMessage(result.error, "No se pudo crear la propiedad."),
-      )}`,
+      message
+        ? `/admin/propiedades/nueva?error=${encodeURIComponent(message)}`
+        : "/admin/propiedades/nueva",
     );
   }
 
   revalidatePath("/admin/propiedades");
-  revalidatePath("/propiedades");
+  revalidatePath("/comprar");
+  revalidatePath("/alquileres");
   redirect(
-    `/admin/propiedades/${result.data.id}/editar?success=${encodeURIComponent(
-      "Propiedad creada.",
-    )}`,
+    `/admin/propiedades?created=${encodeURIComponent("Propiedad creada correctamente.")}`,
   );
 }
 
 export async function updatePropertyAction(formData: FormData) {
   await requireAdminSession();
-  const id = toRequiredString(formData.get("id"));
-  const result = await updateProperty(id, buildPropertyInput(formData));
+  const id = typeof formData.get("id") === "string" ? String(formData.get("id")).trim() : "";
+  const featureIds = toStringArrayFromForm(formData.getAll("featureIds"));
+  const result = await updateProperty(id, buildPropertyInput(formData), featureIds);
 
   if (!result.ok || !result.data) {
     redirect(
@@ -134,25 +57,25 @@ export async function updatePropertyAction(formData: FormData) {
   }
 
   revalidatePath("/admin/propiedades");
-  revalidatePath(`/admin/propiedades/${id}/editar`);
-  revalidatePath("/propiedades");
+  revalidatePath("/comprar");
+  revalidatePath("/alquileres");
   if (result.data.slug) {
-    revalidatePath(`/propiedades/${result.data.slug}`);
+    revalidatePath(`/comprar/${result.data.slug}`);
+    revalidatePath(`/alquileres/${result.data.slug}`);
   }
   redirect(
-    `/admin/propiedades/${id}/editar?success=${encodeURIComponent(
-      "Propiedad actualizada.",
-    )}`,
+    `/admin/propiedades?updated=${encodeURIComponent("Propiedad actualizada correctamente.")}`,
   );
 }
 
 export async function deletePropertyAction(formData: FormData) {
   await requireAdminSession();
-  const id = toRequiredString(formData.get("id"));
+  const id = typeof formData.get("id") === "string" ? String(formData.get("id")).trim() : "";
   const result = await deleteProperty(id);
 
   revalidatePath("/admin/propiedades");
-  revalidatePath("/propiedades");
+  revalidatePath("/comprar");
+  revalidatePath("/alquileres");
 
   if (!result.ok) {
     redirect(
@@ -169,12 +92,16 @@ export async function deletePropertyAction(formData: FormData) {
 
 export async function togglePropertyPublishedAction(formData: FormData) {
   await requireAdminSession();
-  const id = toRequiredString(formData.get("id"));
-  const published = toRequiredString(formData.get("published")) === "true";
+  const id = typeof formData.get("id") === "string" ? String(formData.get("id")).trim() : "";
+  const published =
+    (typeof formData.get("published") === "string"
+      ? String(formData.get("published")).trim()
+      : "") === "true";
   const result = await setPropertyPublished(id, published);
 
   revalidatePath("/admin/propiedades");
-  revalidatePath("/propiedades");
+  revalidatePath("/comprar");
+  revalidatePath("/alquileres");
 
   if (!result.ok || !result.data) {
     redirect(
@@ -184,7 +111,8 @@ export async function togglePropertyPublishedAction(formData: FormData) {
     );
   }
 
-  revalidatePath(`/propiedades/${result.data.slug}`);
+  revalidatePath(`/comprar/${result.data.slug}`);
+  revalidatePath(`/alquileres/${result.data.slug}`);
   redirect(
     `/admin/propiedades?success=${encodeURIComponent(
       published ? "Propiedad publicada." : "Propiedad despublicada.",

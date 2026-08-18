@@ -16,20 +16,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-6">
-        <div className="space-y-4 text-center">
-          <p className="eyebrow">Acceso administrativo</p>
-          <h1 className="font-display text-4xl leading-tight text-foreground">
-            Ingresar al panel
-          </h1>
-          <p className="text-sm leading-7 text-muted">
-            Acceso restringido a usuarios con rol <strong>admin</strong> o{" "}
-            <strong>editor</strong>.
-          </p>
-        </div>
         {params.error ? <Notice message={params.error} tone="error" /> : null}
         <LoginForm />
         <div className="text-center text-sm text-muted">
-          <Link className="transition-colors hover:text-primary-strong" href="/">
+          <Link
+            className="font-medium text-primary underline underline-offset-4 transition-colors hover:text-primary-strong"
+            href="/"
+          >
             Volver al sitio
           </Link>
         </div>

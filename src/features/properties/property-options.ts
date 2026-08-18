@@ -23,8 +23,8 @@ export const propertyStatusOptions: Array<{
   { value: "archived", label: "Archivada" },
 ];
 
-export const currencyOptions: Array<{ value: Currency; label: string }> = [
-  { value: "USD", label: "USD" },
-  { value: "UYU", label: "UYU" },
-  { value: "EUR", label: "EUR" },
+export const currencyOptions: Array<{ value: Currency; label: string; flag: string }> = [
+  { value: "USD", label: "USD", flag: "🇺🇸" },
+  { value: "UYU", label: "UYU", flag: "🇺🇾" },
+  { value: "EUR", label: "EUR", flag: "🇪🇺" },
 ];

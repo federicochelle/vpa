@@ -1,7 +1,8 @@
 import type { Database } from "@/lib/supabase/types";
-import type { Property } from "@/types/property";
+import type { Property, PropertyImage } from "@/types/property";
 
 type PropertyRow = Database["public"]["Tables"]["properties"]["Row"];
+type PropertyImageRow = Database["public"]["Tables"]["property_images"]["Row"];
 
 export function mapPropertyRow(row: PropertyRow): Property {
   return {
@@ -34,5 +35,18 @@ export function mapPropertyRow(row: PropertyRow): Property {
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  };
+}
+
+export function mapPropertyImageRow(row: PropertyImageRow): PropertyImage {
+  return {
+    id: row.id,
+    propertyId: row.property_id,
+    url: row.url,
+    publicId: row.public_id,
+    sortOrder: row.sort_order,
+    isCover: row.is_cover,
+    altText: row.alt_text,
+    createdAt: row.created_at,
   };
 }

@@ -41,3 +41,14 @@ export interface Property {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface PropertyImage {
+  id: string;
+  propertyId: string;
+  url: string;
+  publicId: string | null;
+  sortOrder: number;
+  isCover: boolean;
+  altText: string | null;
+  createdAt: string;
+}

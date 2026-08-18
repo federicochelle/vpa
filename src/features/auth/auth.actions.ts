@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerActionClient } from "@/lib/supabase/server";
 import { signOutAdminSession } from "@/lib/supabase/auth";
 import type { Database } from "@/lib/supabase/types";
 
@@ -14,7 +14,7 @@ function toRequiredString(value: FormDataEntryValue | null) {
 export async function loginAction(formData: FormData) {
   const email = toRequiredString(formData.get("email"));
   const password = toRequiredString(formData.get("password"));
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const {
     data: { user },

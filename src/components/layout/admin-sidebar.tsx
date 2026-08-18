@@ -1,11 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Building2, FolderKanban, LayoutDashboard, Mail, Settings } from "lucide-react";
+import logoVpaCorto from "../../../logovpacorto.webp";
 import { logoutAction } from "@/features/auth/auth.actions";
 import { adminNavigation } from "@/lib/navigation";
-import { siteName } from "@/lib/site";
 import type { Database } from "@/lib/supabase/types";
 
 const icons = {
@@ -20,25 +21,25 @@ interface AdminSidebarProps {
   profile: Database["public"]["Tables"]["profiles"]["Row"];
 }
 
-export function AdminSidebar({ profile }: AdminSidebarProps) {
+export function AdminSidebar(_props: AdminSidebarProps) {
+  void _props;
   const pathname = usePathname();
 
   return (
-    <aside className="border-b border-primary/20 bg-primary lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
+    <aside className="border-b border-primary/20 bg-primary lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:h-screen lg:w-72 lg:border-b-0 lg:border-r">
       <div className="flex h-full flex-col">
         <div className="border-b border-white/15 bg-primary px-6 py-6">
-          <p className="font-display text-2xl tracking-[0.08em] text-white">{siteName}</p>
-          <p className="mt-2 text-sm font-medium tracking-[0.06em] text-white/90">
-            Panel administrativo
-          </p>
-          <div className="mt-4 space-y-1">
-            <p className="text-sm font-semibold text-white">
-              {profile.full_name ?? "Usuario administrador"}
-            </p>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
-              {profile.role}
-            </p>
+          <div className="flex justify-center">
+            <Image
+              alt="VPA"
+              className="h-auto w-44"
+              priority
+              src={logoVpaCorto}
+            />
           </div>
+          <p className="mt-5 text-center text-sm font-bold uppercase tracking-[0.16em] text-white">
+            Panel Administrativo
+          </p>
         </div>
         <nav className="flex flex-col gap-2 p-4">
           {adminNavigation.map((item) => {

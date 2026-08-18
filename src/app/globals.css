@@ -45,8 +45,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-a {
+a:not([class]) {
   color: inherit;
+  text-decoration: none;
+}
+
+a {
   text-decoration: none;
 }
 
@@ -112,6 +116,14 @@ textarea {
   animation: fade-up 0.6s ease-out both;
 }
 
+.hero-track {
+  animation: hero-carousel 16s infinite ease-in-out;
+}
+
+.hero-slide {
+  overflow: hidden;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -120,5 +132,44 @@ textarea {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes hero-carousel {
+  0%,
+  40% {
+    transform: translateX(0);
+  }
+  50%,
+  90% {
+    transform: translateX(-33.3333%);
+  }
+  100% {
+    transform: translateX(-66.6667%);
+  }
+}
+
+@keyframes whatsapp-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes whatsapp-ring {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
   }
 }

@@ -6,7 +6,7 @@ export function HeroSection() {
       <div className="panel grid overflow-hidden lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="space-y-6 px-6 py-10 sm:px-8 lg:px-12 lg:py-14">
           <span className="eyebrow fade-up">Base de lanzamiento</span>
-          <h1 className="fade-up font-display text-5xl leading-tight text-foreground sm:text-6xl">
+          <h1 className="fade-up font-display text-4xl leading-tight text-foreground sm:text-5xl">
             Plataforma lista para crecer con propiedades, proyectos e inversiones.
           </h1>
           <p className="fade-up max-w-2xl text-base leading-8 text-muted">
@@ -14,7 +14,7 @@ export function HeroSection() {
             catalogo, consultas y configuracion sin depender todavia de backend o servicios externos.
           </p>
           <div className="fade-up flex flex-wrap gap-3">
-            <Link className="button-primary" href="/propiedades">
+            <Link className="button-primary" href="/comprar">
               Explorar estructura
             </Link>
             <Link className="button-secondary" href="/admin">
@@ -28,9 +28,9 @@ export function HeroSection() {
             <p className="text-sm font-semibold text-foreground">Rutas iniciales</p>
             <div className="mt-4 grid gap-3 text-sm text-muted sm:grid-cols-2">
               <span>/</span>
-              <span>/propiedades</span>
-              <span>/proyectos</span>
-              <span>/inversiones</span>
+              <span>/alquileres</span>
+              <span>/comprar</span>
+              <span>/inversion</span>
               <span>/asesoramiento</span>
               <span>/admin</span>
             </div>

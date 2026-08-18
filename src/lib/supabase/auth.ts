@@ -1,7 +1,10 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseServerActionClient,
+  createSupabaseServerComponentClient,
+} from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
@@ -16,7 +19,7 @@ export interface AdminSession {
 }
 
 export async function getAdminSession(): Promise<AdminSession | null> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const {
     data: { user },
     error: userError,
@@ -68,7 +71,7 @@ export async function redirectIfAuthenticatedAdmin() {
 }
 
 export async function signOutAdminSession() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
   await supabase.auth.signOut();
 }
 

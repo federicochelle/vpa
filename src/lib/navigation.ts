@@ -1,10 +1,8 @@
 export const publicNavigation = [
-  { href: "/", label: "Inicio" },
-  { href: "/propiedades", label: "Propiedades" },
-  { href: "/proyectos", label: "Proyectos" },
-  { href: "/inversiones", label: "Inversiones" },
-  { href: "/asesoramiento", label: "Asesoramiento" },
-  { href: "/contacto", label: "Contacto" },
+  { href: "/alquileres", label: "ALQUILAR" },
+  { href: "/comprar", label: "COMPRAR" },
+  { href: "/inversion", label: "INVERTIR" },
+  { href: "/asesoramiento", label: "ASESORAMIENTO" },
 ] as const;
 
 export const adminNavigation = [
