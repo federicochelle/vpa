@@ -70,16 +70,16 @@ export async function HomeShell() {
   ];
   const locationOptions = buildLocationOptions(
     rentProperties.map((property) => ({
-      city: property.city,
-      neighborhood: property.neighborhood,
+      city: property.city ?? null,
+      neighborhood: property.neighborhood ?? null,
     })),
     saleProperties.map((property) => ({
-      city: property.city,
-      neighborhood: property.neighborhood,
+      city: property.city ?? null,
+      neighborhood: property.neighborhood ?? null,
     })),
     investmentProjects.map((project) => ({
-      city: project.city,
-      neighborhood: project.neighborhood,
+      city: project.city ?? null,
+      neighborhood: project.neighborhood ?? null,
     })),
   );
 
