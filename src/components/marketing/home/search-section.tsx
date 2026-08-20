@@ -75,7 +75,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               <label className="grid gap-2 text-sm font-medium text-foreground">
                 Tipo de propiedad
                 <select
-                  className="input-base"
+                  className="search-field search-select"
                   value={propertyType}
                   onChange={(event) => setPropertyType(event.target.value)}
                   name="tipo"
@@ -92,7 +92,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               <label className="grid gap-2 text-sm font-medium text-foreground">
                 Operación
                 <select
-                  className="input-base"
+                  className="search-field search-select"
                   value={operation}
                   onChange={(event) =>
                     setOperation(event.target.value as (typeof searchOperationOptions)[number]["value"])
@@ -112,7 +112,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 <div className="relative w-full">
                   <input
                     autoComplete="off"
-                    className="input-base w-full"
+                    className="search-field search-zone-input"
                     type="text"
                     name="zona"
                     placeholder="Ej: Carrasco, Pocitos o Centro"
@@ -181,7 +181,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
             <label className="grid gap-2 text-sm font-medium text-foreground">
               Tipo de propiedad
               <select
-                className="input-base"
+                className="search-field search-select"
                 value={propertyType}
                 onChange={(event) => setPropertyType(event.target.value)}
                 name="tipo"
@@ -198,7 +198,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
             <label className="grid gap-2 text-sm font-medium text-foreground">
               Operación
               <select
-                className="input-base"
+                className="search-field search-select"
                 value={operation}
                 onChange={(event) =>
                   setOperation(event.target.value as (typeof searchOperationOptions)[number]["value"])
@@ -218,7 +218,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               <div className="relative w-full">
                 <input
                   autoComplete="off"
-                  className="input-base w-full"
+                  className="search-field search-zone-input"
                   type="text"
                   name="zona"
                   placeholder="Ej: Carrasco, Pocitos o Centro"
