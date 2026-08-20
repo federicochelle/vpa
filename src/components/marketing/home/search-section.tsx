@@ -103,7 +103,7 @@ function LocationCombobox({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-20 overflow-hidden border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-40 overflow-hidden border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
           <div className="border-b border-border p-3">
             <input
               ref={inputRef}
@@ -172,7 +172,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
   return (
     <section className="relative z-10 -mt-24 pb-12 px-4 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
       <div className="md:hidden">
-        <div className="mx-auto max-w-xl overflow-hidden border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
+        <div className="mx-auto max-w-xl overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">
             <form className="grid gap-4" onSubmit={handleSubmit}>
               <label className="grid gap-2 text-sm font-medium text-foreground">
