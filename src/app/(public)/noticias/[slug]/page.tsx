@@ -21,10 +21,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         <div className="-mx-4 space-y-4 sm:mx-0">
           <div className="panel overflow-hidden !rounded-none">
             <div className="space-y-5 bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-6 sm:px-8 lg:px-12">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                Noticias
-              </p>
-              <h1 className="max-w-4xl font-display text-3xl leading-tight text-foreground sm:text-4xl">
+              <h1 className="max-w-4xl font-display text-[1.75rem] leading-tight text-foreground sm:text-4xl">
                 {news.title}
               </h1>
               {news.excerpt ? (
@@ -57,7 +54,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             </article>
           </div>
         </div>
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside className="-mx-4 w-[calc(100%+2rem)] sm:mx-0 sm:w-auto lg:sticky lg:top-24 lg:self-start">
           <PublicInquirySidebar
             initialMessage={`Hola, leí la noticia "${news.title}" y quisiera recibir más información.`}
             kind="general"

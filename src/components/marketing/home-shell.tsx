@@ -22,38 +22,96 @@ function EmptyCarouselCard({ message }: { message: string }) {
   );
 }
 
+function formatLocationLabel(city: string | null, neighborhood: string | null) {
+  const normalizedCity = city?.trim() || null;
+  const normalizedNeighborhood = neighborhood?.trim() || null;
+  const normalizedNeighborhoodKey = normalizeLocationPart(normalizedNeighborhood);
+
+  const montevideoNeighborhoods = new Set([
+    "buceo",
+    "centro",
+    "ciudad vieja",
+    "cordon",
+  ]);
+
+  if (normalizedNeighborhood) {
+    if (normalizeLocationPart(normalizedCity) === "atlantida") {
+      return `Canelones / ${normalizedNeighborhood === "Atlantida" ? "Atlántida" : normalizedNeighborhood}`;
+    }
+
+    if (
+      normalizeLocationPart(normalizedCity) === "montevideo" ||
+      montevideoNeighborhoods.has(normalizedNeighborhoodKey)
+    ) {
+      return `Montevideo / ${normalizedNeighborhood}`;
+    }
+
+    if (normalizedCity) {
+      return `${normalizedCity ?? "Montevideo"} / ${normalizedNeighborhood}`;
+    }
+  }
+
+  return normalizedCity ?? normalizedNeighborhood ?? "";
+}
+
+function normalizeLocationPart(value: string | null) {
+  return value?.trim().toLocaleLowerCase("es-UY") ?? "";
+}
+
 function buildLocationOptions(
-  ...locationGroups: Array<Array<{ city: string | null; neighborhood: string | null }>>
+  ...locationGroups: Array<
+    Array<{
+      city: string | null;
+      department: string | null;
+      neighborhood: string | null;
+      operation: "sale" | "rent" | "investment";
+    }>
+  >
 ) {
-  return Array.from(
-    new Map(
-      locationGroups
-        .flat()
-        .map(({ city, neighborhood }) => {
-          const normalizedCity = city?.trim() || null;
-          const normalizedNeighborhood = neighborhood?.trim() || null;
+  const optionsMap = new Map<
+    string,
+    {
+      label: string;
+      city: string | null;
+      department: string | null;
+      neighborhood: string | null;
+      operations: Array<"sale" | "rent" | "investment">;
+    }
+  >();
 
-          if (!normalizedCity && !normalizedNeighborhood) {
-            return null;
-          }
+  for (const item of locationGroups.flat()) {
+    const normalizedCity = item.city?.trim() || null;
+    const normalizedDepartment = item.department?.trim() || null;
+    const normalizedNeighborhood = item.neighborhood?.trim() || null;
 
-          const label =
-            normalizedCity && normalizedNeighborhood
-              ? `${normalizedCity} / ${normalizedNeighborhood}`
-              : normalizedCity ?? normalizedNeighborhood ?? "";
+    if (!normalizedCity && !normalizedNeighborhood) {
+      continue;
+    }
 
-          return [
-            label.toLocaleLowerCase("es-UY"),
-            {
-              label,
-              city: normalizedCity,
-              neighborhood: normalizedNeighborhood,
-            },
-          ] as const;
-        })
-        .filter((entry): entry is readonly [string, { label: string; city: string | null; neighborhood: string | null }] => Boolean(entry)),
-    ).values(),
-  ).sort((a, b) => a.label.localeCompare(b.label, "es-UY"));
+    const label = formatLocationLabel(normalizedCity, normalizedNeighborhood);
+    const key = label.toLocaleLowerCase("es-UY");
+    const existing = optionsMap.get(key);
+
+    if (existing) {
+      existing.department = existing.department ?? normalizedDepartment;
+      if (!existing.operations.includes(item.operation)) {
+        existing.operations.push(item.operation);
+      }
+      continue;
+    }
+
+    optionsMap.set(key, {
+      label,
+      city: normalizedCity,
+      department: normalizedDepartment,
+      neighborhood: normalizedNeighborhood,
+      operations: [item.operation],
+    });
+  }
+
+  return Array.from(optionsMap.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, "es-UY"),
+  );
 }
 
 export async function HomeShell() {
@@ -71,15 +129,21 @@ export async function HomeShell() {
   const locationOptions = buildLocationOptions(
     rentProperties.map((property) => ({
       city: property.city ?? null,
+      department: property.department ?? null,
       neighborhood: property.neighborhood ?? null,
+      operation: "rent" as const,
     })),
     saleProperties.map((property) => ({
       city: property.city ?? null,
+      department: property.department ?? null,
       neighborhood: property.neighborhood ?? null,
+      operation: "sale" as const,
     })),
     investmentProjects.map((project) => ({
       city: project.city ?? null,
+      department: project.department ?? null,
       neighborhood: project.neighborhood ?? null,
+      operation: "investment" as const,
     })),
   );
 

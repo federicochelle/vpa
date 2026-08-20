@@ -6,7 +6,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { propertyTypeOptions } from "@/features/properties/property-options";
 
 const searchOperationOptions = [
-  { value: "sale", label: "Venta" },
+  { value: "sale", label: "Compra" },
   { value: "rent", label: "Alquiler" },
   { value: "investment", label: "Inversión" },
 ] as const;
@@ -15,6 +15,8 @@ interface SearchLocationOption {
   label: string;
   city: string | null;
   neighborhood: string | null;
+  department: string | null;
+  operations: Array<(typeof searchOperationOptions)[number]["value"]>;
 }
 
 interface SearchSectionProps {
@@ -25,14 +27,29 @@ function normalizeLocation(value: string) {
   return value.trim().toLocaleLowerCase("es-UY");
 }
 
+function getCommonPrefixLength(a: string, b: string) {
+  const maxLength = Math.min(a.length, b.length);
+  let index = 0;
+
+  while (index < maxLength && a[index] === b[index]) {
+    index += 1;
+  }
+
+  return index;
+}
+
 function LocationCombobox({
   options,
+  operation,
   selectedOption,
   onSelect,
+  onSuggestionSelect,
 }: {
   options: SearchLocationOption[];
+  operation: (typeof searchOperationOptions)[number]["value"];
   selectedOption: SearchLocationOption | null;
   onSelect: (option: SearchLocationOption | null) => void;
+  onSuggestionSelect: (option: SearchLocationOption) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -51,6 +68,63 @@ function LocationCombobox({
       normalizeLocation(option.label).includes(normalizedQuery),
     );
   }, [options, query]);
+
+  const hasExactMatch = useMemo(() => {
+    const normalizedQuery = normalizeLocation(query);
+
+    if (!normalizedQuery) {
+      return false;
+    }
+
+    return options.some((option) => normalizeLocation(option.label) === normalizedQuery);
+  }, [options, query]);
+
+  const suggestedOptions = useMemo(() => {
+    const normalizedQuery = normalizeLocation(query);
+
+    if (!normalizedQuery || filteredOptions.length > 0 || hasExactMatch) {
+      return [];
+    }
+
+    return [...options]
+      .sort((left, right) => {
+        const leftOperationScore = left.operations.includes(operation) ? 1 : 0;
+        const rightOperationScore = right.operations.includes(operation) ? 1 : 0;
+
+        if (leftOperationScore !== rightOperationScore) {
+          return rightOperationScore - leftOperationScore;
+        }
+
+        const leftContextScore =
+          (left.city && normalizeLocation(left.city).includes(normalizedQuery) ? 2 : 0) +
+          (left.department && normalizeLocation(left.department).includes(normalizedQuery) ? 2 : 0) +
+          (left.neighborhood && normalizeLocation(left.neighborhood).includes(normalizedQuery) ? 1 : 0);
+        const rightContextScore =
+          (right.city && normalizeLocation(right.city).includes(normalizedQuery) ? 2 : 0) +
+          (right.department && normalizeLocation(right.department).includes(normalizedQuery) ? 2 : 0) +
+          (right.neighborhood && normalizeLocation(right.neighborhood).includes(normalizedQuery) ? 1 : 0);
+
+        if (leftContextScore !== rightContextScore) {
+          return rightContextScore - leftContextScore;
+        }
+
+        const leftPrefixScore = Math.max(
+          getCommonPrefixLength(normalizedQuery, normalizeLocation(left.label)),
+          getCommonPrefixLength(normalizedQuery, normalizeLocation(left.neighborhood ?? "")),
+        );
+        const rightPrefixScore = Math.max(
+          getCommonPrefixLength(normalizedQuery, normalizeLocation(right.label)),
+          getCommonPrefixLength(normalizedQuery, normalizeLocation(right.neighborhood ?? "")),
+        );
+
+        if (leftPrefixScore !== rightPrefixScore) {
+          return rightPrefixScore - leftPrefixScore;
+        }
+
+        return left.label.localeCompare(right.label, "es-UY");
+      })
+      .slice(0, 5);
+  }, [filteredOptions.length, hasExactMatch, operation, options, query]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -121,6 +195,18 @@ function LocationCombobox({
             id={listboxId}
             role="listbox"
           >
+            <button
+              aria-selected={selectedOption === null}
+              className="block w-full border-b border-border px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-strong"
+              onClick={() => {
+                onSelect(null);
+                setIsOpen(false);
+              }}
+              role="option"
+              type="button"
+            >
+              Cualquiera
+            </button>
             {filteredOptions.map((option) => (
               <button
                 key={option.label}
@@ -136,8 +222,33 @@ function LocationCombobox({
                 {option.label}
               </button>
             ))}
-            {filteredOptions.length === 0 ? (
-              <div className="px-4 py-3 text-sm text-muted">No hay coincidencias</div>
+            {filteredOptions.length === 0 && suggestedOptions.length > 0 ? (
+              <div className="border-t border-border px-4 py-3">
+                <p className="text-sm font-medium text-foreground">
+                  No encontramos esa zona. También te puede interesar:
+                </p>
+                <div className="mt-3 space-y-2">
+                  {suggestedOptions.map((option) => (
+                    <button
+                      key={`suggested-${option.label}`}
+                      className="block w-full text-left text-sm text-primary transition-colors hover:text-primary-strong"
+                      onClick={() => {
+                        onSelect(option);
+                        setIsOpen(false);
+                        onSuggestionSelect(option);
+                      }}
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {filteredOptions.length === 0 && suggestedOptions.length === 0 ? (
+              <div className="px-4 py-3 text-sm text-muted">
+                No encontramos esa zona.
+              </div>
             ) : null}
           </div>
         </div>
@@ -152,21 +263,24 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
   const [propertyType, setPropertyType] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption | null>(null);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  function buildSearchHref(location: SearchLocationOption | null = selectedLocation) {
     const params = new URLSearchParams();
     if (propertyType) {
       params.set("tipo", propertyType);
     }
-    if (selectedLocation) {
-      params.set("zona", selectedLocation.label);
+    if (location) {
+      params.set("zona", location.label);
     }
 
     const basePath =
       operation === "rent" ? "/alquileres" : operation === "investment" ? "/inversion" : "/comprar";
     const query = params.toString();
-    router.push(query ? `${basePath}?${query}` : basePath);
+    return query ? `${basePath}?${query}` : basePath;
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    router.push(buildSearchHref());
   }
 
   return (
@@ -214,8 +328,10 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 Zona
                 <LocationCombobox
                   options={locationOptions}
+                  operation={operation}
                   selectedOption={selectedLocation}
                   onSelect={setSelectedLocation}
+                  onSuggestionSelect={(option) => router.push(buildSearchHref(option))}
                 />
               </label>
 
@@ -276,8 +392,10 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               Zona
               <LocationCombobox
                 options={locationOptions}
+                operation={operation}
                 selectedOption={selectedLocation}
                 onSelect={setSelectedLocation}
+                onSuggestionSelect={(option) => router.push(buildSearchHref(option))}
               />
             </label>
 

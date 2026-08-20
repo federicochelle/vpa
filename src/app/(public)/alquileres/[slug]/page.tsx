@@ -43,7 +43,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
           <div className="panel overflow-hidden !rounded-none">
             <div className="bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-6 sm:px-8 lg:px-12">
               <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:justify-between">
-                <div className="min-w-0 space-y-4">
+                <div className="min-w-0 flex-1 space-y-4">
                   <h1 className="line-clamp-2 font-display text-[1.7rem] leading-tight text-foreground sm:text-4xl">
                     {property.title}
                   </h1>
@@ -54,7 +54,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                         {location}
                       </span>
                     </div>
-                    <p className="shrink-0 font-display text-lg text-primary-strong sm:text-3xl">
+                    <p className="shrink-0 text-right font-display text-lg text-primary-strong sm:text-3xl">
                       {price}
                     </p>
                   </div>

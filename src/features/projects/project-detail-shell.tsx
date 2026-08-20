@@ -50,6 +50,9 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
   const imagesResult = await listPublishedProjectImages(project.id);
   const images = imagesResult.ok ? imagesResult.data : [];
   const parsedVideo = project.videoUrl ? parseYouTubeUrl(project.videoUrl) : null;
+  const videoEmbedUrl = parsedVideo
+    ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
+    : null;
   const mobileFullBleedClassName = "-mx-4 sm:mx-0";
   const location =
     [project.address, project.neighborhood, project.city, project.department]
@@ -71,14 +74,14 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             <div className={mobileFullBleedClassName}>
               <div className="panel !rounded-none p-6 sm:p-8">
                 <h2 className="text-2xl font-display text-primary-strong">Video</h2>
-                <div className="mt-6 overflow-hidden border border-border bg-surface-muted">
+                <div className="mt-6 -mx-6 overflow-hidden border-y border-border bg-surface-muted sm:mx-0 sm:border">
                   <div className="aspect-video">
                     <iframe
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       className="h-full w-full"
                       referrerPolicy="strict-origin-when-cross-origin"
-                      src={parsedVideo.embedUrl}
+                      src={videoEmbedUrl ?? undefined}
                       title={`Video de YouTube de ${project.name}`}
                     />
                   </div>
