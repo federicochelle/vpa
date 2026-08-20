@@ -17,28 +17,66 @@ const AUTOPLAY_DELAY = 8000;
 const SWIPE_THRESHOLD = 50;
 
 export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(slides.length > 1 ? 1 : 0);
+  const [isTransitionEnabled, setIsTransitionEnabled] = useState(slides.length > 1);
   const touchStartXRef = useRef<number | null>(null);
   const touchDeltaXRef = useRef(0);
+  const totalSlides = slides.length;
+  const loopedSlides =
+    totalSlides > 1 ? [slides[totalSlides - 1], ...slides, slides[0]] : slides;
 
   useEffect(() => {
-    if (slides.length <= 1) {
+    if (totalSlides <= 1) {
       return;
     }
 
     const intervalId = window.setInterval(() => {
-      setCurrentSlide((current) => (current + 1) % slides.length);
+      setIsTransitionEnabled(true);
+      setCurrentSlide((current) => current + 1);
     }, AUTOPLAY_DELAY);
 
     return () => window.clearInterval(intervalId);
-  }, [slides.length]);
+  }, [totalSlides]);
+
+  useEffect(() => {
+    if (totalSlides <= 1) {
+      setCurrentSlide(0);
+      setIsTransitionEnabled(false);
+      return;
+    }
+
+    setCurrentSlide(1);
+    setIsTransitionEnabled(true);
+  }, [totalSlides]);
+
+  useEffect(() => {
+    if (isTransitionEnabled || totalSlides <= 1) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setIsTransitionEnabled(true);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [isTransitionEnabled, totalSlides]);
 
   const goToPrevious = () => {
-    setCurrentSlide((current) => (current - 1 + slides.length) % slides.length);
+    if (totalSlides <= 1) {
+      return;
+    }
+
+    setIsTransitionEnabled(true);
+    setCurrentSlide((current) => current - 1);
   };
 
   const goToNext = () => {
-    setCurrentSlide((current) => (current + 1) % slides.length);
+    if (totalSlides <= 1) {
+      return;
+    }
+
+    setIsTransitionEnabled(true);
+    setCurrentSlide((current) => current + 1);
   };
 
   const handleTouchStart = (event: TouchEvent<HTMLElement>) => {
@@ -69,6 +107,23 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     touchDeltaXRef.current = 0;
   };
 
+  const handleTransitionEnd = () => {
+    if (totalSlides <= 1) {
+      return;
+    }
+
+    if (currentSlide === totalSlides + 1) {
+      setIsTransitionEnabled(false);
+      setCurrentSlide(1);
+      return;
+    }
+
+    if (currentSlide === 0) {
+      setIsTransitionEnabled(false);
+      setCurrentSlide(totalSlides);
+    }
+  };
+
   return (
     <section
       className="relative h-[74vh] min-h-[560px] w-full overflow-hidden sm:h-[72vh] sm:min-h-[540px] lg:h-[78vh]"
@@ -77,16 +132,17 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       onTouchStart={handleTouchStart}
     >
       <div
-        className="flex h-full transition-transform duration-500 ease-out"
+        className={`flex h-full ease-out ${isTransitionEnabled ? "transition-transform duration-500" : ""}`}
+        onTransitionEnd={handleTransitionEnd}
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {slides.map((slide, index) => (
+        {loopedSlides.map((slide, index) => (
           <div key={`${slide.alt}-${index}`} className="relative h-full w-full flex-none overflow-hidden">
             <Image
               src={slide.src}
               alt={slide.alt}
               fill
-              priority={index === 0}
+              priority={index <= 1}
               className="object-cover object-center"
               sizes="100vw"
             />
@@ -96,7 +152,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
 
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/10" />
 
-      {slides.length > 1 ? (
+      {totalSlides > 1 ? (
         <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-between md:flex">
           <button
             aria-label="Slide anterior"

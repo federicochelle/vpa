@@ -1,8 +1,8 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { propertyTypeOptions } from "@/features/properties/property-options";
 
 const searchOperationOptions = [
@@ -11,37 +11,146 @@ const searchOperationOptions = [
   { value: "investment", label: "Inversión" },
 ] as const;
 
+interface SearchLocationOption {
+  label: string;
+  city: string | null;
+  neighborhood: string | null;
+}
+
 interface SearchSectionProps {
-  locationOptions: string[];
+  locationOptions: SearchLocationOption[];
 }
 
 function normalizeLocation(value: string) {
   return value.trim().toLocaleLowerCase("es-UY");
 }
 
+function LocationCombobox({
+  options,
+  selectedOption,
+  onSelect,
+}: {
+  options: SearchLocationOption[];
+  selectedOption: SearchLocationOption | null;
+  onSelect: (option: SearchLocationOption | null) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const listboxId = useId();
+
+  const filteredOptions = useMemo(() => {
+    const normalizedQuery = normalizeLocation(query);
+
+    if (!normalizedQuery) {
+      return options;
+    }
+
+    return options.filter((option) =>
+      normalizeLocation(option.label).includes(normalizedQuery),
+    );
+  }, [options, query]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setQuery("");
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="relative w-full" ref={rootRef}>
+      <button
+        aria-controls={listboxId}
+        aria-expanded={isOpen}
+        className="search-field flex items-center justify-between gap-3 text-left"
+        onClick={() => setIsOpen((open) => !open)}
+        type="button"
+      >
+        <span className={selectedOption ? "truncate text-foreground" : "truncate text-muted"}>
+          {selectedOption?.label ?? "Zona / Barrio"}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 flex-none text-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {isOpen ? (
+        <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-20 overflow-hidden border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
+          <div className="border-b border-border p-3">
+            <input
+              ref={inputRef}
+              autoComplete="off"
+              className="search-field search-zone-input"
+              placeholder="Buscar ciudad o zona"
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+          <div
+            aria-label="Opciones de zona"
+            className="max-h-60 overflow-y-auto"
+            id={listboxId}
+            role="listbox"
+          >
+            {filteredOptions.map((option) => (
+              <button
+                key={option.label}
+                aria-selected={selectedOption?.label === option.label}
+                className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
+                onClick={() => {
+                  onSelect(option);
+                  setIsOpen(false);
+                }}
+                role="option"
+                type="button"
+              >
+                {option.label}
+              </button>
+            ))}
+            {filteredOptions.length === 0 ? (
+              <div className="px-4 py-3 text-sm text-muted">No hay coincidencias</div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function SearchSection({ locationOptions }: SearchSectionProps) {
   const router = useRouter();
   const [operation, setOperation] = useState<(typeof searchOperationOptions)[number]["value"]>("sale");
   const [propertyType, setPropertyType] = useState("");
-  const [zone, setZone] = useState("");
-  const [isLocationOpen, setIsLocationOpen] = useState(false);
-
-  const filteredLocationOptions = useMemo(() => {
-    const normalizedZone = normalizeLocation(zone);
-
-    if (!normalizedZone) {
-      return locationOptions;
-    }
-
-    return locationOptions.filter((option) =>
-      normalizeLocation(option).includes(normalizedZone),
-    );
-  }, [locationOptions, zone]);
-
-  const hasExactLocationMatch = useMemo(
-    () => locationOptions.some((option) => normalizeLocation(option) === normalizeLocation(zone)),
-    [locationOptions, zone],
-  );
+  const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption | null>(null);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,14 +159,8 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
     if (propertyType) {
       params.set("tipo", propertyType);
     }
-    if (zone.trim() && hasExactLocationMatch) {
-      const selectedLocation = locationOptions.find(
-        (option) => normalizeLocation(option) === normalizeLocation(zone),
-      );
-
-      if (selectedLocation) {
-        params.set("zona", selectedLocation);
-      }
+    if (selectedLocation) {
+      params.set("zona", selectedLocation.label);
     }
 
     const basePath =
@@ -109,55 +212,11 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
 
               <label className="grid gap-2 text-sm font-medium text-foreground">
                 Zona
-                <div className="relative w-full">
-                  <input
-                    autoComplete="off"
-                    className="search-field search-zone-input"
-                    type="text"
-                    name="zona"
-                    placeholder="Ej: Carrasco, Pocitos o Centro"
-                    value={zone}
-                    onBlur={() => {
-                      window.setTimeout(() => {
-                        setIsLocationOpen(false);
-
-                        if (!zone.trim()) {
-                          return;
-                        }
-
-                        const selectedLocation = locationOptions.find(
-                          (option) => normalizeLocation(option) === normalizeLocation(zone),
-                        );
-
-                        setZone(selectedLocation ?? "");
-                      }, 120);
-                    }}
-                    onChange={(event) => {
-                      setZone(event.target.value);
-                      setIsLocationOpen(true);
-                    }}
-                    onFocus={() => setIsLocationOpen(true)}
-                  />
-
-                  {isLocationOpen && filteredLocationOptions.length > 0 ? (
-                    <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-20 max-h-60 overflow-y-auto border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
-                      {filteredLocationOptions.map((option) => (
-                        <button
-                          key={option}
-                          className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
-                          onMouseDown={(event) => {
-                            event.preventDefault();
-                            setZone(option);
-                            setIsLocationOpen(false);
-                          }}
-                          type="button"
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
+                <LocationCombobox
+                  options={locationOptions}
+                  selectedOption={selectedLocation}
+                  onSelect={setSelectedLocation}
+                />
               </label>
 
               <button
@@ -215,55 +274,11 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
 
             <label className="grid gap-2 text-sm font-medium text-foreground">
               Zona
-              <div className="relative w-full">
-                <input
-                  autoComplete="off"
-                  className="search-field search-zone-input"
-                  type="text"
-                  name="zona"
-                  placeholder="Ej: Carrasco, Pocitos o Centro"
-                  value={zone}
-                  onBlur={() => {
-                    window.setTimeout(() => {
-                      setIsLocationOpen(false);
-
-                      if (!zone.trim()) {
-                        return;
-                      }
-
-                      const selectedLocation = locationOptions.find(
-                        (option) => normalizeLocation(option) === normalizeLocation(zone),
-                      );
-
-                      setZone(selectedLocation ?? "");
-                    }, 120);
-                  }}
-                  onChange={(event) => {
-                    setZone(event.target.value);
-                    setIsLocationOpen(true);
-                  }}
-                  onFocus={() => setIsLocationOpen(true)}
-                />
-
-                {isLocationOpen && filteredLocationOptions.length > 0 ? (
-                  <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-20 max-h-60 overflow-y-auto border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
-                    {filteredLocationOptions.map((option) => (
-                      <button
-                        key={option}
-                        className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
-                        onMouseDown={(event) => {
-                          event.preventDefault();
-                          setZone(option);
-                          setIsLocationOpen(false);
-                        }}
-                        type="button"
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
+              <LocationCombobox
+                options={locationOptions}
+                selectedOption={selectedLocation}
+                onSelect={setSelectedLocation}
+              />
             </label>
 
             <button

@@ -22,15 +22,38 @@ function EmptyCarouselCard({ message }: { message: string }) {
   );
 }
 
-function buildLocationOptions(...locationGroups: Array<Array<string | null | undefined>>) {
+function buildLocationOptions(
+  ...locationGroups: Array<Array<{ city: string | null; neighborhood: string | null }>>
+) {
   return Array.from(
-    new Set(
+    new Map(
       locationGroups
         .flat()
-        .map((value) => value?.trim())
-        .filter((value): value is string => Boolean(value)),
-    ),
-  ).sort((a, b) => a.localeCompare(b, "es-UY"));
+        .map(({ city, neighborhood }) => {
+          const normalizedCity = city?.trim() || null;
+          const normalizedNeighborhood = neighborhood?.trim() || null;
+
+          if (!normalizedCity && !normalizedNeighborhood) {
+            return null;
+          }
+
+          const label =
+            normalizedCity && normalizedNeighborhood
+              ? `${normalizedCity} / ${normalizedNeighborhood}`
+              : normalizedCity ?? normalizedNeighborhood ?? "";
+
+          return [
+            label.toLocaleLowerCase("es-UY"),
+            {
+              label,
+              city: normalizedCity,
+              neighborhood: normalizedNeighborhood,
+            },
+          ] as const;
+        })
+        .filter((entry): entry is readonly [string, { label: string; city: string | null; neighborhood: string | null }] => Boolean(entry)),
+    ).values(),
+  ).sort((a, b) => a.label.localeCompare(b.label, "es-UY"));
 }
 
 export async function HomeShell() {
@@ -46,9 +69,18 @@ export async function HomeShell() {
     { src: proyectoHeroImage, alt: "Proyecto destacado" },
   ];
   const locationOptions = buildLocationOptions(
-    rentProperties.flatMap((property) => [property.city, property.neighborhood]),
-    saleProperties.flatMap((property) => [property.city, property.neighborhood]),
-    investmentProjects.flatMap((project) => [project.city, project.neighborhood]),
+    rentProperties.map((property) => ({
+      city: property.city,
+      neighborhood: property.neighborhood,
+    })),
+    saleProperties.map((property) => ({
+      city: property.city,
+      neighborhood: property.neighborhood,
+    })),
+    investmentProjects.map((project) => ({
+      city: project.city,
+      neighborhood: project.neighborhood,
+    })),
   );
 
   return (
