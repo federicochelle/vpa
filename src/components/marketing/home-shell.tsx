@@ -21,6 +21,17 @@ function EmptyCarouselCard({ message }: { message: string }) {
   );
 }
 
+function buildLocationOptions(...locationGroups: Array<Array<string | null | undefined>>) {
+  return Array.from(
+    new Set(
+      locationGroups
+        .flat()
+        .map((value) => value?.trim())
+        .filter((value): value is string => Boolean(value)),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "es-UY"));
+}
+
 export async function HomeShell() {
   const [rentProperties, saleProperties, investmentProjects, recentNews] = await Promise.all([
     listPublishedPropertiesByOperation("rent"),
@@ -32,6 +43,11 @@ export async function HomeShell() {
     { src: propiedadHeroImage, alt: "Propiedad destacada" },
     { src: proyectoHeroImage, alt: "Proyecto destacado" },
   ];
+  const locationOptions = buildLocationOptions(
+    rentProperties.flatMap((property) => [property.city, property.neighborhood]),
+    saleProperties.flatMap((property) => [property.city, property.neighborhood]),
+    investmentProjects.flatMap((project) => [project.city, project.neighborhood]),
+  );
 
   return (
     <>
@@ -56,7 +72,7 @@ export async function HomeShell() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/10" />
       </section>
 
-      <SearchSection />
+      <SearchSection locationOptions={locationOptions} />
 
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">

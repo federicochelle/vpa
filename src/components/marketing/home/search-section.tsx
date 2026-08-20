@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { propertyTypeOptions } from "@/features/properties/property-options";
 
 const searchOperationOptions = [
@@ -11,12 +11,37 @@ const searchOperationOptions = [
   { value: "investment", label: "Inversión" },
 ] as const;
 
-export function SearchSection() {
+interface SearchSectionProps {
+  locationOptions: string[];
+}
+
+function normalizeLocation(value: string) {
+  return value.trim().toLocaleLowerCase("es-UY");
+}
+
+export function SearchSection({ locationOptions }: SearchSectionProps) {
   const router = useRouter();
   const [operation, setOperation] = useState<(typeof searchOperationOptions)[number]["value"]>("sale");
   const [propertyType, setPropertyType] = useState("");
   const [zone, setZone] = useState("");
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isLocationOpen, setIsLocationOpen] = useState(false);
+
+  const filteredLocationOptions = useMemo(() => {
+    const normalizedZone = normalizeLocation(zone);
+
+    if (!normalizedZone) {
+      return locationOptions;
+    }
+
+    return locationOptions.filter((option) =>
+      normalizeLocation(option).includes(normalizedZone),
+    );
+  }, [locationOptions, zone]);
+
+  const hasExactLocationMatch = useMemo(
+    () => locationOptions.some((option) => normalizeLocation(option) === normalizeLocation(zone)),
+    [locationOptions, zone],
+  );
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,8 +50,14 @@ export function SearchSection() {
     if (propertyType) {
       params.set("tipo", propertyType);
     }
-    if (zone.trim()) {
-      params.set("zona", zone.trim());
+    if (zone.trim() && hasExactLocationMatch) {
+      const selectedLocation = locationOptions.find(
+        (option) => normalizeLocation(option) === normalizeLocation(zone),
+      );
+
+      if (selectedLocation) {
+        params.set("zona", selectedLocation);
+      }
     }
 
     const basePath =
@@ -36,30 +67,10 @@ export function SearchSection() {
   }
 
   return (
-    <section className="relative z-10 pb-12 md:shell md:-mt-20 md:pb-14 lg:-mt-24 lg:pb-16">
+    <section className="relative z-10 -mt-24 pb-12 px-4 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
       <div className="md:hidden">
-        <div className="overflow-hidden border-y border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
-          <button
-            aria-expanded={isMobileOpen}
-            className="flex w-full items-center justify-between gap-4 bg-primary px-5 py-4 text-left"
-            onClick={() => setIsMobileOpen((open) => !open)}
-            type="button"
-          >
-            <span className="text-sm font-semibold uppercase tracking-[0.18em] text-white">
-              Buscar propiedades
-            </span>
-            <ChevronDown
-              className={`h-5 w-5 flex-none text-white transition-transform duration-300 ${
-                isMobileOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          <div
-            className={`overflow-hidden bg-white transition-[max-height,opacity,padding] duration-300 ease-out ${
-              isMobileOpen ? "max-h-[640px] p-5 opacity-100" : "max-h-0 p-0 opacity-0"
-            }`}
-          >
+        <div className="mx-auto max-w-xl overflow-hidden border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
+          <div className="bg-white p-5">
             <form className="grid gap-4" onSubmit={handleSubmit}>
               <label className="grid gap-2 text-sm font-medium text-foreground">
                 Tipo de propiedad
@@ -98,14 +109,55 @@ export function SearchSection() {
 
               <label className="grid gap-2 text-sm font-medium text-foreground">
                 Zona
-                <input
-                  className="input-base"
-                  type="text"
-                  name="zona"
-                  placeholder="Ej: Carrasco, Pocitos o Centro"
-                  value={zone}
-                  onChange={(event) => setZone(event.target.value)}
-                />
+                <div className="relative w-full">
+                  <input
+                    autoComplete="off"
+                    className="input-base w-full"
+                    type="text"
+                    name="zona"
+                    placeholder="Ej: Carrasco, Pocitos o Centro"
+                    value={zone}
+                    onBlur={() => {
+                      window.setTimeout(() => {
+                        setIsLocationOpen(false);
+
+                        if (!zone.trim()) {
+                          return;
+                        }
+
+                        const selectedLocation = locationOptions.find(
+                          (option) => normalizeLocation(option) === normalizeLocation(zone),
+                        );
+
+                        setZone(selectedLocation ?? "");
+                      }, 120);
+                    }}
+                    onChange={(event) => {
+                      setZone(event.target.value);
+                      setIsLocationOpen(true);
+                    }}
+                    onFocus={() => setIsLocationOpen(true)}
+                  />
+
+                  {isLocationOpen && filteredLocationOptions.length > 0 ? (
+                    <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-20 max-h-60 overflow-y-auto border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
+                      {filteredLocationOptions.map((option) => (
+                        <button
+                          key={option}
+                          className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
+                          onMouseDown={(event) => {
+                            event.preventDefault();
+                            setZone(option);
+                            setIsLocationOpen(false);
+                          }}
+                          type="button"
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               </label>
 
               <button
@@ -163,14 +215,55 @@ export function SearchSection() {
 
             <label className="grid gap-2 text-sm font-medium text-foreground">
               Zona
-              <input
-                className="input-base"
-                type="text"
-                name="zona"
-                placeholder="Ej: Carrasco, Pocitos o Centro"
-                value={zone}
-                onChange={(event) => setZone(event.target.value)}
-              />
+              <div className="relative w-full">
+                <input
+                  autoComplete="off"
+                  className="input-base w-full"
+                  type="text"
+                  name="zona"
+                  placeholder="Ej: Carrasco, Pocitos o Centro"
+                  value={zone}
+                  onBlur={() => {
+                    window.setTimeout(() => {
+                      setIsLocationOpen(false);
+
+                      if (!zone.trim()) {
+                        return;
+                      }
+
+                      const selectedLocation = locationOptions.find(
+                        (option) => normalizeLocation(option) === normalizeLocation(zone),
+                      );
+
+                      setZone(selectedLocation ?? "");
+                    }, 120);
+                  }}
+                  onChange={(event) => {
+                    setZone(event.target.value);
+                    setIsLocationOpen(true);
+                  }}
+                  onFocus={() => setIsLocationOpen(true)}
+                />
+
+                {isLocationOpen && filteredLocationOptions.length > 0 ? (
+                  <div className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-20 max-h-60 overflow-y-auto border border-border bg-white shadow-[0_14px_40px_rgba(39,39,39,0.08)]">
+                    {filteredLocationOptions.map((option) => (
+                      <button
+                        key={option}
+                        className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          setZone(option);
+                          setIsLocationOpen(false);
+                        }}
+                        type="button"
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             </label>
 
             <button

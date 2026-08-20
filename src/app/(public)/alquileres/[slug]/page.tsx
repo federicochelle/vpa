@@ -47,10 +47,12 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                   <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
                     {property.title}
                   </h1>
-                  <div className="flex items-start justify-between gap-4 text-sm text-muted">
+                  <div className="flex items-start justify-between gap-4 text-muted">
                     <div className="flex min-w-0 items-center gap-2">
                       <MapPin className="h-4 w-4 flex-none text-primary" />
-                      <span>{location}</span>
+                      <span className="font-display text-2xl text-primary-strong sm:font-sans sm:text-sm sm:text-muted">
+                        {location}
+                      </span>
                     </div>
                     <p className="shrink-0 font-display text-2xl text-primary-strong sm:text-3xl">
                       {price}

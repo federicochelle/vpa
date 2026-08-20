@@ -117,7 +117,7 @@ export function Navbar() {
                 key={item.href}
                 className={`relative w-full rounded-2xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-[0.14em] text-white ${
                   isActive
-                    ? "bg-white/16 after:absolute after:bottom-2 after:left-4 after:right-4 after:h-0.5 after:bg-white after:content-['']"
+                    ? ""
                     : "hover:bg-white/10 hover:text-white"
                 }`}
                 href={item.href}

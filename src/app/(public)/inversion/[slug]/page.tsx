@@ -17,7 +17,8 @@ export default async function InvestmentDetailPage({
     notFound();
   }
 
-  const location =
+  const mobileLocation = project.neighborhood || project.address || "Ubicación pendiente";
+  const desktopLocation =
     [project.neighborhood, project.city, project.department]
       .filter(Boolean)
       .join(", ") || "Ubicación pendiente";
@@ -41,14 +42,20 @@ export default async function InvestmentDetailPage({
                 <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
                   {project.name}
                 </h1>
-                <div className="flex items-start justify-between gap-4 text-sm text-muted lg:justify-start">
-                  <div className="flex min-w-0 items-center gap-2">
+                <div className="flex items-start justify-between gap-4 lg:hidden">
+                  <div className="flex min-w-0 items-center gap-2 text-lg text-primary-strong">
                     <MapPin className="h-4 w-4 flex-none text-primary" />
-                    <span>{location}</span>
+                    <span className="truncate whitespace-nowrap">{mobileLocation}</span>
                   </div>
-                  <p className="shrink-0 font-display text-2xl text-primary-strong sm:text-3xl lg:hidden">
+                  <p className="shrink-0 whitespace-nowrap font-display text-lg text-primary-strong">
                     {status}
                   </p>
+                </div>
+                <div className="hidden items-start justify-between gap-4 text-sm text-muted lg:flex lg:justify-start">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <MapPin className="h-4 w-4 flex-none text-primary" />
+                    <span>{desktopLocation}</span>
+                  </div>
                 </div>
               </div>
               <div className="hidden text-right lg:block">

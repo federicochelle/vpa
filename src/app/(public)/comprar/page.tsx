@@ -2,6 +2,29 @@ import Link from "next/link";
 import { Bath, BedDouble, CarFront, MapPin, Ruler } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listPublishedPropertiesByOperation } from "@/features/properties/properties.data";
+import type { PropertyType } from "@/types/property";
+
+interface BuyPageProps {
+  searchParams: Promise<{
+    tipo?: string;
+    zona?: string;
+  }>;
+}
+
+function normalizeFilterValue(value: string | null | undefined) {
+  return value?.trim().toLocaleLowerCase("es-UY") ?? "";
+}
+
+function isPropertyType(value: string | undefined): value is PropertyType {
+  return [
+    "apartment",
+    "house",
+    "land",
+    "office",
+    "commercial-space",
+    "other",
+  ].includes(value ?? "");
+}
 
 function formatPropertyPrice(price: number | null, currency: string | null) {
   if (!price || !currency) {
@@ -15,8 +38,21 @@ function formatPropertyPrice(price: number | null, currency: string | null) {
   }).format(price);
 }
 
-export default async function BuyPage() {
+export default async function BuyPage({ searchParams }: BuyPageProps) {
+  const params = await searchParams;
   const properties = await listPublishedPropertiesByOperation("sale");
+  const selectedType = isPropertyType(params.tipo) ? params.tipo : null;
+  const selectedZone = normalizeFilterValue(params.zona);
+  const filteredProperties = properties.filter((property) => {
+    const matchesType = selectedType ? property.propertyType === selectedType : true;
+    const matchesZone = selectedZone
+      ? [property.city, property.neighborhood].some(
+          (value) => normalizeFilterValue(value) === selectedZone,
+        )
+      : true;
+
+    return matchesType && matchesZone;
+  });
 
   return (
     <section className="bg-background py-16 sm:py-20">
@@ -30,9 +66,9 @@ export default async function BuyPage() {
           </h1>
         </div>
 
-        {properties.length > 0 ? (
+        {filteredProperties.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {properties.map((property) => (
+            {filteredProperties.map((property) => (
               <Link
                 key={property.id}
                 href={`/comprar/${property.slug}`}
@@ -82,7 +118,7 @@ export default async function BuyPage() {
         ) : (
           <EmptyState
             title="Todavía no hay propiedades en venta publicadas"
-            description="Esta grilla ya quedó preparada para mostrar propiedades reales."
+            description="No encontramos propiedades publicadas con los filtros seleccionados."
           />
         )}
       </div>

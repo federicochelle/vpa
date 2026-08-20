@@ -3,6 +3,16 @@ import { CalendarClock, MapPin, Sparkles } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listPublishedProjects } from "@/features/projects/projects.data";
 
+interface InvestmentPageProps {
+  searchParams: Promise<{
+    zona?: string;
+  }>;
+}
+
+function normalizeFilterValue(value: string | null | undefined) {
+  return value?.trim().toLocaleLowerCase("es-UY") ?? "";
+}
+
 function formatConstructionStatus(status: string | null) {
   if (!status) {
     return "Estado pendiente";
@@ -20,8 +30,17 @@ function formatConstructionStatus(status: string | null) {
   }
 }
 
-export default async function InvestmentPage() {
+export default async function InvestmentPage({ searchParams }: InvestmentPageProps) {
+  const params = await searchParams;
   const projects = await listPublishedProjects();
+  const selectedZone = normalizeFilterValue(params.zona);
+  const filteredProjects = projects.filter((project) =>
+    selectedZone
+      ? [project.city, project.neighborhood].some(
+          (value) => normalizeFilterValue(value) === selectedZone,
+        )
+      : true,
+  );
 
   return (
     <section className="bg-background py-16 sm:py-20">
@@ -35,9 +54,9 @@ export default async function InvestmentPage() {
           </h1>
         </div>
 
-        {projects.length > 0 ? (
+        {filteredProjects.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <Link
                 key={project.id}
                 href={`/inversion/${project.slug}`}
@@ -82,7 +101,7 @@ export default async function InvestmentPage() {
         ) : (
           <EmptyState
             title="Todavía no hay proyectos publicados"
-            description="Esta grilla ya quedó preparada para mostrar proyectos reales."
+            description="No encontramos proyectos publicados con los filtros seleccionados."
           />
         )}
       </div>

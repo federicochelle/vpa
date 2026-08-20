@@ -60,7 +60,7 @@ export function AdminSidebar(_props: AdminSidebarProps) {
                 key={item.href}
                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-semibold text-white transition-colors ${
                   isActive
-                    ? "bg-white/16 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] hover:bg-white/22"
+                    ? "hover:bg-white/12 lg:bg-white/16 lg:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] lg:hover:bg-white/22"
                     : "hover:bg-white/12 hover:text-white"
                 }`}
                 href={item.href}
