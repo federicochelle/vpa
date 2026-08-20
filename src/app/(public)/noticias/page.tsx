@@ -41,14 +41,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           <h1 className="font-display text-3xl text-foreground sm:text-4xl">
             Actualidad y contenido de interés
           </h1>
-          <p className="max-w-2xl text-base leading-7 text-muted">
-            Notas, novedades y contenidos de interés para acompañar cada decisión inmobiliaria con más contexto.
-          </p>
         </div>
 
         {news.length > 0 ? (
           <>
-            <div className="space-y-10">
+            <div className="-mx-4 w-[calc(100%+2rem)] space-y-4 sm:mx-0 sm:w-auto sm:space-y-10">
               {news.map((item) => (
                 <NewsListItem key={item.id} news={item} />
               ))}

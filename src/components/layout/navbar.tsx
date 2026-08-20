@@ -8,6 +8,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import logoVpa from "../../../logovpa.webp";
 import { publicNavigation } from "@/lib/navigation";
 
+const mobileNavigation = [
+  ...publicNavigation,
+  { href: "/noticias", label: "NOTICIAS" },
+] as const;
+
 export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -109,7 +114,7 @@ export function Navbar() {
         }`}
       >
         <nav className="shell flex flex-col items-center py-4 text-center">
-          {publicNavigation.map((item) => {
+          {mobileNavigation.map((item) => {
             const isActive = isItemActive(item.href);
 
             return (

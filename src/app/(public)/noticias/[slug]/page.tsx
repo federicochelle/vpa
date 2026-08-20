@@ -18,7 +18,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   return (
     <div className="shell section-gap !pt-4">
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <div className="space-y-4">
+        <div className="-mx-4 space-y-4 sm:mx-0">
           <div className="panel overflow-hidden !rounded-none">
             <div className="space-y-5 bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-6 sm:px-8 lg:px-12">
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
@@ -39,7 +39,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           </div>
 
           <div
-            className="aspect-[16/9] overflow-hidden border border-border bg-[linear-gradient(135deg,rgba(200,16,46,0.14),rgba(255,255,255,0.42)),linear-gradient(180deg,#d8d1c8,#efeae3)] bg-cover bg-center"
+            className="aspect-[16/9] overflow-hidden border-y border-border bg-[linear-gradient(135deg,rgba(200,16,46,0.14),rgba(255,255,255,0.42)),linear-gradient(180deg,#d8d1c8,#efeae3)] bg-cover bg-center sm:border"
             style={news.imageUrl ? { backgroundImage: `url(${news.imageUrl})` } : undefined}
           />
 
