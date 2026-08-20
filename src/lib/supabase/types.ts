@@ -84,6 +84,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      news: {
+        Row: {
+          content: string | null;
+          created_at: string;
+          excerpt: string | null;
+          id: string;
+          image_public_id: string | null;
+          image_url: string | null;
+          published: boolean;
+          published_at: string | null;
+          slug: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          content?: string | null;
+          created_at?: string;
+          excerpt?: string | null;
+          id?: string;
+          image_public_id?: string | null;
+          image_url?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          slug: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          content?: string | null;
+          created_at?: string;
+          excerpt?: string | null;
+          id?: string;
+          image_public_id?: string | null;
+          image_url?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          slug?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -228,6 +270,7 @@ export type Database = {
           neighborhood: string | null;
           published: boolean;
           slug: string;
+          video_url: string | null;
           city: string | null;
           updated_at: string;
         };
@@ -248,6 +291,7 @@ export type Database = {
           neighborhood?: string | null;
           published?: boolean;
           slug: string;
+          video_url?: string | null;
           city?: string | null;
           updated_at?: string;
         };
@@ -268,6 +312,7 @@ export type Database = {
           neighborhood?: string | null;
           published?: boolean;
           slug?: string;
+          video_url?: string | null;
           city?: string | null;
           updated_at?: string;
         };
@@ -303,6 +348,7 @@ export type Database = {
           title: string;
           total_area: number | null;
           updated_at: string;
+          video_url: string | null;
         };
         Insert: {
           address?: string | null;
@@ -333,6 +379,7 @@ export type Database = {
           title: string;
           total_area?: number | null;
           updated_at?: string;
+          video_url?: string | null;
         };
         Update: {
           address?: string | null;
@@ -363,6 +410,7 @@ export type Database = {
           title?: string;
           total_area?: number | null;
           updated_at?: string;
+          video_url?: string | null;
         };
         Relationships: [];
       };

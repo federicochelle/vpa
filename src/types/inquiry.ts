@@ -25,7 +25,7 @@ export interface Inquiry {
 }
 
 export interface PublicInquiryPayload {
-  kind: "property" | "project";
+  kind: "property" | "project" | "general";
   name: string;
   email: string;
   phone?: string;

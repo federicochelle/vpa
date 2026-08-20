@@ -3,7 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, FolderKanban, LayoutDashboard, Mail, Settings } from "lucide-react";
+import {
+  Building2,
+  FolderKanban,
+  LayoutDashboard,
+  Mail,
+  Newspaper,
+  Settings,
+} from "lucide-react";
 import logoVpaCorto from "../../../logovpacorto.webp";
 import { logoutAction } from "@/features/auth/auth.actions";
 import { adminNavigation } from "@/lib/navigation";
@@ -13,11 +20,13 @@ const icons = {
   "/admin": LayoutDashboard,
   "/admin/propiedades": Building2,
   "/admin/proyectos": FolderKanban,
+  "/admin/noticias": Newspaper,
   "/admin/consultas": Mail,
   "/admin/configuracion": Settings,
 };
 
 interface AdminSidebarProps {
+  newInquiriesCount: number;
   profile: Database["public"]["Tables"]["profiles"]["Row"];
 }
 
@@ -58,6 +67,11 @@ export function AdminSidebar(_props: AdminSidebarProps) {
               >
                 <Icon className="h-[18px] w-[18px] stroke-[2.3] text-white" />
                 <span className="text-white">{item.label}</span>
+                {item.href === "/admin/consultas" && _props.newInquiriesCount > 0 ? (
+                  <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-white px-1.5 py-0.5 text-[11px] font-bold leading-none text-primary">
+                    {_props.newInquiriesCount}
+                  </span>
+                ) : null}
               </Link>
             );
           })}
@@ -68,7 +82,7 @@ export function AdminSidebar(_props: AdminSidebarProps) {
               className="flex w-full justify-center rounded-full border border-white/20 bg-white/8 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/14"
               type="submit"
             >
-              Cerrar sesion
+              Cerrar sesión
             </button>
           </form>
         </div>

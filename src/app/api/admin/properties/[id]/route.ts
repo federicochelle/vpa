@@ -22,7 +22,19 @@ export async function PATCH(
   const { id } = await context.params;
   const formData = await request.formData();
   const featureIds = toStringArray(formData.getAll("featureIds"));
-  const result = await updateProperty(id, buildPropertyInput(formData), featureIds);
+  let result;
+
+  try {
+    result = await updateProperty(id, buildPropertyInput(formData), featureIds);
+  } catch (error) {
+    return Response.json(
+      {
+        message:
+          error instanceof Error ? error.message : "No se pudo actualizar la propiedad.",
+      },
+      { status: 400 },
+    );
+  }
 
   if (!result.ok || !result.data) {
     return Response.json(

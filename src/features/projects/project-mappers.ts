@@ -20,6 +20,7 @@ export function mapProjectRow(row: ProjectRow): Project {
     latitude: row.latitude,
     longitude: row.longitude,
     image: null,
+    videoUrl: row.video_url,
     featured: row.featured,
     published: row.published,
     isInvestmentOpportunity: row.is_investment_opportunity,

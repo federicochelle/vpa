@@ -31,6 +31,9 @@ interface ImagesPickerProps {
   value?: PendingImage[];
   onChange?: (images: PendingImage[]) => void;
   disabled?: boolean;
+  inputId?: string;
+  hideEmptyState?: boolean;
+  showHeader?: boolean;
 }
 
 function createPendingImageId() {
@@ -75,8 +78,12 @@ export function ImagesPicker({
   value,
   onChange,
   disabled = false,
+  inputId: providedInputId,
+  hideEmptyState = false,
+  showHeader = true,
 }: ImagesPickerProps) {
-  const inputId = useId();
+  const generatedInputId = useId();
+  const inputId = providedInputId ?? generatedInputId;
   const [internalImages, setInternalImages] = useState<PendingImage[]>([]);
   const mountedRef = useRef(true);
   const removedIdsRef = useRef(new Set<string>());
@@ -278,20 +285,34 @@ export function ImagesPicker({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="space-y-1">
-            <h3 className="text-sm font-medium text-primary-strong">{label}</h3>
-            <p className="max-w-2xl text-xs leading-6 text-muted">{helperText}</p>
+      {showHeader ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium text-primary-strong">{label}</h3>
+              {helperText ? (
+                <p className="max-w-2xl text-xs leading-6 text-muted">{helperText}</p>
+              ) : null}
+            </div>
+            <label
+              className="button-secondary inline-flex cursor-pointer items-center gap-2"
+              htmlFor={inputId}
+            >
+              <ImagePlus className="h-4 w-4" />
+              Seleccionar imagenes
+            </label>
           </div>
-          <label
-            className="button-secondary inline-flex cursor-pointer items-center gap-2"
-            htmlFor={inputId}
-          >
-            <ImagePlus className="h-4 w-4" />
-            Seleccionar imagenes
-          </label>
+          <input
+            accept={IMAGE_INPUT_ACCEPT}
+            className="sr-only"
+            disabled={disabled}
+            id={inputId}
+            multiple
+            onChange={handleInputChange}
+            type="file"
+          />
         </div>
+      ) : (
         <input
           accept={IMAGE_INPUT_ACCEPT}
           className="sr-only"
@@ -301,12 +322,14 @@ export function ImagesPicker({
           onChange={handleInputChange}
           type="file"
         />
-      </div>
+      )}
 
       {images.length === 0 ? (
+        hideEmptyState ? null : (
         <div className="panel border-dashed px-5 py-8 text-sm text-muted">
           Selecciona una o varias imagenes para ver la galeria procesada antes de guardar.
         </div>
+        )
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {images.map((image) => (

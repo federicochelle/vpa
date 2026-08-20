@@ -30,6 +30,7 @@ export function mapPropertyRow(row: PropertyRow): Property {
     description: row.description,
     investmentOpportunity: row.investment_opportunity,
     image: null,
+    videoUrl: row.video_url,
     featured: row.featured,
     published: row.published,
     status: row.status,

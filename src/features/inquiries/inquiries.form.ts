@@ -2,7 +2,7 @@ const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export interface ParsedPublicInquiryInput {
-  kind: "property" | "project";
+  kind: "property" | "project" | "general";
   name: string;
   email: string;
   phone: string | null;
@@ -48,7 +48,7 @@ export function validatePublicInquiryPayload(
   const relatedTitle = toTrimmedString(payload.relatedTitle);
   const originPath = toTrimmedString(payload.originPath);
 
-  if (kind !== "property" && kind !== "project") {
+  if (kind !== "property" && kind !== "project" && kind !== "general") {
     return { ok: false, error: "El tipo de consulta no es válido." };
   }
 
@@ -85,6 +85,12 @@ export function validatePublicInquiryPayload(
   if (kind === "project") {
     if (!UUID_PATTERN.test(projectId) || propertyId) {
       return { ok: false, error: "El proyecto relacionado no es válido." };
+    }
+  }
+
+  if (kind === "general") {
+    if (propertyId || projectId) {
+      return { ok: false, error: "La consulta general no puede tener una entidad relacionada." };
     }
   }
 

@@ -28,6 +28,7 @@ export interface ProjectMutationInput {
   name: string;
   slug: string;
   description: string | null;
+  videoUrl: string | null;
   developerName: string | null;
   constructionStatus: "planned" | "under_construction" | "finished";
   estimatedDeliveryDate: string | null;
@@ -397,6 +398,7 @@ export async function createProject(
     name: input.name,
     slug: uniqueSlug,
     description: input.description,
+    video_url: input.videoUrl,
     developer_name: input.developerName,
     construction_status: input.constructionStatus,
     estimated_delivery_date: input.estimatedDeliveryDate,
@@ -503,6 +505,7 @@ export async function updateProject(
     name: input.name,
     slug: uniqueSlug,
     description: input.description,
+    video_url: input.videoUrl,
     developer_name: input.developerName,
     construction_status: input.constructionStatus,
     estimated_delivery_date: input.estimatedDeliveryDate,

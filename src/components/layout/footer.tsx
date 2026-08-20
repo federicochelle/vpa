@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="mt-auto border-t border-white/15 bg-primary">
       <div className="shell flex flex-col gap-10 py-10 sm:py-12 lg:flex-row lg:items-center lg:justify-between">
-        <Link className="flex items-center" href="/">
+        <Link className="flex items-center justify-center lg:justify-start" href="/">
           <Image
             alt="VPA"
             className="h-auto w-72 sm:w-80 lg:w-[22rem]"
@@ -15,23 +15,23 @@ export function Footer() {
           />
         </Link>
 
-        <div className="grid gap-5 text-base text-white/90 sm:text-lg">
+        <div className="grid justify-items-center gap-5 text-center text-base text-white/90 sm:text-lg lg:justify-items-start lg:text-left">
           <Link
-            className="inline-flex items-center gap-4 transition-colors hover:text-white"
+            className="inline-flex items-center justify-center gap-4 transition-colors hover:text-white lg:justify-start"
             href="tel:+59899297235"
           >
             <Phone className="h-5 w-5 flex-none" />
             <span>+598 99 297 235</span>
           </Link>
           <Link
-            className="inline-flex items-center gap-4 transition-colors hover:text-white"
+            className="inline-flex items-center justify-center gap-4 transition-colors hover:text-white lg:justify-start"
             href="mailto:info@vpa.com.uy"
           >
             <Mail className="h-5 w-5 flex-none" />
             <span>info@vpa.com.uy</span>
           </Link>
           <Link
-            className="inline-flex items-start gap-4 transition-colors hover:text-white"
+            className="inline-flex items-start justify-center gap-4 text-center transition-colors hover:text-white lg:justify-start lg:text-left"
             href="https://www.google.com.uy/maps/place/of.+904,+26+de+Marzo+3393,+11300+Montevideo,+Departamento+de+Montevideo/@-34.9061421,-56.1419676,17z/data=!3m1!4b1!4m5!3m4!1s0x959f81145bc7f3fb:0x6a8c1b0d02b70b3a!8m2!3d-34.9061421!4d-56.1397789?hl=es-419"
             rel="noreferrer"
             target="_blank"
@@ -41,7 +41,7 @@ export function Footer() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-4 self-start lg:self-auto">
+        <div className="flex items-center justify-center gap-4 self-center lg:self-auto">
           <Link
             aria-label="Facebook"
             className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"

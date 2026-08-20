@@ -5,7 +5,7 @@ import virginiaSecondaryImage from "../../../../virgina2.jpeg";
 export default function AdvisoryPage() {
   return (
     <>
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-surface-strong py-16 sm:py-20">
         <div className="shell">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
             <div className="relative min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
@@ -18,7 +18,7 @@ export default function AdvisoryPage() {
               />
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 text-center lg:text-left">
               <div className="space-y-3">
                 <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
                   ASESORAMIENTO INMOBILIARIO
@@ -52,10 +52,10 @@ export default function AdvisoryPage() {
         </div>
       </section>
 
-      <section className="bg-surface-strong py-18 sm:py-24">
+      <section className="bg-white py-18 sm:py-24">
         <div className="shell">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.95fr)] lg:gap-14">
-            <div className="space-y-6">
+            <div className="space-y-6 text-center lg:text-left">
               <div className="space-y-3">
                 <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
                   Asesoramiento Personalizado
@@ -93,10 +93,10 @@ export default function AdvisoryPage() {
         </div>
       </section>
 
-      <section className="bg-white py-18 sm:py-24">
+      <section className="bg-surface-strong py-18 sm:py-24">
         <div className="shell">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)] lg:items-start lg:gap-14">
-            <div className="space-y-6">
+            <div className="space-y-6 text-center lg:text-left">
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
                 Reunión
               </p>

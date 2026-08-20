@@ -19,7 +19,19 @@ export async function PATCH(
   const { id } = await context.params;
   const formData = await request.formData();
   const featureIds = toStringArray(formData.getAll("featureIds"));
-  const result = await updateProject(id, buildProjectInput(formData), featureIds);
+  let result;
+
+  try {
+    result = await updateProject(id, buildProjectInput(formData), featureIds);
+  } catch (error) {
+    return Response.json(
+      {
+        message:
+          error instanceof Error ? error.message : "No se pudo actualizar el proyecto.",
+      },
+      { status: 400 },
+    );
+  }
 
   if (!result.ok || !result.data) {
     return Response.json(

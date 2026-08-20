@@ -19,7 +19,7 @@ export default async function BuyPage() {
   const properties = await listPublishedPropertiesByOperation("sale");
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-background py-16 sm:py-20">
       <div className="shell space-y-10">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">

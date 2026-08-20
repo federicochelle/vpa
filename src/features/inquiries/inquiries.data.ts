@@ -49,10 +49,14 @@ function mapInquiryRow(row: InquiryRow): Inquiry {
 }
 
 function getExpectedOriginPath(input: {
-  kind: "property" | "project";
+  kind: "property" | "project" | "general";
   slug: string;
   operationType?: "sale" | "rent";
 }) {
+  if (input.kind === "general") {
+    return `/noticias/${input.slug}`;
+  }
+
   if (input.kind === "project") {
     return `/inversion/${input.slug}`;
   }
@@ -78,6 +82,103 @@ export async function createPublicInquiry(
 
   const supabase = createSupabaseServiceRoleClient();
   console.info("[inquiries][create] service_role_client_created");
+
+  if (input.kind === "general") {
+    const slug = input.originPath.replace(/^\/noticias\//, "").trim();
+
+    if (!slug) {
+      return {
+        ok: false,
+        error: "invalid_payload",
+        message: "El origen de la consulta no es válido.",
+      };
+    }
+
+    const { data: news, error } = await supabase
+      .from("news")
+      .select("slug, title")
+      .eq("slug", slug)
+      .eq("published", true)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[inquiries][create] news_lookup_error", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
+      return {
+        ok: false,
+        error: "unexpected",
+        message: "No se pudo procesar la consulta en este momento.",
+      };
+    }
+
+    if (!news) {
+      console.error("[inquiries][create] news_lookup_not_found", {
+        originPath: input.originPath,
+      });
+      return {
+        ok: false,
+        error: "not_found",
+        message: "La noticia consultada ya no está disponible.",
+      };
+    }
+
+    const expectedOriginPath = getExpectedOriginPath({
+      kind: "general",
+      slug: news.slug,
+    });
+
+    if (input.originPath !== expectedOriginPath) {
+      console.error("[inquiries][create] news_origin_mismatch", {
+        expectedOriginPath,
+        receivedOriginPath: input.originPath,
+      });
+      return {
+        ok: false,
+        error: "invalid_payload",
+        message: "El origen de la consulta no es válido.",
+      };
+    }
+
+    const payload: InquiryInsert = {
+      kind: "general",
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      message: input.message,
+      property_id: null,
+      project_id: null,
+      project_unit_id: null,
+      related_title: news.title,
+      origin_path: expectedOriginPath,
+      source: "public_web",
+    };
+
+    const { error: insertError } = await supabase.from("inquiries").insert(payload);
+
+    if (insertError) {
+      console.error("[inquiries][create] inquiry_insert_error", {
+        code: insertError.code,
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint,
+      });
+      return {
+        ok: false,
+        error: "unexpected",
+        message: "No se pudo procesar la consulta en este momento.",
+      };
+    }
+
+    return {
+      ok: true,
+      error: null,
+      message: "Consulta creada correctamente.",
+    };
+  }
 
   if (input.kind === "property") {
     if (!input.propertyId) {

@@ -27,11 +27,11 @@ export function HomeCarousel({ children }: HomeCarouselProps) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative lg:px-12">
       <div className="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 hidden lg:block">
         <button
           aria-label="Ver anteriores"
-          className="pointer-events-auto absolute left-0 top-1/2 inline-flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-primary text-white shadow-[0_12px_24px_rgba(39,39,39,0.18)] transition-colors hover:bg-primary-strong"
+          className="pointer-events-auto absolute left-0 top-1/2 inline-flex h-14 w-14 -translate-x-full -translate-y-1/2 items-center justify-center border border-primary/15 bg-primary text-white shadow-[0_12px_24px_rgba(39,39,39,0.18)] transition-colors hover:bg-primary-strong"
           onClick={() => scrollByCards("left")}
           type="button"
         >
@@ -39,7 +39,7 @@ export function HomeCarousel({ children }: HomeCarouselProps) {
         </button>
         <button
           aria-label="Ver siguientes"
-          className="pointer-events-auto absolute right-0 top-1/2 inline-flex h-14 w-14 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-primary text-white shadow-[0_12px_24px_rgba(39,39,39,0.18)] transition-colors hover:bg-primary-strong"
+          className="pointer-events-auto absolute right-0 top-1/2 inline-flex h-14 w-14 translate-x-full -translate-y-1/2 items-center justify-center border border-primary/15 bg-primary text-white shadow-[0_12px_24px_rgba(39,39,39,0.18)] transition-colors hover:bg-primary-strong"
           onClick={() => scrollByCards("right")}
           type="button"
         >
@@ -49,7 +49,7 @@ export function HomeCarousel({ children }: HomeCarouselProps) {
 
       <div
         ref={scrollRef}
-        className="-mx-4 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:scroll-px-8 lg:px-8"
+        className="-mx-4 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0"
       >
         <div className="flex snap-x snap-mandatory gap-6">
           {children}

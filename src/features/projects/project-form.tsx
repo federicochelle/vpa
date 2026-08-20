@@ -3,7 +3,9 @@
 import { startTransition, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { LoaderCircle, Star, Trash2 } from "lucide-react";
+import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
+import { GooglePlacesAddressInput } from "@/components/admin/google-places-address-input";
+import { YouTubeVideoField } from "@/components/admin/youtube-video-field";
 import { FormField } from "@/components/ui/form-field";
 import { FeaturesPicker } from "@/features/features/features-picker";
 import {
@@ -12,6 +14,7 @@ import {
 } from "@/features/images/images-picker";
 import type { Feature } from "@/types/feature";
 import type { Project, ProjectImage } from "@/types/project";
+import { parseYouTubeUrl } from "@/lib/youtube";
 
 interface ProjectFormProps {
   allFeatures: Feature[];
@@ -32,14 +35,6 @@ interface PersistedProjectImageItemProps {
   readOnly?: boolean;
 }
 
-interface FormToggleProps {
-  defaultChecked?: boolean;
-  disabled?: boolean;
-  description: string;
-  label: string;
-  name: string;
-}
-
 type ProjectSubmitState = "idle" | "saving" | "uploading";
 type UploadTaskResult =
   | {
@@ -57,30 +52,6 @@ type UploadTaskResult =
     };
 
 const MAX_PARALLEL_UPLOADS = 3;
-
-function FormToggle({
-  defaultChecked = false,
-  disabled = false,
-  description,
-  label,
-  name,
-}: FormToggleProps) {
-  return (
-    <label className="flex items-start gap-3 rounded-2xl border border-border bg-white/70 px-4 py-4">
-      <input
-        className="mt-1 h-4 w-4 accent-primary"
-        defaultChecked={defaultChecked}
-        disabled={disabled}
-        name={name}
-        type="checkbox"
-      />
-      <span className="space-y-1">
-        <span className="block text-sm font-medium text-foreground">{label}</span>
-        <span className="block text-sm leading-6 text-muted">{description}</span>
-      </span>
-    </label>
-  );
-}
 
 async function uploadProcessedFileToCloudflare(projectId: string, image: PendingImage) {
   const directUploadResponse = await fetch(
@@ -280,8 +251,10 @@ export function ProjectForm({
   const [persistedImages, setPersistedImages] = useState<ProjectImage[]>(projectImages);
   const [submitState, setSubmitState] = useState<ProjectSubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState(project?.videoUrl ?? "");
   const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
   const [coverUpdatingImageId, setCoverUpdatingImageId] = useState<string | null>(null);
+  const galleryInputId = "project-gallery-input";
 
   async function handleDeletePersistedImage(imageId: string) {
     if (readOnly) {
@@ -400,6 +373,10 @@ export function ProjectForm({
 
     event.preventDefault();
     setFormError(null);
+    if (videoUrl.trim().length > 0 && !parseYouTubeUrl(videoUrl)) {
+      setFormError("Ingresa una URL válida de YouTube para el proyecto.");
+      return;
+    }
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -611,23 +588,6 @@ export function ProjectForm({
         </div>
       ) : null}
 
-      <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <FormToggle
-          defaultChecked={project?.featured ?? false}
-          description="Mantiene el flag destacado disponible para las vistas públicas."
-          disabled={readOnly}
-          label="Destacado"
-          name="featured"
-        />
-        <FormToggle
-          defaultChecked={project?.isInvestmentOpportunity ?? false}
-          description="Conserva el indicador para el canal de inversión."
-          disabled={readOnly}
-          label="Oportunidad de inversión"
-          name="isInvestmentOpportunity"
-        />
-      </div>
-
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-6">
         <div className="xl:col-span-3">
           <FormField htmlFor="name" label="Nombre">
@@ -684,13 +644,12 @@ export function ProjectForm({
         </div>
         <div className="xl:col-span-4">
           <FormField htmlFor="address" label="Dirección">
-            <input
+            <GooglePlacesAddressInput
               className="input-base"
               defaultValue={project?.address ?? ""}
               disabled={readOnly}
               id="address"
               name="address"
-              type="text"
             />
           </FormField>
         </div>
@@ -750,18 +709,20 @@ export function ProjectForm({
 
       <div className="mt-6 border-t border-border pt-6">
         <div className="space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-sm font-medium text-primary-strong">Galería de imágenes</h3>
+            {readOnly ? null : (
+              <label
+                className="button-secondary inline-flex cursor-pointer items-center gap-2"
+                htmlFor={galleryInputId}
+              >
+                <ImagePlus className="h-4 w-4" />
+                Seleccionar imágenes
+              </label>
+            )}
+          </div>
           {persistedImages.length > 0 ? (
             <div className="space-y-3">
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium text-primary-strong">
-                  Galería de imágenes
-                </h3>
-                {readOnly ? null : (
-                  <p className="text-xs leading-6 text-muted">
-                    Estas imágenes ya están persistidas en Cloudflare y Supabase.
-                  </p>
-                )}
-              </div>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {persistedImages
                   .slice()
@@ -784,12 +745,24 @@ export function ProjectForm({
           {readOnly ? null : (
             <ImagesPicker
               disabled={submitState !== "idle"}
+              hideEmptyState
+              inputId={galleryInputId}
               label="Galeria de imagenes"
               onChange={setPendingImages}
+              showHeader={false}
               value={pendingImages}
             />
           )}
         </div>
+      </div>
+      <div className="mt-6 border-t border-border pt-6">
+        <YouTubeVideoField
+          disabled={submitState !== "idle"}
+          idPrefix="project"
+          onChange={setVideoUrl}
+          readOnly={readOnly}
+          value={videoUrl}
+        />
       </div>
       {readOnly ? null : (
         <div className="mt-8 flex justify-end">

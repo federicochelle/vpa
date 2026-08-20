@@ -35,6 +35,7 @@ export interface Property {
   description?: string | null;
   investmentOpportunity?: boolean;
   image: string | null;
+  videoUrl?: string | null;
   featured: boolean;
   published?: boolean;
   status?: "draft" | "published" | "archived";

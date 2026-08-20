@@ -18,7 +18,19 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const featureIds = toStringArray(formData.getAll("featureIds"));
-  const result = await createProperty(buildPropertyInput(formData), featureIds);
+  let result;
+
+  try {
+    result = await createProperty(buildPropertyInput(formData), featureIds);
+  } catch (error) {
+    return Response.json(
+      {
+        message:
+          error instanceof Error ? error.message : "No se pudo crear la propiedad.",
+      },
+      { status: 400 },
+    );
+  }
 
   if (!result.ok || !result.data) {
     return Response.json(

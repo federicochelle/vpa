@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import logoVpa from "../../../logovpa.webp";
 import { publicNavigation } from "@/lib/navigation";
 
@@ -18,8 +18,10 @@ export function Navbar() {
     width: number;
   } | null>(null);
 
-  const isItemActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const isItemActive = useCallback(
+    (href: string) => pathname === href || pathname.startsWith(`${href}/`),
+    [pathname],
+  );
 
   useEffect(() => {
     const updateIndicator = () => {
@@ -42,7 +44,7 @@ export function Navbar() {
 
     window.addEventListener("resize", updateIndicator);
     return () => window.removeEventListener("resize", updateIndicator);
-  }, [pathname]);
+  }, [isItemActive, pathname]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/15 bg-primary backdrop-blur">
@@ -98,30 +100,35 @@ export function Navbar() {
           {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
-      {isOpen ? (
-        <div className="border-t border-white/15 bg-primary md:hidden">
-          <nav className="shell flex flex-col py-4">
-            {publicNavigation.map((item) => {
-              const isActive = isItemActive(item.href);
+      <div
+        aria-hidden={!isOpen}
+        className={`absolute left-0 right-0 top-full z-50 border-t border-white/15 bg-primary/98 backdrop-blur transition-all duration-300 ease-out md:hidden ${
+          isOpen
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-2 opacity-0"
+        }`}
+      >
+        <nav className="shell flex flex-col items-center py-4 text-center">
+          {publicNavigation.map((item) => {
+            const isActive = isItemActive(item.href);
 
-              return (
-                <Link
-                  key={item.href}
-                  className={`relative rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white ${
-                    isActive
-                      ? "bg-white/16 after:absolute after:bottom-2 after:left-4 after:right-4 after:h-0.5 after:bg-white after:content-['']"
-                      : "hover:bg-white/10 hover:text-white"
-                  }`}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      ) : null}
+            return (
+              <Link
+                key={item.href}
+                className={`relative w-full rounded-2xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-[0.14em] text-white ${
+                  isActive
+                    ? "bg-white/16 after:absolute after:bottom-2 after:left-4 after:right-4 after:h-0.5 after:bg-white after:content-['']"
+                    : "hover:bg-white/10 hover:text-white"
+                }`}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </header>
   );
 }

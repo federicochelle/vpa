@@ -22,6 +22,7 @@ export interface Project {
   latitude: number | null;
   longitude: number | null;
   image: string | null;
+  videoUrl: string | null;
   featured: boolean;
   published: boolean;
   isInvestmentOpportunity: boolean;

@@ -15,7 +15,19 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const featureIds = toStringArray(formData.getAll("featureIds"));
-  const result = await createProject(buildProjectInput(formData), featureIds);
+  let result;
+
+  try {
+    result = await createProject(buildProjectInput(formData), featureIds);
+  } catch (error) {
+    return Response.json(
+      {
+        message:
+          error instanceof Error ? error.message : "No se pudo crear el proyecto.",
+      },
+      { status: 400 },
+    );
+  }
 
   if (!result.ok || !result.data) {
     return Response.json(

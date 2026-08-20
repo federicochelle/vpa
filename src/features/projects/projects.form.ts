@@ -1,4 +1,5 @@
 import type { ProjectMutationInput, SupabaseActionError } from "@/features/projects/projects.data";
+import { normalizeYouTubeUrl } from "@/lib/youtube";
 
 function toNullableString(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
@@ -66,11 +67,19 @@ export function toProjectErrorMessage(
 export function buildProjectInput(formData: FormData): ProjectMutationInput {
   const name = toRequiredString(formData.get("name"));
   const slug = slugify(name);
+  const rawVideoUrl = toRequiredString(formData.get("videoUrl"));
+  const normalizedVideoUrl =
+    rawVideoUrl.length > 0 ? normalizeYouTubeUrl(rawVideoUrl) : null;
+
+  if (rawVideoUrl.length > 0 && !normalizedVideoUrl) {
+    throw new Error("Ingresa una URL válida de YouTube para el proyecto.");
+  }
 
   return {
     name,
     slug,
     description: toNullableString(formData.get("description")),
+    videoUrl: normalizedVideoUrl,
     developerName: toNullableString(formData.get("developerName")),
     constructionStatus: toRequiredString(
       formData.get("constructionStatus"),

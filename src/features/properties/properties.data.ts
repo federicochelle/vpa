@@ -42,6 +42,7 @@ export interface PropertyMutationInput {
   totalArea: number | null;
   landArea: number | null;
   description: string | null;
+  videoUrl: string | null;
   address: string | null;
   neighborhood: string | null;
   city: string | null;
@@ -195,6 +196,7 @@ function toPropertyPayload(
     total_area: input.totalArea,
     land_area: input.landArea,
     description: input.description,
+    video_url: input.videoUrl,
     address: input.address,
     neighborhood: input.neighborhood,
     city: input.city,
@@ -509,6 +511,7 @@ export async function createProperty(
     total_area: payload.total_area,
     land_area: payload.land_area,
     description: payload.description,
+    video_url: payload.video_url,
     address: payload.address,
     neighborhood: payload.neighborhood,
     city: payload.city,
@@ -630,6 +633,7 @@ export async function updateProperty(
     total_area: payload.total_area,
     land_area: payload.land_area,
     description: payload.description,
+    video_url: payload.video_url,
     address: payload.address,
     neighborhood: payload.neighborhood,
     city: payload.city,

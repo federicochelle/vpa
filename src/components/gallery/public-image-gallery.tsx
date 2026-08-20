@@ -14,6 +14,8 @@ export interface PublicGalleryImage {
 interface PublicImageGalleryProps {
   emptyLabel: string;
   images: PublicGalleryImage[];
+  badgeLabel?: string;
+  operationType?: "rent" | "sale";
 }
 
 const MAX_VISIBLE_THUMBNAILS = 5;
@@ -24,8 +26,10 @@ function getInitialIndex(images: PublicGalleryImage[]) {
 }
 
 export function PublicImageGallery({
+  badgeLabel,
   emptyLabel,
   images,
+  operationType,
 }: PublicImageGalleryProps) {
   const orderedImages = useMemo(() => images, [images]);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
@@ -97,6 +101,11 @@ export function PublicImageGallery({
           onClick={() => setLightboxIndex(activeIndex)}
           type="button"
         >
+          {badgeLabel || operationType ? (
+            <span className="absolute right-3 top-3 z-10 bg-primary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+              {badgeLabel ?? (operationType === "rent" ? "ALQUILER" : "VENTA")}
+            </span>
+          ) : null}
           <Image
             alt={activeImage.altText ?? ""}
             className="object-cover"

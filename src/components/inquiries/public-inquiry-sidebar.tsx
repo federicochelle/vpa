@@ -7,9 +7,9 @@ import type { PublicInquiryPayload } from "@/types/inquiry";
 import virginiaImage from "../../../virginia.jpeg";
 
 interface PublicInquirySidebarProps {
-  entityId: string;
+  entityId?: string;
   initialMessage: string;
-  kind: "property" | "project";
+  kind: "property" | "project" | "general";
   originPath: string;
   relatedTitle: string;
 }

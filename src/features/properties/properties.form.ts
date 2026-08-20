@@ -2,6 +2,7 @@ import type {
   PropertyMutationInput,
   SupabaseActionError,
 } from "@/features/properties/properties.data";
+import { normalizeYouTubeUrl } from "@/lib/youtube";
 
 function toNullableString(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
@@ -69,6 +70,13 @@ export function toPropertyErrorMessage(
 export function buildPropertyInput(formData: FormData): PropertyMutationInput {
   const title = toRequiredString(formData.get("title"));
   const slug = slugify(toRequiredString(formData.get("slug")) || title);
+  const rawVideoUrl = toRequiredString(formData.get("videoUrl"));
+  const normalizedVideoUrl =
+    rawVideoUrl.length > 0 ? normalizeYouTubeUrl(rawVideoUrl) : null;
+
+  if (rawVideoUrl.length > 0 && !normalizedVideoUrl) {
+    throw new Error("Ingresa una URL válida de YouTube para la propiedad.");
+  }
 
   return {
     title,
@@ -95,6 +103,7 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
     totalArea: toNullableNumber(formData.get("totalArea")),
     landArea: toNullableNumber(formData.get("landArea")),
     description: toNullableString(formData.get("description")),
+    videoUrl: normalizedVideoUrl,
     address: toNullableString(formData.get("address")),
     neighborhood: toNullableString(formData.get("neighborhood")),
     city: toNullableString(formData.get("city")),
