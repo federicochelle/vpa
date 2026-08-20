@@ -47,7 +47,7 @@ export default async function InvestmentDetailPage({
                     <MapPin className="h-4 w-4 flex-none text-primary" />
                     <span className="truncate whitespace-nowrap">{mobileLocation}</span>
                   </div>
-                  <p className="shrink-0 whitespace-nowrap font-display text-lg text-primary-strong">
+                  <p className="inline-flex shrink-0 whitespace-nowrap bg-primary px-3 py-1 text-sm font-semibold uppercase tracking-[0.14em] text-white">
                     {status}
                   </p>
                 </div>
@@ -59,7 +59,7 @@ export default async function InvestmentDetailPage({
                 </div>
               </div>
               <div className="hidden text-right lg:block">
-                <p className="font-display text-3xl text-primary-strong">
+                <p className="inline-flex bg-primary px-3 py-1 text-sm font-semibold uppercase tracking-[0.14em] text-white">
                   {status}
                 </p>
               </div>

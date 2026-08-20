@@ -79,15 +79,9 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
                   style={property.image ? { backgroundImage: `url(${property.image})` } : undefined}
                 />
                 <div className="space-y-5 p-5">
-                  <div className="space-y-2">
-                    <h2 className="font-display text-2xl text-foreground">
-                      {property.title}
-                    </h2>
-                    <div className="flex items-center gap-2 text-sm text-muted">
-                      <MapPin className="h-4 w-4 text-primary" />
-                      <span>{property.neighborhood ?? "Ubicación pendiente"}</span>
-                    </div>
-                  </div>
+                  <h2 className="font-display text-2xl text-foreground">
+                    {property.title}
+                  </h2>
 
                   <div className="grid grid-cols-2 gap-3 text-sm text-muted">
                     <div className="flex items-center gap-2">
@@ -108,9 +102,17 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
                     </div>
                   </div>
 
-                  <p className="text-lg font-semibold text-primary-strong">
-                    {formatPropertyPrice(property.price, property.currency)}
-                  </p>
+                  <div className="flex items-end justify-between gap-4">
+                    <div className="flex min-w-0 items-center gap-2 text-sm text-muted">
+                      <MapPin className="h-4 w-4 flex-none text-primary" />
+                      <span className="truncate">
+                        {property.neighborhood ?? "Ubicación pendiente"}
+                      </span>
+                    </div>
+                    <p className="shrink-0 text-right text-lg font-semibold text-primary-strong">
+                      {formatPropertyPrice(property.price, property.currency)}
+                    </p>
+                  </div>
                 </div>
               </Link>
             ))}

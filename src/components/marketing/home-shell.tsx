@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarClock, MapPin, Sparkles } from "lucide-react";
 import { HomeCarousel } from "@/components/marketing/home-carousel";
+import { HomeHeroCarousel } from "@/components/marketing/home-hero-carousel";
 import { SearchSection } from "@/components/marketing/home/search-section";
 import { PropertyCard } from "@/components/properties/property-card";
 import { NewsCard } from "@/features/news/news-card";
@@ -40,6 +41,7 @@ export async function HomeShell() {
     listPublishedNews({ limit: 3 }),
   ]);
   const heroSlides = [
+    { src: proyectoHeroImage, alt: "Proyecto destacado" },
     { src: propiedadHeroImage, alt: "Propiedad destacada" },
     { src: proyectoHeroImage, alt: "Proyecto destacado" },
   ];
@@ -51,26 +53,7 @@ export async function HomeShell() {
 
   return (
     <>
-      <section className="relative h-[74vh] min-h-[560px] w-full overflow-hidden sm:h-[72vh] sm:min-h-[540px] lg:h-[78vh]">
-        <div className="hero-track flex h-full w-[300%]">
-          {[...heroSlides, heroSlides[0]].map((slide, index) => (
-            <div
-              key={`${slide.alt}-${index}`}
-              className="hero-slide relative h-full flex-[0_0_33.3333%]"
-            >
-              <Image
-                src={slide.src}
-                alt={slide.alt}
-                fill
-                priority={index === 0}
-                className="object-cover object-center"
-                sizes="100vw"
-              />
-            </div>
-          ))}
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/10" />
-      </section>
+      <HomeHeroCarousel slides={heroSlides} />
 
       <SearchSection locationOptions={locationOptions} />
 
