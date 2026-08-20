@@ -159,6 +159,11 @@ function LocationCombobox({
     };
   }, [isOpen]);
 
+  function closeCombobox() {
+    setIsOpen(false);
+    setQuery("");
+  }
+
   return (
     <div className="relative w-full" ref={rootRef}>
       <button
@@ -195,26 +200,16 @@ function LocationCombobox({
             id={listboxId}
             role="listbox"
           >
-            <button
-              aria-selected={selectedOption === null}
-              className="block w-full border-b border-border px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-strong"
-              onClick={() => {
-                onSelect(null);
-                setIsOpen(false);
-              }}
-              role="option"
-              type="button"
-            >
-              Cualquiera
-            </button>
             {filteredOptions.map((option) => (
               <button
                 key={option.label}
                 aria-selected={selectedOption?.label === option.label}
                 className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
-                onClick={() => {
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={(event) => {
+                  event.stopPropagation();
                   onSelect(option);
-                  setIsOpen(false);
+                  closeCombobox();
                 }}
                 role="option"
                 type="button"
@@ -232,9 +227,11 @@ function LocationCombobox({
                     <button
                       key={`suggested-${option.label}`}
                       className="block w-full text-left text-sm text-primary transition-colors hover:text-primary-strong"
-                      onClick={() => {
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={(event) => {
+                        event.stopPropagation();
                         onSelect(option);
-                        setIsOpen(false);
+                        closeCombobox();
                         onSuggestionSelect(option);
                       }}
                       type="button"
@@ -324,8 +321,8 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 </select>
               </label>
 
-              <label className="grid gap-2 text-sm font-medium text-foreground">
-                Zona
+              <div className="grid gap-2 text-sm font-medium text-foreground">
+                <span>Zona</span>
                 <LocationCombobox
                   options={locationOptions}
                   operation={operation}
@@ -333,7 +330,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                   onSelect={setSelectedLocation}
                   onSuggestionSelect={(option) => router.push(buildSearchHref(option))}
                 />
-              </label>
+              </div>
 
               <button
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong"
@@ -388,8 +385,8 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               </select>
             </label>
 
-            <label className="grid gap-2 text-sm font-medium text-foreground">
-              Zona
+            <div className="grid gap-2 text-sm font-medium text-foreground">
+              <span>Zona</span>
               <LocationCombobox
                 options={locationOptions}
                 operation={operation}
@@ -397,7 +394,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 onSelect={setSelectedLocation}
                 onSuggestionSelect={(option) => router.push(buildSearchHref(option))}
               />
-            </label>
+            </div>
 
             <button
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong xl:self-end"
