@@ -41,7 +41,7 @@ export function ProjectListingShell({
         />
         <div className="mt-8">
           {projects.length > 0 ? (
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {projects.map((project) => (
                 <Link href={`${detailBasePath}/${project.slug}`} key={project.id}>
                   <ProjectCard project={project} />

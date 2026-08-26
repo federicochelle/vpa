@@ -333,6 +333,7 @@ export type Database = {
           expenses: number | null;
           featured: boolean;
           garages: number | null;
+          hero_order: number | null;
           id: string;
           investment_opportunity: boolean;
           land_area: number | null;
@@ -364,6 +365,7 @@ export type Database = {
           expenses?: number | null;
           featured?: boolean;
           garages?: number | null;
+          hero_order?: number | null;
           id?: string;
           investment_opportunity?: boolean;
           land_area?: number | null;
@@ -395,6 +397,7 @@ export type Database = {
           expenses?: number | null;
           featured?: boolean;
           garages?: number | null;
+          hero_order?: number | null;
           id?: string;
           investment_opportunity?: boolean;
           land_area?: number | null;

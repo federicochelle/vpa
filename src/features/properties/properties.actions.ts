@@ -6,8 +6,10 @@ import { requireAdminSession } from "@/lib/supabase/auth";
 import {
   createProperty,
   deleteProperty,
+  setPropertyHeroOrder,
   setPropertyPublished,
   updateProperty,
+  type PropertyHeroOrder,
   type SupabaseActionError,
 } from "@/features/properties/properties.data";
 import {
@@ -118,4 +120,21 @@ export async function togglePropertyPublishedAction(formData: FormData) {
       published ? "Propiedad publicada." : "Propiedad despublicada.",
     )}`,
   );
+}
+
+export async function updatePropertyHeroOrderAction(
+  propertyId: string,
+  heroOrder: PropertyHeroOrder,
+) {
+  await requireAdminSession();
+
+  const result = await setPropertyHeroOrder(propertyId, heroOrder);
+
+  revalidatePath("/admin/propiedades");
+
+  if (!result.ok) {
+    throw new Error(
+      toErrorMessage(result.error, "No se pudo actualizar la posición del hero."),
+    );
+  }
 }

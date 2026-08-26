@@ -50,7 +50,7 @@ export function PropertyListingShell({
               </p>
             </div>
             {properties.length > 0 ? (
-              <div className="grid gap-6">
+              <div className="grid gap-6 md:grid-cols-2">
                 {properties.map((property) => (
                   <Link key={property.id} href={`${detailBasePath}/${property.slug}`}>
                     <PropertyCard property={property} />

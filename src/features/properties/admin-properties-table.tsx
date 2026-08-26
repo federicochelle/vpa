@@ -1,7 +1,8 @@
- "use client";
+"use client";
 
-import { Children } from "react";
+import { Children, startTransition, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { updatePropertyHeroOrderAction } from "@/features/properties/properties.actions";
 import type { Property } from "@/types/property";
 import type { ReactNode } from "react";
 
@@ -26,9 +27,9 @@ export function AdminPropertiesTable({
       <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="space-y-2">
-            <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
+            <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
               {title}
-            </h1>
+            </h4>
           </div>
           {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
         </div>
@@ -40,7 +41,7 @@ export function AdminPropertiesTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {["Propiedad", "Operación", "Ubicación"].map(
+              {["Propiedad", "Operación", "Ubicación", "Inicio"].map(
                 (column) => (
                   <th
                     key={column}
@@ -55,7 +56,7 @@ export function AdminPropertiesTable({
           <tbody className="divide-y divide-border">
             {properties.length === 0 ? (
               <tr>
-                <td className="px-6 py-10 text-sm text-muted" colSpan={3}>
+                <td className="px-6 py-10 text-sm text-muted" colSpan={4}>
                   No hay propiedades visibles para esta sesion.
                 </td>
               </tr>
@@ -94,6 +95,9 @@ export function AdminPropertiesTable({
                       .filter(Boolean)
                       .join(", ") || "Sin ubicacion"}
                   </td>
+                  <td className="px-6 py-5 text-sm text-muted">
+                    <HeroOrderSelect property={property} />
+                  </td>
                 </tr>
               ))
             )}
@@ -101,6 +105,68 @@ export function AdminPropertiesTable({
         </table>
       </div>
     </section>
+  );
+}
+
+function HeroOrderSelect({ property }: { property: Property }) {
+  const router = useRouter();
+  const [value, setValue] = useState<string>(property.heroOrder?.toString() ?? "");
+  const [isPending, setIsPending] = useState(false);
+  const isUnpublishedWithoutHero = !property.published && property.heroOrder === null;
+
+  useEffect(() => {
+    setValue(property.heroOrder?.toString() ?? "");
+  }, [property.heroOrder]);
+
+  return (
+    <div
+      className="flex items-center gap-2"
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+      onKeyDown={(event) => {
+        event.stopPropagation();
+      }}
+    >
+      <select
+        aria-label={`Posición hero de ${property.title}`}
+        className="rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-foreground outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={isPending || isUnpublishedWithoutHero}
+        onChange={(event) => {
+          const nextValue = event.target.value;
+          setValue(nextValue);
+          setIsPending(true);
+
+          startTransition(async () => {
+            try {
+              await updatePropertyHeroOrderAction(
+                property.id,
+                nextValue === "" ? null : (Number(nextValue) as 1 | 2 | 3),
+              );
+              router.refresh();
+            } catch {
+              setValue(property.heroOrder?.toString() ?? "");
+            } finally {
+              setIsPending(false);
+            }
+          });
+        }}
+        value={value}
+      >
+        <option value="">—</option>
+        {[1, 2, 3].map((option) => {
+          const disabled =
+            !property.published && property.heroOrder !== option && property.heroOrder !== null;
+
+          return (
+            <option disabled={disabled} key={option} value={option}>
+              {option}
+            </option>
+          );
+        })}
+      </select>
+      {!property.published ? <span className="text-xs text-muted">No publicada</span> : null}
+    </div>
   );
 }
 

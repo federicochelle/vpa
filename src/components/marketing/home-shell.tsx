@@ -1,15 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarClock, MapPin, Sparkles } from "lucide-react";
 import { HomeCarousel } from "@/components/marketing/home-carousel";
 import { HomeHeroCarousel } from "@/components/marketing/home-hero-carousel";
 import { SearchSection } from "@/components/marketing/home/search-section";
 import { PropertyCard } from "@/components/properties/property-card";
+import { ProjectCard } from "@/components/projects/project-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { NewsCard } from "@/features/news/news-card";
 import { NewsListItem } from "@/features/news/news-list-item";
 import { listPublishedNews } from "@/features/news/news.data";
-import { listPublishedPropertiesByOperation } from "@/features/properties/properties.data";
+import {
+  listHeroProperties,
+  listPublishedPropertiesByOperation,
+} from "@/features/properties/properties.data";
 import { listPublishedProjects } from "@/features/projects/projects.data";
 import propiedadHeroImage from "../../../propiedad.jpg";
 import proyectoHeroImage from "../../../proyecto.jpg";
@@ -57,6 +60,22 @@ function formatLocationLabel(city: string | null, neighborhood: string | null) {
 
 function normalizeLocationPart(value: string | null) {
   return value?.trim().toLocaleLowerCase("es-UY") ?? "";
+}
+
+function formatHeroPropertyPrice(price: number | null, currency: string | null) {
+  if (!price || !currency) {
+    return "Precio a consultar";
+  }
+
+  return new Intl.NumberFormat("es-UY", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(price);
+}
+
+function getHeroPropertyHref(slug: string, operationType: "sale" | "rent") {
+  return operationType === "sale" ? `/comprar/${slug}` : `/alquileres/${slug}`;
 }
 
 function buildLocationOptions(
@@ -116,17 +135,31 @@ function buildLocationOptions(
 }
 
 export async function HomeShell() {
-  const [rentProperties, saleProperties, investmentProjects, recentNews] = await Promise.all([
-    listPublishedPropertiesByOperation("rent"),
-    listPublishedPropertiesByOperation("sale"),
-    listPublishedProjects(),
-    listPublishedNews({ limit: 3 }),
-  ]);
-  const heroSlides = [
-    { src: proyectoHeroImage, alt: "Proyecto destacado" },
-    { src: propiedadHeroImage, alt: "Propiedad destacada" },
-    { src: proyectoHeroImage, alt: "Proyecto destacado" },
-  ];
+  const [heroProperties, rentProperties, saleProperties, investmentProjects, recentNews] =
+    await Promise.all([
+      listHeroProperties(),
+      listPublishedPropertiesByOperation("rent"),
+      listPublishedPropertiesByOperation("sale"),
+      listPublishedProjects(),
+      listPublishedNews({ limit: 3 }),
+    ]);
+  const heroPropertySlides = heroProperties
+    .filter((property) => property.image)
+    .map((property) => ({
+      src: property.image!,
+      alt: property.title,
+      title: property.title,
+      price: formatHeroPropertyPrice(property.price, property.currency),
+      href: getHeroPropertyHref(property.slug, property.operationType),
+    }));
+  const heroSlides =
+    heroPropertySlides.length > 0
+      ? heroPropertySlides
+      : [
+          { src: proyectoHeroImage, alt: "Proyecto destacado" },
+          { src: propiedadHeroImage, alt: "Propiedad destacada" },
+          { src: proyectoHeroImage, alt: "Proyecto destacado" },
+        ];
   const locationOptions = buildLocationOptions(
     rentProperties.map((property) => ({
       city: property.city ?? null,
@@ -175,7 +208,7 @@ export async function HomeShell() {
                     href={`/alquileres/${property.slug}`}
                     className="block w-full"
                   >
-                    <PropertyCard className="w-full" property={property} variant="tile" />
+                    <PropertyCard className="w-full" property={property} />
                   </Link>
                 ))}
               </div>
@@ -197,7 +230,7 @@ export async function HomeShell() {
                       href={`/alquileres/${property.slug}`}
                       className="basis-[280px] flex-none snap-start sm:basis-[340px] lg:basis-[calc((100%-3rem)/3)]"
                     >
-                      <PropertyCard property={property} variant="tile" />
+                      <PropertyCard property={property} />
                     </Link>
                   ))}
                 </HomeCarousel>
@@ -230,7 +263,7 @@ export async function HomeShell() {
                     href={`/comprar/${property.slug}`}
                     className="block w-full"
                   >
-                    <PropertyCard className="w-full" property={property} variant="tile" />
+                    <PropertyCard className="w-full" property={property} />
                   </Link>
                 ))}
               </div>
@@ -252,7 +285,7 @@ export async function HomeShell() {
                       href={`/comprar/${property.slug}`}
                       className="basis-[280px] flex-none snap-start sm:basis-[340px] lg:basis-[calc((100%-3rem)/3)]"
                     >
-                      <PropertyCard property={property} variant="tile" />
+                      <PropertyCard property={property} />
                     </Link>
                   ))}
                 </HomeCarousel>
@@ -280,44 +313,8 @@ export async function HomeShell() {
             <>
               <div className="grid gap-6 sm:hidden">
                 {investmentProjects.slice(0, 3).map((project) => (
-                  <Link
-                    key={project.id}
-                    href={`/inversion/${project.slug}`}
-                    className="block overflow-hidden border border-border bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(39,39,39,0.08)]"
-                  >
-                    <div
-                      className="aspect-[4/3] bg-[linear-gradient(135deg,rgba(200,16,46,0.14),rgba(255,255,255,0.42)),linear-gradient(180deg,#d8d1c8,#efeae3)] bg-cover bg-center"
-                      style={project.image ? { backgroundImage: `url(${project.image})` } : undefined}
-                    />
-                    <div className="space-y-5 p-5">
-                      <div className="space-y-2">
-                        <h3 className="font-display text-2xl text-foreground">
-                          {project.name}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-muted">
-                          <MapPin className="h-4 w-4 text-primary" />
-                          <span>
-                            {[project.neighborhood, project.city].filter(Boolean).join(", ") ||
-                              "Ubicación pendiente"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="grid gap-3 text-sm text-muted">
-                        <div className="flex items-center gap-2">
-                          <CalendarClock className="h-4 w-4 text-primary" />
-                          {project.estimatedDeliveryDate ?? "Entrega pendiente"}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-primary" />
-                          {project.isInvestmentOpportunity
-                            ? "Oportunidad de inversión"
-                            : project.featured
-                              ? "Proyecto destacado"
-                              : "Proyecto disponible"}
-                        </div>
-                      </div>
-                    </div>
+                  <Link key={project.id} href={`/inversion/${project.slug}`}>
+                    <ProjectCard className="w-full" project={project} />
                   </Link>
                 ))}
               </div>
@@ -337,41 +334,9 @@ export async function HomeShell() {
                     <Link
                       key={project.id}
                       href={`/inversion/${project.slug}`}
-                      className="basis-[280px] flex-none snap-start overflow-hidden border border-border bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(39,39,39,0.08)] sm:basis-[340px] lg:basis-[calc((100%-3rem)/3)]"
+                      className="basis-[280px] flex-none snap-start sm:basis-[340px] lg:basis-[calc((100%-3rem)/3)]"
                     >
-                      <div
-                        className="aspect-[4/3] bg-[linear-gradient(135deg,rgba(200,16,46,0.14),rgba(255,255,255,0.42)),linear-gradient(180deg,#d8d1c8,#efeae3)] bg-cover bg-center"
-                        style={project.image ? { backgroundImage: `url(${project.image})` } : undefined}
-                      />
-                      <div className="space-y-5 p-5">
-                        <div className="space-y-2">
-                          <h3 className="font-display text-2xl text-foreground">
-                            {project.name}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm text-muted">
-                            <MapPin className="h-4 w-4 text-primary" />
-                            <span>
-                              {[project.neighborhood, project.city].filter(Boolean).join(", ") ||
-                                "Ubicación pendiente"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="grid gap-3 text-sm text-muted">
-                          <div className="flex items-center gap-2">
-                            <CalendarClock className="h-4 w-4 text-primary" />
-                            {project.estimatedDeliveryDate ?? "Entrega pendiente"}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-primary" />
-                            {project.isInvestmentOpportunity
-                              ? "Oportunidad de inversión"
-                              : project.featured
-                                ? "Proyecto destacado"
-                                : "Proyecto disponible"}
-                          </div>
-                        </div>
-                      </div>
+                      <ProjectCard project={project} />
                     </Link>
                   ))}
                 </HomeCarousel>

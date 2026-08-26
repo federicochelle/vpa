@@ -29,6 +29,7 @@ export function mapPropertyRow(row: PropertyRow): Property {
     constructionYear: row.construction_year,
     description: row.description,
     investmentOpportunity: row.investment_opportunity,
+    heroOrder: row.hero_order,
     features: [],
     image: null,
     videoUrl: row.video_url,

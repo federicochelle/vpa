@@ -59,6 +59,8 @@ export interface PropertyMutationInput {
   investmentOpportunity: boolean;
 }
 
+export type PropertyHeroOrder = 1 | 2 | 3 | null;
+
 interface PropertiesReadResult {
   ok: boolean;
   data: Property[];
@@ -259,6 +261,7 @@ function toPropertyPayload(
     expenses: input.expenses,
     construction_year: input.constructionYear,
     investment_opportunity: input.investmentOpportunity,
+    hero_order: null,
     created_at: "",
     updated_at: "",
   };
@@ -331,6 +334,36 @@ export async function listPublishedPropertiesByOperation(
   }
 
   return result.data;
+}
+
+export async function listHeroProperties(): Promise<Property[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .not("hero_order", "is", null)
+    .eq("published", true)
+    .eq("status", "published")
+    .order("hero_order", { ascending: true })
+    .limit(3);
+
+  if (error) {
+    console.error("Error fetching hero properties", formatError(error));
+    return [];
+  }
+
+  const withCoverImages = await attachPropertyCoverImages(supabase, data.map(mapPropertyRow));
+
+  if (!withCoverImages.ok) {
+    console.error("Error attaching hero property cover images", withCoverImages.error);
+    return [];
+  }
+
+  return withCoverImages.data;
 }
 
 export async function getPublishedPropertyBySlug(
@@ -429,9 +462,17 @@ export async function listAdminProperties(): Promise<PropertiesReadResult> {
     };
   }
 
+  const mappedProperties = data.map(mapPropertyRow);
+  const orderedProperties = [
+    ...mappedProperties
+      .filter((property) => property.heroOrder !== null)
+      .sort((a, b) => (a.heroOrder ?? 99) - (b.heroOrder ?? 99)),
+    ...mappedProperties.filter((property) => property.heroOrder === null),
+  ];
+
   return {
     ok: true,
-    data: data.map(mapPropertyRow),
+    data: orderedProperties,
     error: null,
   };
 }
@@ -801,6 +842,99 @@ export async function setPropertyPublished(
       status: nextStatus,
     } as PropertyUpdate)
     .eq("id", id)
+    .select("*")
+    .maybeSingle();
+
+  if (error) {
+    return {
+      ok: false,
+      data: null,
+      error: formatError(error),
+    };
+  }
+
+  return {
+    ok: true,
+    data: data ? mapPropertyRow(data) : null,
+    error: null,
+  };
+}
+
+export async function setPropertyHeroOrder(
+  propertyId: string,
+  heroOrder: PropertyHeroOrder,
+): Promise<PropertyWriteResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerActionClient();
+  const propertyResult = await getAdminPropertyById(propertyId);
+
+  if (!propertyResult.ok) {
+    return {
+      ok: false,
+      data: null,
+      error: propertyResult.error,
+    };
+  }
+
+  if (!propertyResult.data) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "No se encontró la propiedad.",
+      },
+    };
+  }
+
+  if (heroOrder !== null && !propertyResult.data.published) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "Solo las propiedades publicadas pueden ocupar una posición en el hero.",
+      },
+    };
+  }
+
+  if (heroOrder !== null) {
+    const { error: clearError } = await supabase
+      .from("properties")
+      .update({ hero_order: null } as PropertyUpdate)
+      .neq("id", propertyId)
+      .eq("hero_order", heroOrder);
+
+    if (clearError) {
+      return {
+        ok: false,
+        data: null,
+        error: formatError(clearError),
+      };
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("properties")
+    .update({ hero_order: heroOrder } as PropertyUpdate)
+    .eq("id", propertyId)
     .select("*")
     .maybeSingle();
 

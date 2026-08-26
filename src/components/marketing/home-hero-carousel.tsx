@@ -1,12 +1,16 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type TouchEvent } from "react";
 
-interface HomeHeroCarouselSlide {
-  src: StaticImageData;
+export interface HomeHeroCarouselSlide {
+  src: StaticImageData | string;
   alt: string;
+  title?: string;
+  price?: string;
+  href?: string;
 }
 
 interface HomeHeroCarouselProps {
@@ -16,17 +20,87 @@ interface HomeHeroCarouselProps {
 const AUTOPLAY_DELAY = 8000;
 const SWIPE_THRESHOLD = 50;
 
+function normalizeSlideIndex(index: number, totalSlides: number) {
+  if (totalSlides <= 1) {
+    return 0;
+  }
+
+  if (index <= 0) {
+    return totalSlides;
+  }
+
+  if (index > totalSlides) {
+    return ((index - 1) % totalSlides) + 1;
+  }
+
+  return index;
+}
+
 export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(slides.length > 1 ? 1 : 0);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(slides.length > 1);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const touchStartXRef = useRef<number | null>(null);
   const touchDeltaXRef = useRef(0);
   const totalSlides = slides.length;
   const loopedSlides =
     totalSlides > 1 ? [slides[totalSlides - 1], ...slides, slides[0]] : slides;
 
+  const renderSlideContent = (slide: HomeHeroCarouselSlide, index: number) => (
+    <>
+      <Image
+        src={slide.src}
+        alt={slide.alt}
+        fill
+        priority={index <= 1}
+        className="object-cover object-center"
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/58 via-black/34 to-black/24" />
+      {(slide.title || slide.price) ? (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center sm:px-8">
+          {slide.href ? (
+            <Link
+              aria-label={slide.title ? `Ver ${slide.title}` : slide.alt}
+              className="pointer-events-auto block w-full max-w-[min(92vw,720px)] rounded-[24px] border border-white/14 bg-black/46 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:py-7"
+              href={slide.href}
+            >
+              <div className="space-y-3 sm:space-y-4">
+                {slide.title ? (
+                  <h1 className="mx-auto max-w-[18ch] font-display text-[clamp(1.15rem,2.2vw,2rem)] uppercase leading-[1.02] tracking-[0.08em] text-white">
+                    {slide.title}
+                  </h1>
+                ) : null}
+                {slide.price ? (
+                  <p className="font-display text-[1.7rem] leading-none tracking-[0.04em] text-white sm:text-[2.4rem] lg:text-[2.95rem]">
+                    {slide.price}
+                  </p>
+                ) : null}
+              </div>
+            </Link>
+          ) : (
+            <div className="w-full max-w-[min(92vw,720px)] rounded-[24px] border border-white/14 bg-black/46 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:py-7">
+              <div className="space-y-3 sm:space-y-4">
+                {slide.title ? (
+                  <h1 className="mx-auto max-w-[18ch] font-display text-[clamp(1.15rem,2.2vw,2rem)] uppercase leading-[1.02] tracking-[0.08em] text-white">
+                    {slide.title}
+                  </h1>
+                ) : null}
+                {slide.price ? (
+                  <p className="font-display text-[1.7rem] leading-none tracking-[0.04em] text-white sm:text-[2.4rem] lg:text-[2.95rem]">
+                    {slide.price}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : null}
+    </>
+  );
+
   useEffect(() => {
-    if (totalSlides <= 1) {
+    if (totalSlides <= 1 || !isDocumentVisible) {
       return;
     }
 
@@ -36,6 +110,27 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     }, AUTOPLAY_DELAY);
 
     return () => window.clearInterval(intervalId);
+  }, [isDocumentVisible, totalSlides]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const isVisible = document.visibilityState === "visible";
+      setIsDocumentVisible(isVisible);
+
+      if (!isVisible) {
+        return;
+      }
+
+      setIsTransitionEnabled(false);
+      setCurrentSlide((current) => normalizeSlideIndex(current, totalSlides));
+    };
+
+    handleVisibilityChange();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [totalSlides]);
 
   useEffect(() => {
@@ -112,13 +207,13 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       return;
     }
 
-    if (currentSlide === totalSlides + 1) {
+    if (currentSlide >= totalSlides + 1) {
       setIsTransitionEnabled(false);
       setCurrentSlide(1);
       return;
     }
 
-    if (currentSlide === 0) {
+    if (currentSlide <= 0) {
       setIsTransitionEnabled(false);
       setCurrentSlide(totalSlides);
     }
@@ -138,19 +233,12 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       >
         {loopedSlides.map((slide, index) => (
           <div key={`${slide.alt}-${index}`} className="relative h-full w-full flex-none overflow-hidden">
-            <Image
-              src={slide.src}
-              alt={slide.alt}
-              fill
-              priority={index <= 1}
-              className="object-cover object-center"
-              sizes="100vw"
-            />
+            <div className="absolute inset-0">
+              {renderSlideContent(slide, index)}
+            </div>
           </div>
         ))}
       </div>
-
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/10" />
 
       {totalSlides > 1 ? (
         <div className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden items-center justify-between md:flex">

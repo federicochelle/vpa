@@ -36,6 +36,7 @@ export interface Property {
   constructionYear?: number | null;
   description?: string | null;
   investmentOpportunity?: boolean;
+  heroOrder: number | null;
   features?: Feature[];
   image: string | null;
   videoUrl?: string | null;

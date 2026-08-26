@@ -29,9 +29,9 @@ export function AdminInquiriesTable({
     return (
       <section className="panel overflow-hidden">
         <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
-          <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
+          <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
             Listado de consultas
-          </h1>
+          </h4>
         </div>
         <div className="px-6 py-10 sm:px-8 lg:px-12">
           <p className="text-sm leading-7 text-muted">
@@ -45,9 +45,9 @@ export function AdminInquiriesTable({
   return (
     <section className="panel overflow-hidden">
       <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
-        <h1 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
+        <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
           Listado de consultas
-        </h1>
+        </h4>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-border">

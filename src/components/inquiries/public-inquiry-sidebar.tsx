@@ -60,7 +60,9 @@ export function PublicInquirySidebar({
           />
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-2xl font-display text-primary-strong">{advisor.name}</h2>
+          <h5 className="text-xl font-display leading-tight text-primary-strong sm:text-[1.35rem]">
+            {advisor.name}
+          </h5>
           <a
             className="mt-3 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary-strong"
             href={advisor.phoneHref}
