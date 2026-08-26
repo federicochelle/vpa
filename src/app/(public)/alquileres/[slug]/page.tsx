@@ -28,7 +28,11 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
     notFound();
   }
 
-  const location = cleanLocationPart(property.address) || "Ubicación pendiente";
+  const mobileLocation =
+    cleanLocationPart(property.neighborhood) ||
+    cleanLocationPart(property.address) ||
+    "Ubicación pendiente";
+  const desktopLocation = cleanLocationPart(property.address) || "Ubicación pendiente";
   const price =
     property.currency && property.price
       ? `${property.currency} ${new Intl.NumberFormat("es-UY", {
@@ -47,12 +51,19 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                   <h1 className="detail-hero-title text-foreground">
                     {property.title}
                   </h1>
-                  <div className="flex items-start justify-between gap-4 text-muted">
+                  <div className="flex items-start justify-between gap-4 lg:hidden">
+                    <div className="flex min-w-0 items-center gap-2 text-base text-primary-strong">
+                      <MapPin className="h-4 w-4 flex-none text-primary" />
+                      <span className="truncate whitespace-nowrap">{mobileLocation}</span>
+                    </div>
+                    <p className="detail-hero-price shrink-0 text-right text-primary-strong">
+                      {price}
+                    </p>
+                  </div>
+                  <div className="hidden items-start justify-between gap-4 text-muted lg:flex">
                     <div className="flex min-w-0 items-center gap-2">
                       <MapPin className="h-4 w-4 flex-none text-primary" />
-                      <span className="font-display text-lg text-primary-strong sm:font-sans sm:text-sm sm:text-muted">
-                        {location}
-                      </span>
+                      <span>{desktopLocation}</span>
                     </div>
                     <p className="detail-hero-price shrink-0 text-right text-primary-strong">
                       {price}

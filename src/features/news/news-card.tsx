@@ -19,7 +19,7 @@ export function NewsCard({ news }: NewsCardProps) {
         />
         <div className="space-y-4 p-5">
           <div className="space-y-3">
-            <h2 className="font-display text-2xl leading-tight text-primary transition-colors hover:text-primary-strong">
+            <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors hover:text-primary-strong">
               {news.title}
             </h2>
             <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
