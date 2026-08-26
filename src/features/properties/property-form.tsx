@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
 import type { Feature } from "@/types/feature";
 import type { Property, PropertyImage } from "@/types/property";
+import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { FormField } from "@/components/ui/form-field";
 import { GooglePlacesAddressInput } from "@/components/admin/google-places-address-input";
 import { YouTubeVideoField } from "@/components/admin/youtube-video-field";
@@ -779,19 +780,11 @@ export function PropertyForm({
           <span className="text-sm font-medium text-primary-strong">Amenities</span>
           {readOnly ? (
             selectedFeatureIds.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {selectedFeatureIds
+              <FeatureChipList
+                features={selectedFeatureIds
                   .map((featureId) => allFeatures.find((feature) => feature.id === featureId))
-                  .filter((feature): feature is Feature => Boolean(feature))
-                  .map((feature) => (
-                    <span
-                      className="inline-flex items-center rounded-full border border-primary/12 bg-primary/8 px-3 py-2 text-sm font-medium text-primary-strong"
-                      key={feature.id}
-                    >
-                      {feature.name}
-                    </span>
-                  ))}
-              </div>
+                  .filter((feature): feature is Feature => Boolean(feature))}
+              />
             ) : (
               <p className="text-sm text-muted">Sin amenities seleccionados.</p>
             )

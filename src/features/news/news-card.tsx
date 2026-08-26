@@ -18,18 +18,18 @@ export function NewsCard({ news }: NewsCardProps) {
           style={news.imageUrl ? { backgroundImage: `url(${news.imageUrl})` } : undefined}
         />
         <div className="space-y-4 p-5">
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-primary">
-            {formatNewsDate(news.publishedAt ?? news.createdAt)}
-          </p>
           <div className="space-y-3">
-            <h2 className="font-display text-2xl leading-tight text-foreground transition-colors hover:text-primary-strong">
+            <h2 className="font-display text-2xl leading-tight text-primary transition-colors hover:text-primary-strong">
               {news.title}
             </h2>
+            <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
+              {formatNewsDate(news.publishedAt ?? news.createdAt)}
+            </p>
             <p className="text-sm leading-7 text-muted">
               {news.excerpt ?? "Esta noticia ya está disponible para leer completa."}
             </p>
           </div>
-          <span className="inline-flex items-center text-sm font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:text-primary-strong">
+          <span className="font-display inline-flex items-center text-sm font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:text-primary-strong">
             Leer más
           </span>
         </div>

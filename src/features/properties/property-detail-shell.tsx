@@ -2,6 +2,7 @@ import { Bath, BedDouble, CarFront, Ruler } from "lucide-react";
 import { PublicImageGallery } from "@/components/gallery/public-image-gallery";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
 import { PublicLocationMap } from "@/components/maps/public-location-map";
+import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
 import { parseYouTubeUrl } from "@/lib/youtube";
 import type { Property } from "@/types/property";
@@ -13,6 +14,7 @@ interface PropertyDetailShellProps {
 export async function PropertyDetailShell({ property }: PropertyDetailShellProps) {
   const imagesResult = await listPublishedPropertyImages(property.id);
   const images = imagesResult.ok ? imagesResult.data : [];
+  const features = property.features ?? [];
   const parsedVideo = property.videoUrl ? parseYouTubeUrl(property.videoUrl) : null;
   const videoEmbedUrl = parsedVideo
     ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
@@ -86,6 +88,12 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                 {property.description ??
                   "Espacio preparado para descripcion, caracteristicas destacadas y atributos complementarios."}
               </p>
+              {features.length > 0 ? (
+                <div className="mt-8 space-y-4">
+                  <h3 className="text-sm font-medium text-primary-strong">Amenities</h3>
+                  <FeatureChipList features={features} />
+                </div>
+              ) : null}
             </div>
           </div>
           <div className={mobileFullBleedClassName}>

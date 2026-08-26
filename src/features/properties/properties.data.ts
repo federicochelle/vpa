@@ -7,6 +7,7 @@ import {
 } from "@/lib/supabase/server";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type { Property } from "@/types/property";
+import type { Feature } from "@/types/feature";
 import { mapPropertyRow } from "@/features/properties/property-mappers";
 import type { Database } from "@/lib/supabase/types";
 
@@ -16,6 +17,10 @@ type PropertyFeatureInsert = Database["public"]["Tables"]["property_features"]["
 type PropertyCoverImageRow = Pick<
   Database["public"]["Tables"]["property_images"]["Row"],
   "id" | "property_id" | "url" | "is_cover" | "sort_order" | "created_at"
+>;
+type FeatureRow = Pick<
+  Database["public"]["Tables"]["features"]["Row"],
+  "id" | "name" | "slug" | "category"
 >;
 
 export interface SupabaseActionError {
@@ -84,6 +89,54 @@ function formatError(error: {
     hint: error.hint,
     message: error.message,
   };
+}
+
+function mapFeatureRow(row: FeatureRow): Feature {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    category: row.category,
+  };
+}
+
+async function readPropertyFeatures(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  propertyId: string,
+): Promise<Feature[]> {
+  const { data: propertyFeatureRows, error: propertyFeaturesError } = await supabase
+    .from("property_features")
+    .select("feature_id")
+    .eq("property_id", propertyId);
+
+  if (propertyFeaturesError) {
+    console.error("Error fetching property feature relations", formatError(propertyFeaturesError));
+    return [];
+  }
+
+  const featureIds = Array.from(
+    new Set(propertyFeatureRows.map((row) => row.feature_id).filter(Boolean)),
+  );
+
+  if (featureIds.length === 0) {
+    return [];
+  }
+
+  const { data: featureRows, error: featuresError } = await supabase
+    .from("features")
+    .select("id, name, slug, category")
+    .in("id", featureIds);
+
+  if (featuresError) {
+    console.error("Error fetching property features", formatError(featuresError));
+    return [];
+  }
+
+  const featuresById = new Map(featureRows.map((row) => [row.id, mapFeatureRow(row)]));
+
+  return featureIds
+    .map((featureId) => featuresById.get(featureId))
+    .filter((feature): feature is Feature => Boolean(feature));
 }
 
 function selectPropertyCoverImages(
@@ -327,9 +380,22 @@ export async function getPublishedPropertyBySlugResult(
     };
   }
 
+  if (!data) {
+    return {
+      ok: true,
+      data: null,
+      error: null,
+    };
+  }
+
+  const features = await readPropertyFeatures(supabase, data.id);
+
   return {
     ok: true,
-    data: data ? mapPropertyRow(data) : null,
+    data: {
+      ...mapPropertyRow(data),
+      features,
+    },
     error: null,
   };
 }

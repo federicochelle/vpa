@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Bath, BedDouble, CarFront, MapPin, Ruler } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listPublishedPropertiesByOperation } from "@/features/properties/properties.data";
 import type { PropertyType } from "@/types/property";
@@ -78,14 +79,11 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
   return (
     <section className="bg-background py-16 sm:py-20">
       <div className="shell space-y-10">
-        <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-            Alquileres
-          </p>
-          <h1 className="font-display text-3xl text-foreground sm:text-4xl">
-            Propiedades en alquiler
-          </h1>
-        </div>
+        <SectionHeading
+          title="ALQUILERES"
+          description=""
+          titleAs="h1"
+        />
 
         {filteredProperties.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

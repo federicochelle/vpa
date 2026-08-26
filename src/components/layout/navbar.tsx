@@ -85,8 +85,8 @@ export function Navbar() {
                 ref={(element) => {
                   linkRefs.current[item.href] = element;
                 }}
-                className={`relative text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
-                  isActive ? "" : "hover:text-white"
+                className={`font-display relative text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
+                  isActive ? "" : "hover:text-white/70"
                 }`}
                 href={item.href}
               >
@@ -120,10 +120,10 @@ export function Navbar() {
             return (
               <Link
                 key={item.href}
-                className={`relative w-full rounded-2xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-[0.14em] text-white ${
+                className={`font-display relative w-full rounded-2xl px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
                   isActive
                     ? ""
-                    : "hover:bg-white/10 hover:text-white"
+                    : "hover:bg-white/10 hover:text-white/70"
                 }`}
                 href={item.href}
                 onClick={() => setIsOpen(false)}

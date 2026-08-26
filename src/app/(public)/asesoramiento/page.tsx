@@ -20,11 +20,8 @@ export default function AdvisoryPage() {
 
             <div className="space-y-6 text-center lg:text-left">
               <div className="space-y-3">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                  ASESORAMIENTO INMOBILIARIO
-                </p>
-                <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
-                  Experiencia, cercanía y una mirada que va más allá de cada propiedad
+                <h1 className="section-title">
+                  Experiencia y cercanía
                 </h1>
               </div>
 
@@ -57,10 +54,7 @@ export default function AdvisoryPage() {
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.95fr)] lg:gap-14">
             <div className="space-y-6 text-center lg:text-left">
               <div className="space-y-3">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                  Asesoramiento Personalizado
-                </p>
-                <h2 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
+                <h2 className="section-title">
                   Un asesoramiento pensado para vos
                 </h2>
               </div>
@@ -97,10 +91,7 @@ export default function AdvisoryPage() {
         <div className="shell">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)] lg:items-start lg:gap-14">
             <div className="space-y-6 text-center lg:text-left">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                Reunión
-              </p>
-              <h2 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
+              <h2 className="section-title">
                 Conversemos
               </h2>
               <p className="max-w-2xl text-base leading-8 text-muted sm:text-lg">

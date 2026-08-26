@@ -18,16 +18,18 @@ export function NewsListItem({ news }: NewsListItemProps) {
           style={news.imageUrl ? { backgroundImage: `url(${news.imageUrl})` } : undefined}
         />
         <div className="flex min-w-0 flex-col justify-center space-y-4 px-5 py-5 sm:px-6 sm:py-6 md:px-8">
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-primary">
-            {formatNewsDate(news.publishedAt ?? news.createdAt)}
-          </p>
-          <h2 className="font-display text-2xl leading-tight text-foreground transition-colors group-hover:text-primary-strong sm:text-3xl">
-            {news.title}
-          </h2>
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl leading-tight text-primary transition-colors group-hover:text-primary-strong sm:text-3xl">
+              {news.title}
+            </h2>
+            <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
+              {formatNewsDate(news.publishedAt ?? news.createdAt)}
+            </p>
+          </div>
           <p className="max-w-3xl text-sm leading-7 text-muted sm:text-base">
             {news.excerpt ?? "Esta noticia ya está disponible para leer completa."}
           </p>
-          <span className="inline-flex items-center text-sm font-semibold uppercase tracking-[0.14em] text-primary transition-colors group-hover:text-primary-strong">
+          <span className="font-display inline-flex items-center text-sm font-semibold uppercase tracking-[0.14em] text-primary transition-colors group-hover:text-primary-strong">
             Leer más
           </span>
         </div>

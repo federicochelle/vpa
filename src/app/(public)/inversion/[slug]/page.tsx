@@ -39,7 +39,7 @@ export default async function InvestmentDetailPage({
           <div className="panel overflow-hidden !rounded-none">
             <div className="flex flex-col gap-6 bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-6 sm:px-8 lg:flex-row lg:items-start lg:justify-between lg:px-12">
               <div className="min-w-0 space-y-4">
-                <h1 className="line-clamp-2 font-display text-[1.7rem] leading-tight text-foreground sm:text-4xl">
+                <h1 className="detail-hero-title text-foreground">
                   {project.name}
                 </h1>
                 <div className="flex items-start justify-between gap-4 lg:hidden">

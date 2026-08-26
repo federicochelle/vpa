@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarClock, MapPin, Sparkles } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { listPublishedProjects } from "@/features/projects/projects.data";
 
 interface InvestmentPageProps {
@@ -66,14 +67,11 @@ export default async function InvestmentPage({ searchParams }: InvestmentPagePro
   return (
     <section className="bg-background py-16 sm:py-20">
       <div className="shell space-y-10">
-        <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-            Invertir
-          </p>
-          <h1 className="font-display text-3xl text-foreground sm:text-4xl">
-            Conocé nuestros proyectos de inversión
-          </h1>
-        </div>
+        <SectionHeading
+          title="INVERSIONES"
+          description=""
+          titleAs="h1"
+        />
 
         {filteredProjects.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

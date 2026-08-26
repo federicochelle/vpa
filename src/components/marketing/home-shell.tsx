@@ -5,6 +5,7 @@ import { HomeCarousel } from "@/components/marketing/home-carousel";
 import { HomeHeroCarousel } from "@/components/marketing/home-hero-carousel";
 import { SearchSection } from "@/components/marketing/home/search-section";
 import { PropertyCard } from "@/components/properties/property-card";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { NewsCard } from "@/features/news/news-card";
 import { NewsListItem } from "@/features/news/news-list-item";
 import { listPublishedNews } from "@/features/news/news.data";
@@ -156,17 +157,10 @@ export async function HomeShell() {
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                Alquileres
-              </p>
-              <h2 className="font-display text-3xl text-foreground sm:text-4xl">
-                Propiedades en alquiler
-              </h2>
-            </div>
+            <SectionHeading title="ALQUILERES" />
             <Link
               href="/alquileres"
-              className="hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               Ver más
             </Link>
@@ -189,7 +183,7 @@ export async function HomeShell() {
               <div className="sm:hidden">
                 <Link
                   href="/alquileres"
-                  className="inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   Ver más
                 </Link>
@@ -218,17 +212,10 @@ export async function HomeShell() {
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                Comprar
-              </p>
-              <h2 className="font-display text-3xl text-foreground sm:text-4xl">
-                Propiedades en venta
-              </h2>
-            </div>
+            <SectionHeading title="VENTAS" />
             <Link
               href="/comprar"
-              className="hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               Ver más
             </Link>
@@ -251,7 +238,7 @@ export async function HomeShell() {
               <div className="sm:hidden">
                 <Link
                   href="/comprar"
-                  className="inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   Ver más
                 </Link>
@@ -280,17 +267,10 @@ export async function HomeShell() {
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                Invertir
-              </p>
-              <h2 className="font-display text-3xl text-foreground sm:text-4xl">
-                Conocé nuestros proyectos de inversión
-              </h2>
-            </div>
+            <SectionHeading title="INVERSIONES" />
             <Link
               href="/inversion"
-              className="hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               Ver más
             </Link>
@@ -345,7 +325,7 @@ export async function HomeShell() {
               <div className="sm:hidden">
                 <Link
                   href="/inversion"
-                  className="inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   Ver más
                 </Link>
@@ -418,10 +398,7 @@ export async function HomeShell() {
 
             <div className="space-y-6 text-center sm:text-left">
               <div className="space-y-3">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                  Asesoramiento
-                </p>
-                <h2 className="font-display text-3xl text-foreground sm:text-4xl">
+                <h2 className="section-title">
                   Acompañamiento cercano para cada decisión
                 </h2>
               </div>
@@ -452,15 +429,12 @@ export async function HomeShell() {
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                Noticias
-              </p>
-              <h2 className="font-display text-3xl text-foreground sm:text-4xl">
+              <h2 className="section-title">
                 Noticias e interés
               </h2>
             </div>
             <Link
-              className="hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
               href="/noticias"
             >
               Ver todas
@@ -477,7 +451,7 @@ export async function HomeShell() {
 
               <div className="sm:hidden">
                 <Link
-                  className="inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                   href="/noticias"
                 >
                   Ver todas

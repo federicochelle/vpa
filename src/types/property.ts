@@ -1,3 +1,5 @@
+import type { Feature } from "@/types/feature";
+
 export type OperationType = "sale" | "rent";
 
 export type PropertyType =
@@ -34,6 +36,7 @@ export interface Property {
   constructionYear?: number | null;
   description?: string | null;
   investmentOpportunity?: boolean;
+  features?: Feature[];
   image: string | null;
   videoUrl?: string | null;
   featured: boolean;
