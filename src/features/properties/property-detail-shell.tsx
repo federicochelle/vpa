@@ -35,7 +35,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           {parsedVideo ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel !rounded-none p-6 sm:p-8">
-                <h2 className="text-2xl font-display text-primary-strong">Video</h2>
+                <h2 className="text-xl font-display text-primary-strong">Video</h2>
                 <div className="mt-6 -mx-6 overflow-hidden border-y border-border bg-surface-muted sm:mx-0 sm:border">
                   <div className="aspect-video">
                     <iframe
@@ -53,7 +53,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           ) : null}
           <div className={mobileFullBleedClassName}>
             <div className="panel !rounded-none p-6 sm:p-8">
-              <h2 className="text-2xl font-display text-primary-strong">Información principal</h2>
+              <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
               <div className="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div className="flex items-center gap-3 text-sm text-foreground">
                   <BedDouble className="h-4 w-4 flex-none text-primary" />
@@ -83,7 +83,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           </div>
           <div className={mobileFullBleedClassName}>
             <div className="panel !rounded-none p-6 sm:p-8">
-              <h2 className="text-2xl font-display text-primary-strong">Descripción</h2>
+              <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
               <p className="mt-4 text-sm leading-7 text-muted">
                 {property.description ??
                   "Espacio preparado para descripcion, caracteristicas destacadas y atributos complementarios."}
@@ -98,7 +98,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           </div>
           <div className={mobileFullBleedClassName}>
             <div className="panel !rounded-none p-6 sm:p-8">
-              <h2 className="text-2xl font-display text-primary-strong">Ubicación</h2>
+              <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
               <PublicLocationMap
                 address={property.address}
                 fallbackLabel="Area lista para integrar ubicacion o mapa en una fase posterior."
