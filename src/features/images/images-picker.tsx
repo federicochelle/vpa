@@ -289,13 +289,13 @@ export function ImagesPicker({
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-primary-strong">{label}</h3>
+              <h3 className="type-body-compact font-medium text-primary-strong">{label}</h3>
               {helperText ? (
-                <p className="max-w-2xl text-xs leading-6 text-muted">{helperText}</p>
+                <p className="type-caption max-w-2xl text-muted">{helperText}</p>
               ) : null}
             </div>
             <label
-              className="button-secondary inline-flex cursor-pointer items-center gap-2"
+              className="admin-button-secondary inline-flex cursor-pointer items-center gap-2"
               htmlFor={inputId}
             >
               <ImagePlus className="h-4 w-4" />
@@ -326,7 +326,7 @@ export function ImagesPicker({
 
       {images.length === 0 ? (
         hideEmptyState ? null : (
-        <div className="panel border-dashed px-5 py-8 text-sm text-muted">
+        <div className="type-body-compact panel border-dashed px-5 py-8 text-muted">
           Selecciona una o varias imagenes para ver la galeria procesada antes de guardar.
         </div>
         )
@@ -371,7 +371,7 @@ export function ImagesPicker({
               </div>
               {image.error ? (
                 <div className="px-4 py-4">
-                  <div className="border border-primary/20 bg-primary/6 px-3 py-3 text-xs leading-6 text-primary-strong">
+                  <div className="type-caption border border-primary/20 bg-primary/6 px-3 py-3 text-primary-strong">
                     {image.error}
                   </div>
                 </div>

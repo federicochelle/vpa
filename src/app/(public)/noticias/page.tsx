@@ -35,7 +35,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     <section className="bg-background py-16 sm:py-20">
       <div className="shell space-y-10">
         <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
+          <p className="type-body-compact font-semibold uppercase tracking-[0.28em] text-primary">
             Noticias
           </p>
           <h1 className="font-display text-3xl text-foreground sm:text-4xl">
@@ -58,13 +58,13 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
               >
                 {result.page > 1 ? (
                   <a
-                    className="inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary/20 hover:text-primary-strong"
+                    className="button-secondary inline-flex min-w-24 items-center justify-center px-4 py-2"
                     href={buildNewsPageHref(result.page - 1)}
                   >
                     Anterior
                   </a>
                 ) : (
-                  <span className="inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-muted">
+                  <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
                     Anterior
                   </span>
                 )}
@@ -73,7 +73,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                   <a
                     key={page}
                     aria-current={page === result.page ? "page" : undefined}
-                    className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-sm font-semibold transition-colors ${
+                    className={`type-button inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
                       page === result.page
                         ? "border-primary bg-primary text-white"
                         : "border-border bg-white text-foreground hover:border-primary/20 hover:text-primary-strong"
@@ -86,13 +86,13 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
                 {result.page < result.totalPages ? (
                   <a
-                    className="inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary/20 hover:text-primary-strong"
+                    className="button-secondary inline-flex min-w-24 items-center justify-center px-4 py-2"
                     href={buildNewsPageHref(result.page + 1)}
                   >
                     Siguiente
                   </a>
                 ) : (
-                  <span className="inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-muted">
+                  <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
                     Siguiente
                   </span>
                 )}

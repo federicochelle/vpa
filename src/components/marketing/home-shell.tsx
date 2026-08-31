@@ -20,7 +20,7 @@ import virginiaImage from "../../../virginia.jpeg";
 
 function EmptyCarouselCard({ message }: { message: string }) {
   return (
-    <article className="min-w-[280px] flex-none snap-start border border-border bg-surface p-6 text-sm text-muted sm:min-w-[340px] lg:min-w-[380px]">
+    <article className="type-body-compact min-w-[280px] flex-none snap-start border border-border bg-surface p-6 text-muted sm:min-w-[340px] lg:min-w-[380px]">
       {message}
     </article>
   );
@@ -193,7 +193,7 @@ export async function HomeShell() {
             <SectionHeading title="ALQUILERES" />
             <Link
               href="/alquileres"
-              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               Ver más
             </Link>
@@ -216,7 +216,7 @@ export async function HomeShell() {
               <div className="sm:hidden">
                 <Link
                   href="/alquileres"
-                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   Ver más
                 </Link>
@@ -248,7 +248,7 @@ export async function HomeShell() {
             <SectionHeading title="VENTAS" />
             <Link
               href="/comprar"
-              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               Ver más
             </Link>
@@ -271,7 +271,7 @@ export async function HomeShell() {
               <div className="sm:hidden">
                 <Link
                   href="/comprar"
-                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   Ver más
                 </Link>
@@ -303,7 +303,7 @@ export async function HomeShell() {
             <SectionHeading title="INVERSIONES" />
             <Link
               href="/inversion"
-              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               Ver más
             </Link>
@@ -322,7 +322,7 @@ export async function HomeShell() {
               <div className="sm:hidden">
                 <Link
                   href="/inversion"
-                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   Ver más
                 </Link>
@@ -368,7 +368,7 @@ export async function HomeShell() {
                 </h2>
               </div>
 
-              <div className="space-y-5 text-base leading-8 text-muted">
+              <div className="space-y-5 section-copy max-w-none">
                 <p>
                   En Virginia Pintos entendemos que cada búsqueda tiene un ritmo,
                   una historia y una necesidad distinta. Por eso trabajamos con
@@ -399,7 +399,7 @@ export async function HomeShell() {
               </h2>
             </div>
             <Link
-              className="font-display hidden items-center justify-center bg-primary px-5 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
               href="/noticias"
             >
               Ver todas
@@ -416,7 +416,7 @@ export async function HomeShell() {
 
               <div className="sm:hidden">
                 <Link
-                  className="font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                   href="/noticias"
                 >
                   Ver todas
@@ -435,7 +435,7 @@ export async function HomeShell() {
                 <h3 className="text-lg font-semibold text-primary-strong">
                   Todavía no hay noticias publicadas
                 </h3>
-                <p className="mx-auto max-w-lg text-sm leading-6 text-muted">
+                <p className="type-body-compact mx-auto max-w-lg text-muted">
                   Esta sección quedará poblada automáticamente cuando se publiquen noticias desde el panel admin.
                 </p>
               </div>

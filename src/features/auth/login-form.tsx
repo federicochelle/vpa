@@ -18,9 +18,9 @@ export function LoginForm() {
       </div>
       <div className="mt-8 grid gap-6">
         <label className="flex flex-col gap-2" htmlFor="email">
-          <span className="text-sm font-medium text-white">Email</span>
+          <span className="type-body-compact font-medium text-white">Email</span>
           <input
-            className="w-full rounded-2xl border border-white bg-white px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted focus:border-white focus:ring-4 focus:ring-white/20"
+            className="type-input w-full rounded-2xl border border-white bg-white px-4 py-3 text-foreground outline-none transition placeholder:text-muted focus:border-white focus:ring-4 focus:ring-white/20"
             id="email"
             name="email"
             required
@@ -28,9 +28,9 @@ export function LoginForm() {
           />
         </label>
         <label className="flex flex-col gap-2" htmlFor="password">
-          <span className="text-sm font-medium text-white">Contrasena</span>
+          <span className="type-body-compact font-medium text-white">Contrasena</span>
           <input
-            className="w-full rounded-2xl border border-white bg-white px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted focus:border-white focus:ring-4 focus:ring-white/20"
+            className="type-input w-full rounded-2xl border border-white bg-white px-4 py-3 text-foreground outline-none transition placeholder:text-muted focus:border-white focus:ring-4 focus:ring-white/20"
             id="password"
             name="password"
             required
@@ -40,7 +40,7 @@ export function LoginForm() {
       </div>
       <div className="mt-8">
         <button
-          className="inline-flex w-full justify-center rounded-full bg-primary-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8d0d21]"
+          className="button-primary inline-flex w-full justify-center"
           type="submit"
         >
           Ingresar

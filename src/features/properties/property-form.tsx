@@ -18,7 +18,10 @@ import {
 import { parseYouTubeUrl } from "@/lib/youtube";
 import {
   currencyOptions,
+  kitchenTypeOptions,
   operationTypeOptions,
+  propertyDispositionOptions,
+  propertyOrientationOptions,
   propertyTypeOptions,
 } from "@/features/properties/property-options";
 import { PriceInput } from "@/features/properties/price-input";
@@ -184,7 +187,7 @@ function PersistedPropertyImageItem({
           unoptimized
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2 text-[11px]">
-          {image.isCover ? <span className="status-pill">Portada</span> : null}
+          {image.isCover ? <span className="admin-status-pill">Portada</span> : null}
         </div>
         {readOnly ? null : (
           <div className="absolute right-3 top-3 z-10 flex items-start gap-2">
@@ -250,9 +253,14 @@ export function PropertyForm({
   const [submitState, setSubmitState] = useState<PropertySubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState(property?.videoUrl ?? "");
+  const [propertyType, setPropertyType] = useState<Property["propertyType"]>(
+    property?.propertyType ?? "apartment",
+  );
+  const [floorValue, setFloorValue] = useState(property?.floor ?? "");
   const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
   const [coverUpdatingImageId, setCoverUpdatingImageId] = useState<string | null>(null);
   const galleryInputId = "property-gallery-input";
+  const showFloorField = propertyType === "apartment";
 
   async function handleDeletePersistedImage(imageId: string) {
     if (readOnly) {
@@ -587,7 +595,7 @@ export function PropertyForm({
       {existingPropertyId ? <input name="id" type="hidden" value={existingPropertyId} /> : null}
 
       {formError ? (
-        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/6 px-4 py-4 text-sm text-primary-strong">
+        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/6 px-4 py-4 type-body-compact text-primary-strong">
           {formError}
         </div>
       ) : null}
@@ -596,7 +604,7 @@ export function PropertyForm({
         <div className="xl:col-span-3">
           <FormField htmlFor="title" label="Título">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={property?.title ?? ""}
               disabled={readOnly}
               id="title"
@@ -609,7 +617,7 @@ export function PropertyForm({
         <div className="xl:col-span-3 grid gap-6 sm:grid-cols-2">
           <FormField htmlFor="operationType" label="Operación">
             <select
-              className="input-base"
+              className="admin-input-base"
               defaultValue={property?.operationType ?? "sale"}
               disabled={readOnly}
               id="operationType"
@@ -624,11 +632,19 @@ export function PropertyForm({
           </FormField>
           <FormField htmlFor="propertyType" label="Tipo de propiedad">
             <select
-              className="input-base"
-              defaultValue={property?.propertyType ?? "apartment"}
+              className="admin-input-base"
               disabled={readOnly}
               id="propertyType"
               name="propertyType"
+              onChange={(event) => {
+                const nextPropertyType = event.target.value as Property["propertyType"];
+                setPropertyType(nextPropertyType);
+
+                if (nextPropertyType !== "apartment") {
+                  setFloorValue("");
+                }
+              }}
+              value={propertyType}
             >
               {propertyTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -643,7 +659,7 @@ export function PropertyForm({
             <div className="flex overflow-hidden rounded-2xl border border-border bg-white transition focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/8">
               <PriceInput defaultValue={property?.price ?? null} disabled={readOnly} />
               <select
-                className="w-24 border-0 border-l border-border bg-surface-strong px-3 py-3 text-sm font-semibold text-foreground outline-none"
+              className="type-input w-24 border-0 border-l border-border bg-surface-strong px-3 py-3 font-semibold text-foreground outline-none"
                 defaultValue={property?.currency ?? "UYU"}
                 disabled={readOnly}
                 id="currency"
@@ -676,7 +692,7 @@ export function PropertyForm({
         <div>
           <FormField htmlFor="bedrooms" label="Dormitorios">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={property?.bedrooms ?? ""}
               disabled={readOnly}
               id="bedrooms"
@@ -687,7 +703,7 @@ export function PropertyForm({
         </div>
         <FormField htmlFor="bathrooms" label="Baños">
           <input
-            className="input-base"
+            className="admin-input-base"
             defaultValue={property?.bathrooms ?? ""}
             disabled={readOnly}
             id="bathrooms"
@@ -697,7 +713,7 @@ export function PropertyForm({
         </FormField>
         <FormField htmlFor="garages" label="Garages">
           <input
-            className="input-base"
+            className="admin-input-base"
             defaultValue={property?.garages ?? ""}
             disabled={readOnly}
             id="garages"
@@ -705,20 +721,9 @@ export function PropertyForm({
             type="number"
           />
         </FormField>
-        <FormField htmlFor="builtArea" label="Área construida">
-          <input
-            className="input-base"
-            defaultValue={property?.builtArea ?? ""}
-            disabled={readOnly}
-            id="builtArea"
-            name="builtArea"
-            step="0.01"
-            type="number"
-          />
-        </FormField>
         <FormField htmlFor="totalArea" label="Área total">
           <input
-            className="input-base"
+            className="admin-input-base"
             defaultValue={property?.totalArea ?? ""}
             disabled={readOnly}
             id="totalArea"
@@ -727,9 +732,72 @@ export function PropertyForm({
             type="number"
           />
         </FormField>
+        <FormField htmlFor="kitchenType" label="Cocina">
+          <select
+            className="admin-input-base"
+            defaultValue={property?.kitchenType ?? ""}
+            disabled={readOnly}
+            id="kitchenType"
+            name="kitchenType"
+          >
+            <option value="">Seleccionar</option>
+            {kitchenTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </FormField>
+        <FormField htmlFor="disposition" label="Disposición">
+          <select
+            className="admin-input-base"
+            defaultValue={property?.disposition ?? ""}
+            disabled={readOnly}
+            id="disposition"
+            name="disposition"
+          >
+            <option value="">Seleccionar</option>
+            {propertyDispositionOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </FormField>
+        <FormField htmlFor="orientation" label="Orientación">
+          <select
+            className="admin-input-base"
+            defaultValue={property?.orientation ?? ""}
+            disabled={readOnly}
+            id="orientation"
+            name="orientation"
+          >
+            <option value="">Seleccionar</option>
+            {propertyOrientationOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </FormField>
+        {showFloorField ? (
+          <FormField htmlFor="floor" label="Piso">
+            <input
+              className="admin-input-base"
+              disabled={readOnly}
+              id="floor"
+              name="floor"
+              onChange={(event) => {
+                setFloorValue(event.target.value);
+              }}
+              type="text"
+              value={floorValue}
+            />
+          </FormField>
+        ) : null}
         <FormField htmlFor="constructionYear" label="Año de construcción">
           <input
-            className="input-base"
+            className="admin-input-base"
             defaultValue={property?.constructionYear ?? ""}
             disabled={readOnly}
             id="constructionYear"
@@ -738,12 +806,38 @@ export function PropertyForm({
           />
         </FormField>
         <div className="md:col-span-2 xl:col-span-6">
+          <div className="grid gap-4 sm:grid-cols-2 xl:max-w-xl">
+            <label className="type-body-compact flex items-center gap-3 border border-border bg-white px-4 py-3 text-foreground">
+              <input
+                className="h-4 w-4 accent-primary"
+                defaultChecked={property?.hasBalcony ?? false}
+                disabled={readOnly}
+                id="hasBalcony"
+                name="hasBalcony"
+                type="checkbox"
+              />
+              <span>Balcón</span>
+            </label>
+            <label className="type-body-compact flex items-center gap-3 border border-border bg-white px-4 py-3 text-foreground">
+              <input
+                className="h-4 w-4 accent-primary"
+                defaultChecked={property?.hasTerrace ?? false}
+                disabled={readOnly}
+                id="hasTerrace"
+                name="hasTerrace"
+                type="checkbox"
+              />
+              <span>Terraza</span>
+            </label>
+          </div>
+        </div>
+        <div className="md:col-span-2 xl:col-span-6">
           <div className="border-t border-border" />
         </div>
         <div className="xl:col-span-4">
           <FormField htmlFor="address" label="Dirección">
             <GooglePlacesAddressInput
-              className="input-base"
+              className="admin-input-base"
               defaultValue={property?.address ?? ""}
               disabled={readOnly}
               id="address"
@@ -754,7 +848,7 @@ export function PropertyForm({
         <div className="xl:col-span-2">
           <FormField htmlFor="neighborhood" label="Barrio">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={property?.neighborhood ?? ""}
               disabled={readOnly}
               id="neighborhood"
@@ -767,7 +861,7 @@ export function PropertyForm({
       <div className="mt-6">
         <FormField htmlFor="description" label="Descripción">
           <textarea
-            className="input-base min-h-40"
+            className="admin-input-base min-h-40"
             defaultValue={property?.description ?? ""}
             disabled={readOnly}
             id="description"
@@ -777,7 +871,7 @@ export function PropertyForm({
       </div>
       <div className="mt-6 pt-6">
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-primary-strong">Amenities</span>
+          <span className="type-body-compact font-medium text-primary-strong">Amenities</span>
           {readOnly ? (
             selectedFeatureIds.length > 0 ? (
               <FeatureChipList
@@ -786,7 +880,7 @@ export function PropertyForm({
                   .filter((feature): feature is Feature => Boolean(feature))}
               />
             ) : (
-              <p className="text-sm text-muted">Sin amenities seleccionados.</p>
+              <p className="type-body-compact text-muted">Sin amenities seleccionados.</p>
             )
           ) : (
             <FeaturesPicker
@@ -799,10 +893,10 @@ export function PropertyForm({
       <div className="mt-6 border-t border-border pt-6">
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-sm font-medium text-primary-strong">Galería de imágenes</h3>
+            <h3 className="type-body-compact font-medium text-primary-strong">Galería de imágenes</h3>
             {readOnly ? null : (
               <label
-                className="button-secondary inline-flex cursor-pointer items-center gap-2"
+                className="admin-button-secondary inline-flex cursor-pointer items-center gap-2"
                 htmlFor={galleryInputId}
               >
                 <ImagePlus className="h-4 w-4" />
@@ -856,7 +950,7 @@ export function PropertyForm({
       {readOnly ? null : (
         <div className="mt-8 flex justify-end">
           <button
-            className="button-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
+            className="admin-button-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
             disabled={submitState !== "idle"}
             type="submit"
           >

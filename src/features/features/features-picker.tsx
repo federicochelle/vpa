@@ -59,7 +59,7 @@ export function FeaturesPicker({
     <div ref={containerRef} className="space-y-4">
       <div className="relative">
         <input
-          className="input-base"
+          className="admin-input-base"
           onChange={(event) => {
             setQuery(event.target.value);
           }}
@@ -74,7 +74,7 @@ export function FeaturesPicker({
                 {matches.map((feature) => (
                   <li key={feature.id}>
                     <button
-                      className="flex w-full items-center px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-muted"
+                      className="type-body-compact flex w-full items-center px-4 py-3 text-left text-foreground transition-colors hover:bg-surface-muted"
                       onClick={() => {
                         setSelectedIds((current) => [...current, feature.id]);
                         setQuery("");
@@ -87,7 +87,7 @@ export function FeaturesPicker({
                 ))}
               </ul>
             ) : (
-              <div className="px-4 py-3 text-sm text-muted">No se encontraron amenities</div>
+              <div className="type-body-compact px-4 py-3 text-muted">No se encontraron amenities</div>
             )}
           </div>
         ) : null}
@@ -96,7 +96,7 @@ export function FeaturesPicker({
         {selectedFeatures.map((feature) => (
           <div
             key={feature.id}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/12 bg-primary/8 px-3 py-2 text-sm font-medium text-primary-strong"
+            className="type-body-compact inline-flex items-center gap-2 rounded-full border border-primary/12 bg-primary/8 px-3 py-2 font-medium text-primary-strong"
           >
             <span>{feature.name}</span>
             <button

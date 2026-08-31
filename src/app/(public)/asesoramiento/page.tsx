@@ -25,7 +25,7 @@ export default function AdvisoryPage() {
                 </h1>
               </div>
 
-              <div className="space-y-5 text-base leading-8 text-muted">
+              <div className="section-copy max-w-none space-y-5">
                 <p>
                   Una sólida trayectoria en el mercado inmobiliario permite acompañar
                   a personas, familias e inversores en decisiones de compra, venta,
@@ -59,7 +59,7 @@ export default function AdvisoryPage() {
                 </h2>
               </div>
 
-              <div className="max-w-2xl space-y-6 text-base leading-8 text-muted sm:text-lg">
+              <div className="section-copy max-w-2xl space-y-6">
                 <p>
                   Cada decisión inmobiliaria parte de una necesidad diferente. Ya sea
                   que estés buscando alquilar, comprar o invertir, te acompañamos para
@@ -94,7 +94,7 @@ export default function AdvisoryPage() {
               <h2 className="section-title">
                 Conversemos
               </h2>
-              <p className="max-w-2xl text-base leading-8 text-muted sm:text-lg">
+              <p className="section-copy max-w-2xl">
                 Si estás pensando en alquilar, comprar o invertir y querés recibir
                 asesoramiento personalizado, coordinemos una reunión para conocer qué
                 estás buscando.
@@ -104,13 +104,13 @@ export default function AdvisoryPage() {
             <form className="space-y-4">
               <div className="space-y-2">
                 <label
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
                   htmlFor="meeting-fullName"
                 >
                   Nombre completo
                 </label>
                 <input
-                  className="w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+                  className="input-base w-full"
                   id="meeting-fullName"
                   name="fullName"
                   placeholder="Tu nombre y apellido"
@@ -120,13 +120,13 @@ export default function AdvisoryPage() {
 
               <div className="space-y-2">
                 <label
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
                   htmlFor="meeting-phone"
                 >
                   Telefono
                 </label>
                 <input
-                  className="w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+                  className="input-base w-full"
                   id="meeting-phone"
                   name="phone"
                   placeholder="Tu telefono o WhatsApp"
@@ -136,13 +136,13 @@ export default function AdvisoryPage() {
 
               <div className="space-y-2">
                 <label
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
                   htmlFor="meeting-email"
                 >
                   Email
                 </label>
                 <input
-                  className="w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+                  className="input-base w-full"
                   id="meeting-email"
                   name="email"
                   placeholder="tu@email.com"
@@ -152,13 +152,13 @@ export default function AdvisoryPage() {
 
               <div className="space-y-2">
                 <label
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
                   htmlFor="meeting-message"
                 >
                   Mensaje
                 </label>
                 <textarea
-                  className="min-h-40 w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+                  className="input-base min-h-40 w-full"
                   id="meeting-message"
                   name="message"
                   placeholder="Contanos qué estás buscando"
@@ -166,7 +166,7 @@ export default function AdvisoryPage() {
               </div>
 
               <div className="pt-2">
-                <button className="inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong" type="button">
+                <button className="button-primary inline-flex w-full items-center justify-center" type="button">
                   Agendar una reunión
                 </button>
               </div>

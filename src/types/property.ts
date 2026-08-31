@@ -11,6 +11,17 @@ export type PropertyType =
   | "other";
 
 export type Currency = "USD" | "UYU" | "EUR";
+export type KitchenType = "integrated" | "independent";
+export type PropertyDisposition = "front" | "back" | "lateral" | "interior";
+export type PropertyOrientation =
+  | "north"
+  | "south"
+  | "east"
+  | "west"
+  | "northeast"
+  | "northwest"
+  | "southeast"
+  | "southwest";
 
 export interface Property {
   id: string;
@@ -26,6 +37,12 @@ export interface Property {
   builtArea: number | null;
   totalArea: number | null;
   landArea?: number | null;
+  kitchenType?: KitchenType | null;
+  hasBalcony?: boolean;
+  hasTerrace?: boolean;
+  disposition?: PropertyDisposition | null;
+  orientation?: PropertyOrientation | null;
+  floor?: string | null;
   neighborhood: string | null;
   address?: string | null;
   city?: string | null;

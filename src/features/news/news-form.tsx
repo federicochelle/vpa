@@ -297,7 +297,7 @@ export function NewsForm({
       {existingNewsId ? <input name="id" type="hidden" value={existingNewsId} /> : null}
 
       {formError ? (
-        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/6 px-4 py-4 text-sm text-primary-strong">
+        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/6 px-4 py-4 type-body-compact text-primary-strong">
           {formError}
         </div>
       ) : null}
@@ -306,7 +306,7 @@ export function NewsForm({
         <div className="flex flex-col gap-5 xl:col-span-3">
           <FormField htmlFor="title" label="Titulo">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={persistedNews?.title ?? ""}
               id="title"
               name="title"
@@ -317,7 +317,7 @@ export function NewsForm({
 
           <FormField htmlFor="excerpt" label="Bajada">
             <textarea
-              className="input-base min-h-32"
+              className="admin-input-base min-h-32"
               defaultValue={persistedNews?.excerpt ?? ""}
               id="excerpt"
               name="excerpt"
@@ -339,7 +339,7 @@ export function NewsForm({
                     unoptimized
                   />
                   <button
-                    className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/92 px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-white"
+                    className="admin-button-secondary absolute bottom-4 right-4 inline-flex items-center gap-2 border-white/30 bg-white/92 px-4 py-2 text-foreground shadow-sm hover:bg-white"
                     disabled={submitState !== "idle"}
                     onClick={() => {
                       imageInputRef.current?.click();
@@ -352,7 +352,7 @@ export function NewsForm({
                 </>
               ) : (
                 <button
-                  className="flex h-full w-full items-center justify-center gap-2 px-6 text-center text-sm font-semibold text-foreground transition-colors hover:text-primary-strong"
+                  className="type-button flex h-full w-full items-center justify-center gap-2 px-6 text-center text-foreground transition-colors hover:text-primary-strong"
                   disabled={submitState !== "idle"}
                   onClick={() => {
                     imageInputRef.current?.click();
@@ -375,10 +375,10 @@ export function NewsForm({
             />
           </div>
           {activePendingImage?.status === "processing" ? (
-            <p className="text-sm text-muted">Procesando imagen...</p>
+            <p className="type-body-compact text-muted">Procesando imagen...</p>
           ) : null}
           {hasPendingImageError ? (
-            <p className="text-sm text-primary-strong">{activePendingImage.error}</p>
+            <p className="type-body-compact text-primary-strong">{activePendingImage.error}</p>
           ) : null}
         </div>
       </div>
@@ -386,7 +386,7 @@ export function NewsForm({
       <div className="mt-6">
         <FormField htmlFor="content" label="Contenido">
           <textarea
-            className="input-base min-h-72"
+            className="admin-input-base min-h-72"
             defaultValue={persistedNews?.content ?? ""}
             id="content"
             name="content"
@@ -397,7 +397,7 @@ export function NewsForm({
 
       <div className="mt-8 flex justify-end">
         <button
-          className="button-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
+          className="admin-button-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
           disabled={submitState !== "idle"}
           type="submit"
         >

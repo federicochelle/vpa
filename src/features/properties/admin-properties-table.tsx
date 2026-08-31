@@ -24,7 +24,7 @@ export function AdminPropertiesTable({
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+      <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="space-y-2">
             <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
@@ -45,7 +45,7 @@ export function AdminPropertiesTable({
                 (column) => (
                   <th
                     key={column}
-                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                    className="admin-table-head px-6 py-4 text-left"
                   >
                     {column}
                   </th>
@@ -56,7 +56,7 @@ export function AdminPropertiesTable({
           <tbody className="divide-y divide-border">
             {properties.length === 0 ? (
               <tr>
-                <td className="px-6 py-10 text-sm text-muted" colSpan={4}>
+                <td className="admin-note px-6 py-10" colSpan={4}>
                   No hay propiedades visibles para esta sesion.
                 </td>
               </tr>
@@ -79,23 +79,23 @@ export function AdminPropertiesTable({
                   <td className="px-6 py-5">
                     <p className="font-medium text-foreground">{property.title}</p>
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
+                  <td className="admin-note px-6 py-5">
                     <span
                       className={
                         property.operationType === "rent"
-                          ? "inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-sky-700"
-                          : "inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700"
+                          ? "type-meta inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 font-semibold uppercase tracking-[0.12em] text-sky-700"
+                          : "type-meta inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-semibold uppercase tracking-[0.12em] text-emerald-700"
                       }
                     >
                       {translateOperationType(property.operationType)}
                     </span>
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
+                  <td className="admin-note px-6 py-5">
                     {[property.neighborhood, property.city]
                       .filter(Boolean)
                       .join(", ") || "Sin ubicacion"}
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
+                  <td className="admin-note px-6 py-5">
                     <HeroOrderSelect property={property} />
                   </td>
                 </tr>
@@ -130,7 +130,7 @@ function HeroOrderSelect({ property }: { property: Property }) {
     >
       <select
         aria-label={`Posición hero de ${property.title}`}
-        className="rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-foreground outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+        className="type-meta rounded-full border border-border bg-white px-3 py-2 font-semibold text-foreground outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isPending || isUnpublishedWithoutHero}
         onChange={(event) => {
           const nextValue = event.target.value;
@@ -165,7 +165,7 @@ function HeroOrderSelect({ property }: { property: Property }) {
           );
         })}
       </select>
-      {!property.published ? <span className="text-xs text-muted">No publicada</span> : null}
+      {!property.published ? <span className="type-meta text-muted">No publicada</span> : null}
     </div>
   );
 }

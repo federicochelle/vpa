@@ -179,7 +179,7 @@ export function GooglePlacesAddressInput({
   name,
   defaultValue = "",
   disabled = false,
-  className = "input-base",
+  className = "admin-input-base",
 }: GooglePlacesAddressInputProps) {
   const autocompleteId = useId();
   const containerRef = useRef<HTMLDivElement | null>(null);

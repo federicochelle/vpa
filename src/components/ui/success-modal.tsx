@@ -34,7 +34,7 @@ export function SuccessModal({
           ✓
         </div>
         <h2 className="mt-4 font-display text-2xl text-foreground">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-muted">{message}</p>
+        <p className="type-body-compact mt-2 text-muted">{message}</p>
         <button
           className="mt-6 button-primary w-full"
           onClick={() => {

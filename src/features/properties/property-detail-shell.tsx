@@ -1,14 +1,177 @@
 import { Bath, BedDouble, CarFront, Ruler } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { ComponentType } from "react";
 import { PublicImageGallery } from "@/components/gallery/public-image-gallery";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
 import { PublicLocationMap } from "@/components/maps/public-location-map";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
+import { buildPropertyLocationLabel } from "@/features/properties/property-location";
 import { parseYouTubeUrl } from "@/lib/youtube";
 import type { Property } from "@/types/property";
 
 interface PropertyDetailShellProps {
   property: Property;
+}
+
+interface PropertyFact {
+  icon: LucideIcon | ComponentType<{ className?: string }>;
+  key: string;
+  label: string;
+  value: string;
+}
+
+function KitchenIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
+      <path
+        d="M5 10.5h14V19H5zm3-5.5v2.5m8-2.5v2.5M8 14h3m2 0h3"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function BalconyIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
+      <path
+        d="M5 19h14M7 19v-7m5 7v-7m5 7v-7M5 12h14M9 12V7.5A1.5 1.5 0 0 1 10.5 6H12m3 6V7.5A1.5 1.5 0 0 0 13.5 6H12"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function TerraceIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
+      <path
+        d="M4 17h16M6.5 17V9.5A2.5 2.5 0 0 1 9 7h6a2.5 2.5 0 0 1 2.5 2.5V17M9 12h6"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function DispositionIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
+      <path
+        d="M12 5v14m0-14 4 4m-4-4-4 4M5 12h14m-14 0 4-4m-4 4 4 4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function OrientationIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="m12 8 2.5 5L12 12l-2.5 1L12 8Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function FloorIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
+      <path
+        d="M6 19V8l6-3 6 3v11M6 11l6-3 6 3M9 14h.01M12 14h.01M15 14h.01M9 17h.01M12 17h.01M15 17h.01"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function getKitchenLabel(value: Property["kitchenType"]) {
+  if (value === "integrated") {
+    return "Integrada";
+  }
+
+  if (value === "independent") {
+    return "Independiente";
+  }
+
+  return null;
+}
+
+function getDispositionLabel(value: Property["disposition"]) {
+  if (value === "front") {
+    return "Frente";
+  }
+
+  if (value === "back") {
+    return "Contrafrente";
+  }
+
+  if (value === "lateral") {
+    return "Lateral";
+  }
+
+  if (value === "interior") {
+    return "Interior";
+  }
+
+  return null;
+}
+
+function getOrientationLabel(value: Property["orientation"]) {
+  if (value === "north") {
+    return "Norte";
+  }
+
+  if (value === "south") {
+    return "Sur";
+  }
+
+  if (value === "east") {
+    return "Este";
+  }
+
+  if (value === "west") {
+    return "Oeste";
+  }
+
+  if (value === "northeast") {
+    return "Noreste";
+  }
+
+  if (value === "northwest") {
+    return "Noroeste";
+  }
+
+  if (value === "southeast") {
+    return "Sureste";
+  }
+
+  if (value === "southwest") {
+    return "Suroeste";
+  }
+
+  return null;
 }
 
 export async function PropertyDetailShell({ property }: PropertyDetailShellProps) {
@@ -20,6 +183,90 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
     : null;
   const mobileFullBleedClassName = "-mx-4 sm:mx-0";
+  const locationLabel = buildPropertyLocationLabel(property);
+  const facts: PropertyFact[] = [
+    {
+      icon: BedDouble,
+      key: "bedrooms",
+      label: "Dormitorios",
+      value: property.bedrooms != null ? String(property.bedrooms) : "-",
+    },
+    {
+      icon: Bath,
+      key: "bathrooms",
+      label: "Baños",
+      value: property.bathrooms != null ? String(property.bathrooms) : "-",
+    },
+    {
+      icon: CarFront,
+      key: "garages",
+      label: "Garajes",
+      value: property.garages != null ? String(property.garages) : "-",
+    },
+    {
+      icon: Ruler,
+      key: "totalArea",
+      label: "Área total",
+      value: property.totalArea != null ? `${property.totalArea} m2` : "-",
+    },
+  ];
+  const kitchenLabel = getKitchenLabel(property.kitchenType);
+  const dispositionLabel = getDispositionLabel(property.disposition);
+  const orientationLabel = getOrientationLabel(property.orientation);
+
+  if (kitchenLabel) {
+    facts.push({
+      icon: KitchenIcon,
+      key: "kitchenType",
+      label: "Cocina",
+      value: kitchenLabel,
+    });
+  }
+
+  if (property.hasBalcony) {
+    facts.push({
+      icon: BalconyIcon,
+      key: "hasBalcony",
+      label: "Balcón",
+      value: "Sí",
+    });
+  }
+
+  if (property.hasTerrace) {
+    facts.push({
+      icon: TerraceIcon,
+      key: "hasTerrace",
+      label: "Terraza",
+      value: "Sí",
+    });
+  }
+
+  if (dispositionLabel) {
+    facts.push({
+      icon: DispositionIcon,
+      key: "disposition",
+      label: "Disposición",
+      value: dispositionLabel,
+    });
+  }
+
+  if (orientationLabel) {
+    facts.push({
+      icon: OrientationIcon,
+      key: "orientation",
+      label: "Orientación",
+      value: orientationLabel,
+    });
+  }
+
+  if (property.propertyType === "apartment" && property.floor?.trim()) {
+    facts.push({
+      icon: FloorIcon,
+      key: "floor",
+      label: "Piso",
+      value: property.floor.trim(),
+    });
+  }
 
   return (
     <div className="shell section-gap !pt-4">
@@ -54,43 +301,40 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           <div className={mobileFullBleedClassName}>
             <div className="panel !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
-              <div className="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="flex items-center gap-3 text-sm text-foreground">
-                  <BedDouble className="h-4 w-4 flex-none text-primary" />
-                  <span>{property.bedrooms ?? "-"}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-foreground">
-                  <Bath className="h-4 w-4 flex-none text-primary" />
-                  <span>{property.bathrooms ?? "-"}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-foreground">
-                  <CarFront className="h-4 w-4 flex-none text-primary" />
-                  <span>{property.garages ?? "-"}</span>
-                </div>
-                <div className="col-span-3 flex items-center gap-3 text-sm text-foreground sm:col-span-1">
-                  <Ruler className="h-4 w-4 flex-none text-primary" />
-                  <span>
-                    {[
-                      property.builtArea ? `${property.builtArea} m2` : null,
-                      property.totalArea ? `${property.totalArea} m2` : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" / ") || "-"}
-                  </span>
-                </div>
+              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {facts.map((fact) => {
+                  const Icon = fact.icon;
+
+                  return (
+                    <div
+                      key={fact.key}
+                      className="flex min-w-0 items-center gap-4 rounded-2xl border border-border px-4 py-3 text-foreground"
+                    >
+                      <Icon className="h-6 w-6 flex-none text-primary" />
+                      <div className="min-w-0">
+                        <p className="type-micro uppercase tracking-[0.16em] text-muted">
+                          {fact.label}
+                        </p>
+                        <p className="type-body-compact break-words [overflow-wrap:anywhere]">
+                          {fact.value}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
           <div className={mobileFullBleedClassName}>
             <div className="panel !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
-              <p className="mt-4 text-sm leading-7 text-muted">
+              <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
                 {property.description ??
                   "Espacio preparado para descripcion, caracteristicas destacadas y atributos complementarios."}
               </p>
               {features.length > 0 ? (
                 <div className="mt-8 space-y-4">
-                  <h3 className="text-sm font-medium text-primary-strong">Amenities</h3>
+                  <h3 className="type-body-compact font-medium text-primary-strong">Amenities</h3>
                   <FeatureChipList features={features} />
                 </div>
               ) : null}
@@ -101,7 +345,10 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
               <PublicLocationMap
                 address={property.address}
-                fallbackLabel="Area lista para integrar ubicacion o mapa en una fase posterior."
+                fallbackLabel="Ubicación pendiente."
+                latitude={property.latitude}
+                locationLabel={locationLabel}
+                longitude={property.longitude}
                 title={`Mapa de ubicación de ${property.title}`}
               />
             </div>

@@ -14,7 +14,7 @@ export function AdminTableShell({
   return (
     <section className="panel overflow-hidden">
       {title ? (
-        <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+        <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="space-y-2">
               <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
@@ -32,7 +32,7 @@ export function AdminTableShell({
               {columns.map((column) => (
                 <th
                   key={column}
-                  className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="admin-table-head px-6 py-4 text-left"
                 >
                   {column}
                 </th>
@@ -41,7 +41,7 @@ export function AdminTableShell({
           </thead>
           <tbody>
             <tr>
-              <td className="px-6 py-10 text-sm text-muted" colSpan={columns.length}>
+              <td className="admin-note px-6 py-10" colSpan={columns.length}>
                 Sin registros todavia. La tabla queda lista para conectarse a una fuente de datos real.
               </td>
             </tr>

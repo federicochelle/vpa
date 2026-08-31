@@ -1,4 +1,12 @@
-import type { Currency, OperationType, Property, PropertyType } from "@/types/property";
+import type {
+  Currency,
+  KitchenType,
+  OperationType,
+  Property,
+  PropertyDisposition,
+  PropertyOrientation,
+  PropertyType,
+} from "@/types/property";
 
 export const operationTypeOptions: Array<{ value: OperationType; label: string }> = [
   { value: "sale", label: "Venta" },
@@ -27,4 +35,33 @@ export const currencyOptions: Array<{ value: Currency; label: string; flag: stri
   { value: "USD", label: "USD", flag: "🇺🇸" },
   { value: "UYU", label: "UYU", flag: "🇺🇾" },
   { value: "EUR", label: "EUR", flag: "🇪🇺" },
+];
+
+export const kitchenTypeOptions: Array<{ value: KitchenType; label: string }> = [
+  { value: "integrated", label: "Cocina integrada" },
+  { value: "independent", label: "Cocina independiente" },
+];
+
+export const propertyDispositionOptions: Array<{
+  value: PropertyDisposition;
+  label: string;
+}> = [
+  { value: "front", label: "Frente" },
+  { value: "back", label: "Contrafrente" },
+  { value: "lateral", label: "Lateral" },
+  { value: "interior", label: "Interior" },
+];
+
+export const propertyOrientationOptions: Array<{
+  value: PropertyOrientation;
+  label: string;
+}> = [
+  { value: "north", label: "Norte" },
+  { value: "south", label: "Sur" },
+  { value: "east", label: "Este" },
+  { value: "west", label: "Oeste" },
+  { value: "northeast", label: "Noreste" },
+  { value: "northwest", label: "Noroeste" },
+  { value: "southeast", label: "Sureste" },
+  { value: "southwest", label: "Suroeste" },
 ];

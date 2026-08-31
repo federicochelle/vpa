@@ -58,6 +58,9 @@ interface GoogleMarker {
 interface PublicLocationMapProps {
   address?: string | null;
   fallbackLabel: string;
+  latitude?: number | null;
+  locationLabel?: string | null;
+  longitude?: number | null;
   title: string;
 }
 
@@ -198,16 +201,20 @@ async function loadMapsLibraries(apiKey: string) {
 export function PublicLocationMap({
   address,
   fallbackLabel,
+  latitude,
+  locationLabel,
+  longitude,
   title,
 }: PublicLocationMapProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const normalizedAddress = address?.trim() ?? "";
+  const normalizedLocationLabel = locationLabel?.trim() ?? "";
   const mapRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<GoogleMarker | null>(null);
   const [hasMapError, setHasMapError] = useState(false);
 
   useEffect(() => {
-    if (!apiKey || !normalizedAddress || !mapRef.current) {
+    if (!apiKey || (!normalizedAddress && (latitude == null || longitude == null)) || !mapRef.current) {
       return;
     }
 
@@ -220,7 +227,10 @@ export function PublicLocationMap({
         }
 
         const map = new Map(mapRef.current, {
-          center: { lat: -34.9011, lng: -56.1645 },
+          center: {
+            lat: latitude ?? -34.9011,
+            lng: longitude ?? -56.1645,
+          },
           disableDefaultUI: true,
           fullscreenControl: false,
           gestureHandling: "cooperative",
@@ -229,18 +239,33 @@ export function PublicLocationMap({
           zoomControl: false,
         });
 
-        const geocoder = new Geocoder();
-        const response = await geocoder.geocode({
-          address: normalizedAddress,
-          region: "UY",
-        });
-        const result = response.results[0];
+        let markerLocation: GoogleLatLng | null = null;
 
-        if (isCancelled || !result) {
-          throw new Error("Google Maps no devolvió resultados para la dirección.");
+        if (latitude != null && longitude != null) {
+          markerLocation = {
+            lat: () => latitude,
+            lng: () => longitude,
+          };
+        } else {
+          const geocoder = new Geocoder();
+          const response = await geocoder.geocode({
+            address: normalizedAddress,
+            region: "UY",
+          });
+          const result = response.results[0];
+
+          if (isCancelled || !result) {
+            throw new Error("Google Maps no devolvió resultados para la dirección.");
+          }
+
+          markerLocation = result.geometry.location;
         }
 
-        map.setCenter(result.geometry.location);
+        if (isCancelled || !markerLocation) {
+          return;
+        }
+
+        map.setCenter(markerLocation);
         map.setZoom(15);
 
         if (markerRef.current) {
@@ -249,7 +274,7 @@ export function PublicLocationMap({
 
         markerRef.current = new Marker({
           map,
-          position: result.geometry.location,
+          position: markerLocation,
           title,
         });
 
@@ -269,19 +294,33 @@ export function PublicLocationMap({
         markerRef.current.map = null;
       }
     };
-  }, [apiKey, normalizedAddress, title]);
+  }, [apiKey, latitude, longitude, normalizedAddress, title]);
 
-  if (!apiKey || !normalizedAddress || hasMapError) {
+  const hasRenderableMap = Boolean(
+    apiKey && ((latitude != null && longitude != null) || normalizedAddress),
+  );
+
+  if (!hasRenderableMap || hasMapError) {
     return (
-      <div className="mt-6 flex min-h-60 items-center justify-center rounded-none border border-dashed border-border bg-surface-strong px-6 text-center text-sm text-muted">
-        {fallbackLabel}
-      </div>
+      <>
+        {normalizedLocationLabel ? (
+          <p className="type-body mt-4 text-foreground">{normalizedLocationLabel}</p>
+        ) : null}
+        <div className="type-body-compact mt-6 flex min-h-60 items-center justify-center rounded-none border border-dashed border-border bg-surface-strong px-6 text-center text-muted">
+          {normalizedLocationLabel || fallbackLabel}
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="mt-6 min-h-60 overflow-hidden rounded-none border border-dashed border-border bg-surface-strong">
-      <div className="h-full min-h-60 w-full" ref={mapRef} />
-    </div>
+    <>
+      {normalizedLocationLabel ? (
+        <p className="type-body mt-4 text-foreground">{normalizedLocationLabel}</p>
+      ) : null}
+      <div className="mt-6 min-h-60 overflow-hidden rounded-none border border-dashed border-border bg-surface-strong">
+        <div className="h-full min-h-60 w-full" ref={mapRef} />
+      </div>
+    </>
   );
 }

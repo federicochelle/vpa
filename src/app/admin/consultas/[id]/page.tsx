@@ -85,7 +85,7 @@ export default async function AdminInquiryDetailPage({
           status={inquiry.status}
         />
       }
-      subtitle={<p className="text-sm text-muted">{formatInquiryDate(inquiry.createdAt)}</p>}
+      subtitle={<p className="type-body-compact text-muted">{formatInquiryDate(inquiry.createdAt)}</p>}
       title={inquiry.name}
     >
       {query.error ? <Notice message={query.error} tone="error" /> : null}
@@ -96,16 +96,16 @@ export default async function AdminInquiryDetailPage({
           <section className="space-y-6">
             <div className="space-y-6">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
                   Origen
                 </p>
-                <p className="text-sm text-foreground">
+                <p className="type-body-compact text-foreground">
                   {formatInquiryOrigin(inquiry.kind, inquiry.originPath)}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
                   Propiedad / Proyecto relacionado
                 </p>
                 {inquiry.relatedTitle ? (
@@ -116,7 +116,7 @@ export default async function AdminInquiryDetailPage({
 
                     return publicOriginPath ? (
                       <Link
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-primary-strong transition-colors hover:text-primary"
+                        className="type-body-compact inline-flex items-center gap-2 font-semibold text-primary-strong transition-colors hover:text-primary"
                         href={publicOriginPath}
                         target="_blank"
                       >
@@ -124,19 +124,19 @@ export default async function AdminInquiryDetailPage({
                         <ExternalLink className="h-4 w-4" />
                       </Link>
                     ) : (
-                      <p className="text-sm text-foreground">{inquiry.relatedTitle}</p>
+                      <p className="type-body-compact text-foreground">{inquiry.relatedTitle}</p>
                     );
                   })()
                 ) : (
-                  <p className="text-sm text-foreground">-</p>
+                  <p className="type-body-compact text-foreground">-</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
                   Mensaje
                 </p>
-                <p className="text-sm leading-7 text-foreground">{inquiry.message}</p>
+                <p className="type-body text-foreground">{inquiry.message}</p>
               </div>
             </div>
           </section>
@@ -146,28 +146,28 @@ export default async function AdminInquiryDetailPage({
           <section className="space-y-5">
             <div className="space-y-5">
               <h2 className="text-2xl font-display text-primary-strong">Datos de contacto</h2>
-              <div className="space-y-4 text-sm text-foreground">
+              <div className="space-y-4 type-body-compact text-foreground">
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
                     Nombre
                   </p>
                   <p>{inquiry.name}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
                     Email
                   </p>
                   <p>{inquiry.email}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
                     Teléfono
                   </p>
                   <p>{inquiry.phone || "-"}</p>
                 </div>
               </div>
               <button
-                className="w-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong"
+                className="admin-button-primary w-full"
                 type="button"
               >
                 Coordinar reunion

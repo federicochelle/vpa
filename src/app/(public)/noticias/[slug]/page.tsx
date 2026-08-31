@@ -20,29 +20,29 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
         <div className="-mx-4 space-y-4 sm:mx-0">
           <div className="panel overflow-hidden !rounded-none">
-            <div className="space-y-5 bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-6 sm:px-8 lg:px-12">
+            <div className="space-y-5 brand-panel-header px-6 py-6 sm:px-8 lg:px-12">
               <h1 className="max-w-4xl font-display text-[1.75rem] leading-tight text-foreground sm:text-4xl">
                 {news.title}
               </h1>
               {news.excerpt ? (
-                <p className="max-w-3xl text-base leading-7 text-muted">
+                <p className="section-copy max-w-3xl">
                   {news.excerpt}
                 </p>
               ) : null}
-              <p className="text-sm uppercase tracking-[0.16em] text-muted">
+              <p className="type-body-compact uppercase tracking-[0.16em] text-muted">
                 {formatNewsDate(news.publishedAt ?? news.createdAt)}
               </p>
             </div>
           </div>
 
           <div
-            className="aspect-[16/9] overflow-hidden border-y border-border bg-[linear-gradient(135deg,rgba(200,16,46,0.14),rgba(255,255,255,0.42)),linear-gradient(180deg,#d8d1c8,#efeae3)] bg-cover bg-center sm:border"
+            className="aspect-[16/9] overflow-hidden border-y border-border brand-media-fallback bg-cover bg-center sm:border"
             style={news.imageUrl ? { backgroundImage: `url(${news.imageUrl})` } : undefined}
           />
 
           <div className="panel !rounded-none px-6 py-8 sm:px-8 lg:px-12">
             <article>
-              <div className="max-w-3xl space-y-6 text-base leading-8 text-muted">
+              <div className="section-copy max-w-3xl space-y-6">
                 {(news.content ?? "")
                   .split(/\n{2,}/)
                   .map((paragraph) => paragraph.trim())

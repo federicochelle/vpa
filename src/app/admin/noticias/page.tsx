@@ -25,7 +25,7 @@ export default async function AdminNewsPage({ searchParams }: AdminNewsPageProps
       <AdminNewsTable
         actions={
           <Link
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-strong"
+            className="admin-button-primary inline-flex items-center gap-2 font-bold"
             href="/admin/noticias/nueva"
           >
             <Plus className="h-4 w-4 stroke-[2.4] text-white" />

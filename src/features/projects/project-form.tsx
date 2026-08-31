@@ -177,7 +177,7 @@ function PersistedProjectImageItem({
           unoptimized
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2 text-[11px]">
-          {image.isCover ? <span className="status-pill">Portada</span> : null}
+          {image.isCover ? <span className="admin-status-pill">Portada</span> : null}
         </div>
         {readOnly ? null : (
           <div className="absolute right-3 top-3 z-10 flex items-start gap-2">
@@ -225,8 +225,8 @@ function PersistedProjectImageItem({
       </div>
       {readOnly ? null : (
         <div className="space-y-2 px-4 py-4">
-          <p className="text-sm font-semibold text-foreground">Imagen guardada</p>
-          <div className="flex flex-wrap gap-2 text-xs text-muted">
+          <p className="type-body-compact font-semibold text-foreground">Imagen guardada</p>
+          <div className="type-caption flex flex-wrap gap-2 text-muted">
             <span>{image.publicId ?? "Sin public_id"}</span>
           </div>
         </div>
@@ -583,7 +583,7 @@ export function ProjectForm({
       {existingProjectId ? <input name="id" type="hidden" value={existingProjectId} /> : null}
 
       {formError ? (
-        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/6 px-4 py-4 text-sm text-primary-strong">
+        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/6 px-4 py-4 type-body-compact text-primary-strong">
           {formError}
         </div>
       ) : null}
@@ -592,7 +592,7 @@ export function ProjectForm({
         <div className="xl:col-span-3">
           <FormField htmlFor="name" label="Nombre">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={project?.name ?? ""}
               disabled={readOnly}
               id="name"
@@ -605,7 +605,7 @@ export function ProjectForm({
         <div className="xl:col-span-3">
           <FormField htmlFor="developerName" label="Desarrollador">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={project?.developerName ?? ""}
               disabled={readOnly}
               id="developerName"
@@ -617,7 +617,7 @@ export function ProjectForm({
         <div className="xl:col-span-6 grid gap-6 md:grid-cols-2">
           <FormField htmlFor="constructionStatus" label="Estado de construcción">
             <select
-              className="input-base"
+              className="admin-input-base"
               defaultValue={project?.constructionStatus ?? "planned"}
               disabled={readOnly}
               id="constructionStatus"
@@ -630,7 +630,7 @@ export function ProjectForm({
           </FormField>
           <FormField htmlFor="estimatedDeliveryDate" label="Fecha estimada de entrega">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={project?.estimatedDeliveryDate ?? ""}
               disabled={readOnly}
               id="estimatedDeliveryDate"
@@ -645,7 +645,7 @@ export function ProjectForm({
         <div className="xl:col-span-4">
           <FormField htmlFor="address" label="Dirección">
             <GooglePlacesAddressInput
-              className="input-base"
+              className="admin-input-base"
               defaultValue={project?.address ?? ""}
               disabled={readOnly}
               id="address"
@@ -656,7 +656,7 @@ export function ProjectForm({
         <div className="xl:col-span-2">
           <FormField htmlFor="neighborhood" label="Barrio">
             <input
-              className="input-base"
+              className="admin-input-base"
               defaultValue={project?.neighborhood ?? ""}
               disabled={readOnly}
               id="neighborhood"
@@ -669,7 +669,7 @@ export function ProjectForm({
       <div className="mt-6 border-t border-border pt-6">
         <FormField htmlFor="description" label="Descripción">
           <textarea
-            className="input-base min-h-40"
+            className="admin-input-base min-h-40"
             defaultValue={project?.description ?? ""}
             disabled={readOnly}
             id="description"
@@ -679,7 +679,7 @@ export function ProjectForm({
       </div>
       <div className="mt-6 pt-6">
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-primary-strong">Amenities</span>
+          <span className="type-body-compact font-medium text-primary-strong">Amenities</span>
           {readOnly ? (
             selectedFeatureIds.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -688,7 +688,7 @@ export function ProjectForm({
                   .filter((feature): feature is Feature => Boolean(feature))
                   .map((feature) => (
                     <span
-                      className="inline-flex items-center rounded-full border border-primary/12 bg-primary/8 px-3 py-2 text-sm font-medium text-primary-strong"
+                      className="type-body-compact inline-flex items-center rounded-full border border-primary/12 bg-primary/8 px-3 py-2 font-medium text-primary-strong"
                       key={feature.id}
                     >
                       {feature.name}
@@ -696,7 +696,7 @@ export function ProjectForm({
                   ))}
               </div>
             ) : (
-              <p className="text-sm text-muted">Sin amenities seleccionados.</p>
+              <p className="type-body-compact text-muted">Sin amenities seleccionados.</p>
             )
           ) : (
             <FeaturesPicker
@@ -710,10 +710,10 @@ export function ProjectForm({
       <div className="mt-6 border-t border-border pt-6">
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-sm font-medium text-primary-strong">Galería de imágenes</h3>
+            <h3 className="type-body-compact font-medium text-primary-strong">Galería de imágenes</h3>
             {readOnly ? null : (
               <label
-                className="button-secondary inline-flex cursor-pointer items-center gap-2"
+                className="admin-button-secondary inline-flex cursor-pointer items-center gap-2"
                 htmlFor={galleryInputId}
               >
                 <ImagePlus className="h-4 w-4" />
@@ -767,7 +767,7 @@ export function ProjectForm({
       {readOnly ? null : (
         <div className="mt-8 flex justify-end">
           <button
-            className="button-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
+            className="admin-button-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
             disabled={submitState !== "idle"}
             type="submit"
           >

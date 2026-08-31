@@ -34,7 +34,7 @@ export function AdminNewsTable({
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+      <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="space-y-2">
             <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
@@ -54,7 +54,7 @@ export function AdminNewsTable({
               {["Titulo", "Estado", "Fecha", "Acciones"].map((column) => (
                 <th
                   key={column}
-                  className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="admin-table-head px-6 py-4 text-left"
                 >
                   {column}
                 </th>
@@ -64,7 +64,7 @@ export function AdminNewsTable({
           <tbody className="divide-y divide-border">
             {news.length === 0 ? (
               <tr>
-                <td className="px-6 py-10 text-sm text-muted" colSpan={4}>
+                <td className="admin-note px-6 py-10" colSpan={4}>
                   No hay noticias cargadas todavia.
                 </td>
               </tr>
@@ -79,12 +79,12 @@ export function AdminNewsTable({
                       {item.title}
                     </Link>
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
-                    <span className={item.published ? "status-pill" : "inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-700"}>
+                  <td className="admin-note px-6 py-5">
+                    <span className={item.published ? "admin-status-pill" : "type-meta inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 font-semibold uppercase tracking-[0.12em] text-amber-700"}>
                       {item.published ? "Publicada" : "Borrador"}
                     </span>
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
+                  <td className="admin-note px-6 py-5">
                     {formatAdminDate(item.publishedAt ?? item.updatedAt ?? item.createdAt)}
                   </td>
                   <td className="px-6 py-5">

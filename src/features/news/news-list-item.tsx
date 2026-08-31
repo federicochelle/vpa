@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { News } from "@/types/news";
 import { formatNewsDate } from "@/features/news/news.utils";
@@ -13,10 +14,19 @@ export function NewsListItem({ news }: NewsListItemProps) {
       href={`/noticias/${news.slug}`}
     >
       <article className="grid md:grid-cols-[minmax(240px,0.38fr)_minmax(0,0.62fr)] md:items-stretch">
-        <div
-          className="aspect-[4/3] bg-[linear-gradient(135deg,rgba(200,16,46,0.14),rgba(255,255,255,0.42)),linear-gradient(180deg,#d8d1c8,#efeae3)] bg-cover bg-center"
-          style={news.imageUrl ? { backgroundImage: `url(${news.imageUrl})` } : undefined}
-        />
+        <div className="relative aspect-[4/3] overflow-hidden bg-surface-muted">
+          {news.imageUrl ? (
+            <Image
+              alt={news.title}
+              className="object-cover object-center"
+              fill
+              sizes="(min-width: 768px) 38vw, 100vw"
+              src={news.imageUrl}
+            />
+          ) : (
+            <div className="h-full w-full brand-media-fallback" />
+          )}
+        </div>
         <div className="flex min-w-0 flex-col justify-center space-y-4 px-5 py-5 sm:px-6 sm:py-6 md:px-8">
           <div className="space-y-2">
             <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors group-hover:text-primary-strong sm:text-[1.7rem]">
@@ -26,10 +36,10 @@ export function NewsListItem({ news }: NewsListItemProps) {
               {formatNewsDate(news.publishedAt ?? news.createdAt)}
             </p>
           </div>
-          <p className="max-w-3xl text-sm leading-7 text-muted sm:text-base">
+          <p className="type-body max-w-3xl text-muted">
             {news.excerpt ?? "Esta noticia ya está disponible para leer completa."}
           </p>
-          <span className="font-display inline-flex items-center text-sm font-semibold uppercase tracking-[0.14em] text-primary transition-colors group-hover:text-primary-strong">
+          <span className="type-body-compact font-display inline-flex items-center font-semibold uppercase tracking-[0.14em] text-primary transition-colors group-hover:text-primary-strong">
             Leer más
           </span>
         </div>

@@ -204,7 +204,7 @@ function LocationCombobox({
               <button
                 key={option.label}
                 aria-selected={selectedOption?.label === option.label}
-                className="block w-full px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-strong"
+                className="type-body-compact block w-full px-4 py-3 text-left text-foreground transition-colors hover:bg-surface-strong"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={(event) => {
                   event.stopPropagation();
@@ -219,14 +219,14 @@ function LocationCombobox({
             ))}
             {filteredOptions.length === 0 && suggestedOptions.length > 0 ? (
               <div className="border-t border-border px-4 py-3">
-                <p className="text-sm font-medium text-foreground">
+                <p className="type-body-compact font-medium text-foreground">
                   No encontramos esa zona. También te puede interesar:
                 </p>
                 <div className="mt-3 space-y-2">
                   {suggestedOptions.map((option) => (
                     <button
                       key={`suggested-${option.label}`}
-                      className="block w-full text-left text-sm text-primary transition-colors hover:text-primary-strong"
+                      className="type-body-compact block w-full text-left text-primary transition-colors hover:text-primary-strong"
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={(event) => {
                         event.stopPropagation();
@@ -243,7 +243,7 @@ function LocationCombobox({
               </div>
             ) : null}
             {filteredOptions.length === 0 && suggestedOptions.length === 0 ? (
-              <div className="px-4 py-3 text-sm text-muted">
+              <div className="type-body-compact px-4 py-3 text-muted">
                 No encontramos esa zona.
               </div>
             ) : null}
@@ -286,7 +286,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
         <div className="mx-auto max-w-xl overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">
             <form className="grid gap-4" onSubmit={handleSubmit}>
-              <label className="grid gap-2 text-sm font-medium text-foreground">
+              <label className="grid gap-2 type-body-compact font-medium text-foreground">
                 Tipo de propiedad
                 <select
                   className="search-field search-select"
@@ -303,7 +303,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 </select>
               </label>
 
-              <label className="grid gap-2 text-sm font-medium text-foreground">
+              <label className="grid gap-2 type-body-compact font-medium text-foreground">
                 Operación
                 <select
                   className="search-field search-select"
@@ -321,7 +321,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 </select>
               </label>
 
-              <div className="grid gap-2 text-sm font-medium text-foreground">
+              <div className="grid gap-2 type-body-compact font-medium text-foreground">
                 <span>Zona</span>
                 <LocationCombobox
                   options={locationOptions}
@@ -333,7 +333,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               </div>
 
               <button
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong"
+                className="button-primary inline-flex items-center justify-center gap-2 rounded-2xl"
                 type="submit"
               >
                 <Search className="h-4 w-4" />
@@ -350,7 +350,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
             className="gap-4 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto]"
             onSubmit={handleSubmit}
           >
-            <label className="grid gap-2 text-sm font-medium text-foreground">
+            <label className="grid gap-2 type-body-compact font-medium text-foreground">
               Tipo de propiedad
               <select
                 className="search-field search-select"
@@ -367,7 +367,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               </select>
             </label>
 
-            <label className="grid gap-2 text-sm font-medium text-foreground">
+            <label className="grid gap-2 type-body-compact font-medium text-foreground">
               Operación
               <select
                 className="search-field search-select"
@@ -385,7 +385,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               </select>
             </label>
 
-            <div className="grid gap-2 text-sm font-medium text-foreground">
+            <div className="grid gap-2 type-body-compact font-medium text-foreground">
               <span>Zona</span>
               <LocationCombobox
                 options={locationOptions}
@@ -397,7 +397,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
             </div>
 
             <button
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong xl:self-end"
+              className="button-primary inline-flex items-center justify-center gap-2 rounded-2xl xl:self-end"
               type="submit"
             >
               <Search className="h-4 w-4" />

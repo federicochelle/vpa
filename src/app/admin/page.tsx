@@ -27,7 +27,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+      <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
         <div className="space-y-4">
           <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
             Bienvenida al panel administrativo
@@ -46,12 +46,12 @@ export default async function AdminDashboardPage() {
           {!inquiriesResult.ok ? (
             <Notice message={inquiriesResult.error ?? "No se pudieron cargar las consultas."} tone="error" />
           ) : latestInquiries.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border bg-surface-strong px-6 py-10 text-center text-sm text-muted">
+            <div className="type-body-compact rounded-2xl border border-dashed border-border bg-surface-strong px-6 py-10 text-center text-muted">
               Todavía no hay consultas registradas.
             </div>
           ) : (
             <>
-              <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_140px_140px] gap-4 border-b border-border bg-surface-strong px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted lg:grid">
+              <div className="admin-table-head hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_140px_140px] gap-4 border-b border-border bg-surface-strong px-5 py-3 lg:grid">
                 <span>Nombre</span>
                 <span>Relacionado</span>
                 <span>Fecha</span>
@@ -67,33 +67,33 @@ export default async function AdminDashboardPage() {
                   >
                     <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_140px_140px] lg:items-center lg:gap-4">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
+                        <p className="type-meta font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
                           Nombre
                         </p>
-                        <p className="text-sm font-semibold text-foreground">{inquiry.name}</p>
+                        <p className="type-body-compact font-semibold text-foreground">{inquiry.name}</p>
                       </div>
 
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
+                        <p className="type-meta font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
                           Relacionado
                         </p>
-                        <p className="text-sm text-muted">
+                        <p className="type-body-compact text-muted">
                           {inquiry.relatedTitle ?? "Consulta general"}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
+                        <p className="type-meta font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
                           Fecha
                         </p>
-                        <p className="text-sm text-muted">{formatAdminDate(inquiry.createdAt)}</p>
+                        <p className="type-body-compact text-muted">{formatAdminDate(inquiry.createdAt)}</p>
                       </div>
 
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
+                        <p className="type-meta font-semibold uppercase tracking-[0.14em] text-muted lg:hidden">
                           Estado
                         </p>
-                        <span className="inline-flex rounded-full border border-primary/12 bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary-strong">
+                        <span className="admin-status-pill">
                           {formatInquiryStatus(inquiry.status)}
                         </span>
                       </div>
@@ -104,7 +104,7 @@ export default async function AdminDashboardPage() {
 
               <div className="flex justify-end">
                 <Link
-                  className="inline-flex items-center justify-center bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong"
+                  className="admin-button-primary inline-flex items-center justify-center"
                   href="/admin/consultas"
                 >
                   Ver todas las consultas

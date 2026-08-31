@@ -24,11 +24,11 @@ export function AdminInquiryStatusForm({
     >
       <input name="id" type="hidden" value={inquiryId} />
       <label className="flex min-w-[220px] flex-col gap-2">
-        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+        <span className="admin-label">
           Estado
         </span>
         <select
-          className="border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+          className="admin-input-base rounded-none"
           defaultValue={status}
           name="status"
           onChange={() => formRef.current?.requestSubmit()}

@@ -64,7 +64,7 @@ export function PublicInquirySidebar({
             {advisor.name}
           </h5>
           <a
-            className="mt-3 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary-strong"
+            className="type-body-compact mt-3 inline-flex items-center gap-2 text-muted transition-colors hover:text-primary-strong"
             href={advisor.phoneHref}
             rel="noreferrer"
             target="_blank"
@@ -135,13 +135,13 @@ export function PublicInquirySidebar({
       >
         <div className="space-y-2">
           <label
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+            className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="fullName"
           >
             Nombre completo
           </label>
           <input
-            className="w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+            className="input-base w-full"
             id="fullName"
             name="fullName"
             required
@@ -156,13 +156,13 @@ export function PublicInquirySidebar({
 
         <div className="space-y-2">
           <label
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+            className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="phone"
           >
             Telefono
           </label>
           <input
-            className="w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+            className="input-base w-full"
             id="phone"
             name="phone"
             onChange={(event) =>
@@ -176,13 +176,13 @@ export function PublicInquirySidebar({
 
         <div className="space-y-2">
           <label
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+            className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="email"
           >
             Email
           </label>
           <input
-            className="w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+            className="input-base w-full"
             id="email"
             name="email"
             required
@@ -197,13 +197,13 @@ export function PublicInquirySidebar({
 
         <div className="space-y-2">
           <label
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+            className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="message"
           >
             Mensaje
           </label>
           <textarea
-            className="min-h-40 w-full border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+            className="input-base min-h-40 w-full"
             id="message"
             name="message"
             required
@@ -215,7 +215,7 @@ export function PublicInquirySidebar({
         </div>
 
         <button
-          className="inline-flex w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong"
+          className="button-primary inline-flex w-full items-center justify-center gap-2"
           disabled={submitState === "submitting"}
           type="submit"
         >
@@ -225,7 +225,7 @@ export function PublicInquirySidebar({
 
         {feedbackMessage ? (
           <p
-            className={`text-sm ${
+            className={`type-body-compact ${
               submitState === "success" ? "text-primary-strong" : "text-muted"
             }`}
           >

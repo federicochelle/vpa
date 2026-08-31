@@ -11,5 +11,4 @@ export const adminNavigation = [
   { href: "/admin/proyectos", label: "Proyectos" },
   { href: "/admin/noticias", label: "Noticias" },
   { href: "/admin/consultas", label: "Consultas" },
-  { href: "/admin/configuracion", label: "Configuracion" },
 ] as const;

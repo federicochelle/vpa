@@ -32,7 +32,7 @@ export function PropertyListingShell({
             {["Operacion", "Tipo", "Barrio", "Dormitorios", "Precio"].map((item) => (
               <div
                 key={item}
-                className="rounded-2xl border border-border bg-white/70 px-4 py-3 text-sm text-muted"
+                className="type-body-compact rounded-2xl border border-border bg-white/70 px-4 py-3 text-muted"
               >
                 {item}
               </div>
@@ -43,7 +43,7 @@ export function PropertyListingShell({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-primary-strong">Resultados</h2>
-              <p className="text-sm text-muted">
+              <p className="type-body-compact text-muted">
                 {properties.length > 0
                   ? `${properties.length} publicadas`
                   : "Sin resultados cargados aun"}
@@ -66,7 +66,7 @@ export function PropertyListingShell({
           </div>
           <aside className="panel p-6">
             <h3 className="text-lg font-semibold text-primary-strong">Paginacion</h3>
-            <p className="mt-3 text-sm leading-6 text-muted">
+            <p className="type-body-compact mt-3 text-muted">
               Espacio reservado para controles de pagina, conteo de resultados y navegacion futura.
             </p>
           </aside>

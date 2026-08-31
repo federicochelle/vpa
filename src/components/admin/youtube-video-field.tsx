@@ -28,7 +28,7 @@ export function YouTubeVideoField({
     <div className="space-y-4">
       <FormField htmlFor={`${idPrefix}-video-url`} label={label}>
         <input
-          className="input-base"
+          className="admin-input-base"
           disabled={disabled || readOnly}
           id={`${idPrefix}-video-url`}
           name="videoUrl"
@@ -42,7 +42,7 @@ export function YouTubeVideoField({
       </FormField>
 
       {hasError ? (
-        <p className="text-sm text-primary-strong">
+        <p className="type-body-compact text-primary-strong">
           Ingresa una URL válida de YouTube.
         </p>
       ) : null}

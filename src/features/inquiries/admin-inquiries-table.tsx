@@ -28,13 +28,13 @@ export function AdminInquiriesTable({
   if (inquiries.length === 0) {
     return (
       <section className="panel overflow-hidden">
-        <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+        <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
           <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
             Listado de consultas
           </h4>
         </div>
         <div className="px-6 py-10 sm:px-8 lg:px-12">
-          <p className="text-sm leading-7 text-muted">
+          <p className="admin-copy text-muted">
             Todavía no ingresaron consultas desde la web pública.
           </p>
         </div>
@@ -44,7 +44,7 @@ export function AdminInquiriesTable({
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+      <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
         <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
           Listado de consultas
         </h4>
@@ -57,7 +57,7 @@ export function AdminInquiriesTable({
                 (column) => (
                   <th
                     key={column}
-                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                    className="admin-table-head px-6 py-4 text-left"
                   >
                     {column}
                   </th>
@@ -81,16 +81,16 @@ export function AdminInquiriesTable({
                 }}
                 tabIndex={0}
               >
-                <td className="px-6 py-4 text-sm text-muted">
+                <td className="admin-note px-6 py-4">
                   {formatInquiryDate(inquiry.createdAt)}
                 </td>
-                <td className="px-6 py-4 text-sm font-medium text-foreground">
+                <td className="type-body-compact px-6 py-4 font-medium text-foreground">
                   {inquiry.name}
                 </td>
-                <td className="px-6 py-4 text-sm text-muted">
+                <td className="admin-note px-6 py-4">
                   {inquiry.phone || "-"}
                 </td>
-                <td className="px-6 py-4 text-sm text-muted">
+                <td className="admin-note px-6 py-4">
                   {inquiry.relatedTitle || "-"}
                 </td>
               </tr>

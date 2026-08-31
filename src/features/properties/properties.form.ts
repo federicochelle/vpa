@@ -3,6 +3,12 @@ import type {
   SupabaseActionError,
 } from "@/features/properties/properties.data";
 import { normalizeYouTubeUrl } from "@/lib/youtube";
+import type {
+  KitchenType,
+  PropertyDisposition,
+  PropertyOrientation,
+  PropertyType,
+} from "@/types/property";
 
 function toNullableString(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
@@ -39,6 +45,47 @@ function toBoolean(value: FormDataEntryValue | null) {
   return value === "on";
 }
 
+function toNullableEnumString(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function toEnumValue<T extends string>(
+  value: FormDataEntryValue | null,
+  allowedValues: readonly T[],
+  fieldLabel: string,
+): T | null {
+  const normalizedValue = toNullableEnumString(value);
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  if (!allowedValues.includes(normalizedValue as T)) {
+    throw new Error(`El campo ${fieldLabel} tiene un valor inválido.`);
+  }
+
+  return normalizedValue as T;
+}
+
+const kitchenTypeValues = ["integrated", "independent"] as const satisfies readonly KitchenType[];
+const dispositionValues =
+  ["front", "back", "lateral", "interior"] as const satisfies readonly PropertyDisposition[];
+const orientationValues = [
+  "north",
+  "south",
+  "east",
+  "west",
+  "northeast",
+  "northwest",
+  "southeast",
+  "southwest",
+] as const satisfies readonly PropertyOrientation[];
+
 export function toStringArray(values: FormDataEntryValue[]) {
   return values
     .filter((value): value is string => typeof value === "string")
@@ -71,6 +118,10 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
   const title = toRequiredString(formData.get("title"));
   const slug = slugify(toRequiredString(formData.get("slug")) || title);
   const rawVideoUrl = toRequiredString(formData.get("videoUrl"));
+  const propertyType = toRequiredString(
+    formData.get("propertyType"),
+    "other",
+  ) as PropertyType;
   const normalizedVideoUrl =
     rawVideoUrl.length > 0 ? normalizeYouTubeUrl(rawVideoUrl) : null;
 
@@ -85,10 +136,7 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
       formData.get("operationType"),
       "sale",
     ) as PropertyMutationInput["operationType"],
-    propertyType: toRequiredString(
-      formData.get("propertyType"),
-      "other",
-    ),
+    propertyType,
     status: "published",
     published: true,
     featured: toBoolean(formData.get("featured")),
@@ -99,9 +147,24 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
     bedrooms: toNullableNumber(formData.get("bedrooms")),
     bathrooms: toNullableNumber(formData.get("bathrooms")),
     garages: toNullableNumber(formData.get("garages")),
-    builtArea: toNullableNumber(formData.get("builtArea")),
     totalArea: toNullableNumber(formData.get("totalArea")),
-    landArea: toNullableNumber(formData.get("landArea")),
+    kitchenType: toEnumValue(formData.get("kitchenType"), kitchenTypeValues, "cocina"),
+    hasBalcony: toBoolean(formData.get("hasBalcony")),
+    hasTerrace: toBoolean(formData.get("hasTerrace")),
+    disposition: toEnumValue(
+      formData.get("disposition"),
+      dispositionValues,
+      "disposición",
+    ),
+    orientation: toEnumValue(
+      formData.get("orientation"),
+      orientationValues,
+      "orientación",
+    ),
+    floor:
+      propertyType === "apartment"
+        ? toNullableString(formData.get("floor"))
+        : null,
     description: toNullableString(formData.get("description")),
     videoUrl: normalizedVideoUrl,
     address: toNullableString(formData.get("address")),

@@ -43,9 +43,13 @@ export interface PropertyMutationInput {
   bedrooms: number | null;
   bathrooms: number | null;
   garages: number | null;
-  builtArea: number | null;
   totalArea: number | null;
-  landArea: number | null;
+  kitchenType: Property["kitchenType"];
+  hasBalcony: boolean;
+  hasTerrace: boolean;
+  disposition: Property["disposition"];
+  orientation: Property["orientation"];
+  floor: string | null;
   description: string | null;
   videoUrl: string | null;
   address: string | null;
@@ -232,9 +236,40 @@ async function resolveUniquePropertySlug(
 
 function toPropertyPayload(
   input: PropertyMutationInput,
-): Database["public"]["Tables"]["properties"]["Row"] {
+): Pick<
+  Database["public"]["Tables"]["properties"]["Insert"],
+  | "title"
+  | "slug"
+  | "operation_type"
+  | "property_type"
+  | "status"
+  | "published"
+  | "featured"
+  | "price"
+  | "currency"
+  | "bedrooms"
+  | "bathrooms"
+  | "garages"
+  | "total_area"
+  | "kitchen_type"
+  | "has_balcony"
+  | "has_terrace"
+  | "disposition"
+  | "orientation"
+  | "floor"
+  | "description"
+  | "video_url"
+  | "address"
+  | "neighborhood"
+  | "city"
+  | "department"
+  | "latitude"
+  | "longitude"
+  | "expenses"
+  | "construction_year"
+  | "investment_opportunity"
+> {
   return {
-    id: "",
     title: input.title,
     slug: input.slug,
     operation_type: input.operationType,
@@ -247,9 +282,13 @@ function toPropertyPayload(
     bedrooms: input.bedrooms,
     bathrooms: input.bathrooms,
     garages: input.garages,
-    built_area: input.builtArea,
     total_area: input.totalArea,
-    land_area: input.landArea,
+    kitchen_type: input.kitchenType,
+    has_balcony: input.hasBalcony,
+    has_terrace: input.hasTerrace,
+    disposition: input.disposition,
+    orientation: input.orientation,
+    floor: input.floor,
     description: input.description,
     video_url: input.videoUrl,
     address: input.address,
@@ -261,9 +300,6 @@ function toPropertyPayload(
     expenses: input.expenses,
     construction_year: input.constructionYear,
     investment_opportunity: input.investmentOpportunity,
-    hero_order: null,
-    created_at: "",
-    updated_at: "",
   };
 }
 
@@ -614,9 +650,13 @@ export async function createProperty(
     bedrooms: payload.bedrooms,
     bathrooms: payload.bathrooms,
     garages: payload.garages,
-    built_area: payload.built_area,
     total_area: payload.total_area,
-    land_area: payload.land_area,
+    kitchen_type: payload.kitchen_type,
+    has_balcony: payload.has_balcony,
+    has_terrace: payload.has_terrace,
+    disposition: payload.disposition,
+    orientation: payload.orientation,
+    floor: payload.floor,
     description: payload.description,
     video_url: payload.video_url,
     address: payload.address,
@@ -736,9 +776,13 @@ export async function updateProperty(
     bedrooms: payload.bedrooms,
     bathrooms: payload.bathrooms,
     garages: payload.garages,
-    built_area: payload.built_area,
     total_area: payload.total_area,
-    land_area: payload.land_area,
+    kitchen_type: payload.kitchen_type,
+    has_balcony: payload.has_balcony,
+    has_terrace: payload.has_terrace,
+    disposition: payload.disposition,
+    orientation: payload.orientation,
+    floor: payload.floor,
     description: payload.description,
     video_url: payload.video_url,
     address: payload.address,

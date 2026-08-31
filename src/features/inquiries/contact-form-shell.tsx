@@ -6,7 +6,7 @@ export function ContactFormShell() {
       <div className="grid gap-6 sm:grid-cols-2">
         <FormField htmlFor="name" label="Nombre">
           <input
-            className="rounded-2xl border border-border bg-white/70 px-4 py-3 outline-none transition focus:border-primary"
+            className="input-base bg-white/70"
             id="name"
             name="name"
             placeholder="Nombre"
@@ -15,7 +15,7 @@ export function ContactFormShell() {
         </FormField>
         <FormField htmlFor="email" label="Email">
           <input
-            className="rounded-2xl border border-border bg-white/70 px-4 py-3 outline-none transition focus:border-primary"
+            className="input-base bg-white/70"
             id="email"
             name="email"
             placeholder="Email"
@@ -24,7 +24,7 @@ export function ContactFormShell() {
         </FormField>
         <FormField htmlFor="phone" label="Telefono">
           <input
-            className="rounded-2xl border border-border bg-white/70 px-4 py-3 outline-none transition focus:border-primary"
+            className="input-base bg-white/70"
             id="phone"
             name="phone"
             placeholder="Telefono"
@@ -35,7 +35,7 @@ export function ContactFormShell() {
         <div className="sm:col-span-2">
           <FormField htmlFor="message" label="Mensaje">
             <textarea
-              className="min-h-40 rounded-2xl border border-border bg-white/70 px-4 py-3 outline-none transition focus:border-primary"
+              className="input-base min-h-40 bg-white/70"
               id="message"
               name="message"
               placeholder="Mensaje"
@@ -45,7 +45,7 @@ export function ContactFormShell() {
       </div>
       <div className="mt-6">
         <button
-          className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-strong"
+          className="button-primary"
           type="submit"
         >
           Enviar

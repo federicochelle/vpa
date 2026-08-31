@@ -12,7 +12,7 @@ export function HomeInvestmentsSection() {
         />
         <div className="flex justify-start lg:justify-end">
           <Link
-            className="rounded-full border border-border bg-white/70 px-5 py-3 text-sm font-semibold text-primary-strong transition-colors hover:bg-surface-strong"
+            className="type-button rounded-full border border-border bg-white/70 px-5 py-3 text-primary-strong transition-colors hover:bg-surface-strong"
             href="/inversion"
           >
             Ver estructura

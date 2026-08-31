@@ -33,7 +33,7 @@ export default async function AdminProjectDetailPage({
       <AdminRecordShell
         actions={
           <Link
-            className="rounded-full border border-border px-5 py-3 text-sm font-semibold text-primary-strong"
+            className="admin-button-secondary text-primary-strong"
             href="/admin/proyectos"
           >
             Volver al listado
@@ -59,7 +59,7 @@ export default async function AdminProjectDetailPage({
         actions={
           <>
             <Link
-              className="rounded-full border border-border px-5 py-3 text-sm font-semibold text-primary-strong"
+              className="admin-button-secondary text-primary-strong"
               href="/admin/proyectos"
             >
               Volver al listado

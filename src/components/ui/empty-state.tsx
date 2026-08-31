@@ -13,7 +13,7 @@ export function EmptyState({ title, description }: EmptyStateProps) {
       </div>
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-primary-strong">{title}</h3>
-        <p className="mx-auto max-w-lg text-sm leading-6 text-muted">{description}</p>
+        <p className="type-body-compact mx-auto max-w-lg text-muted">{description}</p>
       </div>
     </div>
   );

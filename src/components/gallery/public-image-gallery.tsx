@@ -80,7 +80,7 @@ export function PublicImageGallery({
 
   if (orderedImages.length === 0) {
     return (
-      <div className="panel !rounded-none flex min-h-[420px] items-center justify-center border-dashed bg-surface-strong px-6 text-center text-sm text-muted">
+      <div className="type-body-compact panel !rounded-none flex min-h-[420px] items-center justify-center border-dashed bg-surface-strong px-6 text-center text-muted">
         {emptyLabel}
       </div>
     );
@@ -146,7 +146,7 @@ export function PublicImageGallery({
                   src={image.url}
                 />
                 {isOverflowTile ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/45 text-sm font-semibold text-white">
+                  <div className="type-body-compact absolute inset-0 flex items-center justify-center bg-black/45 font-semibold text-white">
                     +{hiddenImagesCount}
                   </div>
                 ) : null}
@@ -160,7 +160,7 @@ export function PublicImageGallery({
         <div className="fixed inset-0 z-50 bg-black/85 p-4 sm:p-6">
           <div className="mx-auto flex h-full w-full max-w-6xl flex-col">
             <div className="flex items-center justify-between pb-4 text-white">
-              <p className="text-sm text-white/80">
+              <p className="type-body-compact text-white/80">
                 {lightboxIndex + 1} / {orderedImages.length}
               </p>
               <button

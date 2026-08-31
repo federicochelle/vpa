@@ -64,7 +64,7 @@ export function PriceInput({
         placeholder={placeholder}
         type="text"
         value={formatPriceInput(rawValue)}
-        className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3 text-sm text-foreground outline-none disabled:cursor-not-allowed"
+        className="type-input min-w-0 flex-1 border-0 bg-transparent px-4 py-3 text-foreground outline-none disabled:cursor-not-allowed"
       />
       <input name={name} type="hidden" value={rawValue} />
     </>

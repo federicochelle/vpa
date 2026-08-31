@@ -12,7 +12,7 @@ export function ContactCtaSection() {
         />
         <div className="mt-8">
           <Link
-            className="inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-primary-strong transition-transform hover:-translate-y-0.5"
+            className="type-button inline-flex rounded-full bg-white px-5 py-3 text-primary-strong transition-transform hover:-translate-y-0.5"
             href="/contacto"
           >
             Abrir formulario

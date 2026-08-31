@@ -23,7 +23,7 @@ export function AdminProjectsTable({
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-border bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.09),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,247,245,0.96))] px-6 py-10 sm:px-8 lg:px-12">
+      <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="space-y-2">
             <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
@@ -48,7 +48,7 @@ export function AdminProjectsTable({
               ].map((column) => (
                 <th
                   key={column}
-                  className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.16em] text-muted"
+                  className="admin-table-head px-6 py-4 text-left"
                 >
                   {column}
                 </th>
@@ -58,7 +58,7 @@ export function AdminProjectsTable({
           <tbody className="divide-y divide-border">
             {projects.length === 0 ? (
               <tr>
-                <td className="px-6 py-10 text-sm text-muted" colSpan={4}>
+                <td className="admin-note px-6 py-10" colSpan={4}>
                   No hay proyectos visibles para esta sesión.
                 </td>
               </tr>
@@ -81,15 +81,15 @@ export function AdminProjectsTable({
                   <td className="px-6 py-5">
                     <p className="font-medium text-foreground">{project.name}</p>
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
+                  <td className="admin-note px-6 py-5">
                     {project.developerName || "Sin desarrollador"}
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
-                    <span className="status-pill">
+                  <td className="admin-note px-6 py-5">
+                    <span className="admin-status-pill">
                       {translateConstructionStatus(project.constructionStatus)}
                     </span>
                   </td>
-                  <td className="px-6 py-5 text-sm text-muted">
+                  <td className="admin-note px-6 py-5">
                     {[project.department, project.city].filter(Boolean).join(" / ") ||
                       "Sin ubicación"}
                   </td>
