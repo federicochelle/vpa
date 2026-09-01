@@ -8,9 +8,13 @@ import { useEffect, useRef, useState, type TouchEvent } from "react";
 export interface HomeHeroCarouselSlide {
   src: StaticImageData | string;
   alt: string;
+  entityId?: string;
+  entityType?: "property" | "project";
+  heroOrder?: 1 | 2 | 3;
   title?: string;
   price?: string;
   href?: string;
+  locationLabel?: string | null;
 }
 
 interface HomeHeroCarouselProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormField } from "@/components/ui/form-field";
-import { parseYouTubeUrl } from "@/lib/youtube";
+import { parseVideoUrl } from "@/lib/youtube";
 
 interface YouTubeVideoFieldProps {
   disabled?: boolean;
@@ -15,14 +15,19 @@ interface YouTubeVideoFieldProps {
 export function YouTubeVideoField({
   disabled = false,
   idPrefix,
-  label = "Video de YouTube",
+  label = "Video YouTube / Instagram",
   onChange,
   readOnly = false,
   value,
 }: YouTubeVideoFieldProps) {
-  const parsedVideo = parseYouTubeUrl(value);
+  const parsedVideo = parseVideoUrl(value);
   const hasValue = value.trim().length > 0;
   const hasError = hasValue && !parsedVideo;
+  const previewWrapperClassName =
+    parsedVideo?.provider === "instagram"
+      ? "mx-auto w-full max-w-[380px]"
+      : "max-w-2xl";
+  const previewAspectClassName = parsedVideo?.aspectClassName ?? "";
 
   return (
     <div className="space-y-4">
@@ -35,7 +40,7 @@ export function YouTubeVideoField({
           onChange={(event) => {
             onChange(event.target.value);
           }}
-          placeholder="https://www.youtube.com/watch?v=..."
+          placeholder="https://www.youtube.com/watch?v=... o https://www.instagram.com/reel/..."
           type="url"
           value={value}
         />
@@ -43,20 +48,20 @@ export function YouTubeVideoField({
 
       {hasError ? (
         <p className="type-body-compact text-primary-strong">
-          Ingresa una URL válida de YouTube.
+          Ingresa una URL válida de YouTube o Instagram.
         </p>
       ) : null}
 
       {parsedVideo ? (
-        <div className="overflow-hidden border border-border bg-white">
-          <div className="aspect-video bg-surface-muted">
+        <div className={`overflow-hidden border border-border bg-white ${previewWrapperClassName}`}>
+          <div className={`${previewAspectClassName} bg-surface-muted`}>
             <iframe
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
               className="h-full w-full"
               referrerPolicy="strict-origin-when-cross-origin"
               src={parsedVideo.embedUrl}
-              title="Preview de video de YouTube"
+              title={`Preview de ${parsedVideo.title}`}
             />
           </div>
         </div>

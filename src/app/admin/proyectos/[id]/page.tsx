@@ -5,7 +5,7 @@ import { AdminRecordShell } from "@/components/admin/admin-record-shell";
 import { Notice } from "@/components/ui/notice";
 import { listAllFeatures } from "@/features/features/features.data";
 import { DeleteProjectButton } from "@/features/projects/delete-project-button";
-import { ProjectForm } from "@/features/projects/project-form";
+import { ProjectReadOnlyDetails } from "@/features/projects/project-read-only-details";
 import { listAdminProjectImages } from "@/features/projects/project-images.data";
 import { deleteProjectAction } from "@/features/projects/projects.actions";
 import {
@@ -84,14 +84,11 @@ export default async function AdminProjectDetailPage({
         }
         title={result.data.name}
       >
-        <ProjectForm
-          allFeatures={featuresResult.data}
-          className="space-y-0"
+        <ProjectReadOnlyDetails
+          features={featuresResult.data}
+          images={projectImagesResult.ok ? projectImagesResult.data : []}
           project={result.data}
-          projectImages={projectImagesResult.ok ? projectImagesResult.data : []}
-          readOnly
           selectedFeatureIds={selectedFeatureIds}
-          submitLabel="Guardar cambios"
         />
       </AdminRecordShell>
     </div>

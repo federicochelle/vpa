@@ -14,36 +14,18 @@ function normalizeFilterValue(value: string | null | undefined) {
   return value?.trim().toLocaleLowerCase("es-UY") ?? "";
 }
 
-function parseLocationFilter(value: string | undefined) {
-  const normalizedValue = value?.trim();
-
-  if (!normalizedValue) {
-    return null;
-  }
-
-  const [cityPart, neighborhoodPart] = normalizedValue.split("/").map((part) => part?.trim() || "");
-
-  if (cityPart && neighborhoodPart) {
-    return {
-      city: normalizeFilterValue(cityPart),
-      neighborhood: normalizeFilterValue(neighborhoodPart),
-    };
-  }
-
-  return {
-    city: normalizeFilterValue(normalizedValue),
-    neighborhood: normalizeFilterValue(normalizedValue),
-  };
+function parseNeighborhoodFilter(value: string | undefined) {
+  const normalizedValue = normalizeFilterValue(value?.split("/").at(-1));
+  return normalizedValue || null;
 }
 
 export default async function InvestmentPage({ searchParams }: InvestmentPageProps) {
   const params = await searchParams;
   const projects = await listPublishedProjects();
-  const selectedLocation = parseLocationFilter(params.zona);
+  const selectedNeighborhood = parseNeighborhoodFilter(params.zona);
   const filteredProjects = projects.filter((project) =>
-    selectedLocation
-      ? normalizeFilterValue(project.city) === selectedLocation.city ||
-        normalizeFilterValue(project.neighborhood) === selectedLocation.neighborhood
+    selectedNeighborhood
+      ? normalizeFilterValue(project.neighborhood) === selectedNeighborhood
       : true,
   );
 

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HomeCarousel } from "@/components/marketing/home-carousel";
 import { HomeHeroCarousel } from "@/components/marketing/home-hero-carousel";
+import { listHomeHeroSlides } from "@/features/home-hero/home-hero.data";
 import { SearchSection } from "@/components/marketing/home/search-section";
 import { PropertyCard } from "@/components/properties/property-card";
 import { ProjectCard } from "@/components/projects/project-card";
@@ -9,10 +10,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { NewsCard } from "@/features/news/news-card";
 import { NewsListItem } from "@/features/news/news-list-item";
 import { listPublishedNews } from "@/features/news/news.data";
-import {
-  listHeroProperties,
-  listPublishedPropertiesByOperation,
-} from "@/features/properties/properties.data";
+import { listPublishedPropertiesByOperation } from "@/features/properties/properties.data";
 import { listPublishedProjects } from "@/features/projects/projects.data";
 import propiedadHeroImage from "../../../propiedad.jpg";
 import proyectoHeroImage from "../../../proyecto.jpg";
@@ -26,63 +24,9 @@ function EmptyCarouselCard({ message }: { message: string }) {
   );
 }
 
-function formatLocationLabel(city: string | null, neighborhood: string | null) {
-  const normalizedCity = city?.trim() || null;
-  const normalizedNeighborhood = neighborhood?.trim() || null;
-  const normalizedNeighborhoodKey = normalizeLocationPart(normalizedNeighborhood);
-
-  const montevideoNeighborhoods = new Set([
-    "buceo",
-    "centro",
-    "ciudad vieja",
-    "cordon",
-  ]);
-
-  if (normalizedNeighborhood) {
-    if (normalizeLocationPart(normalizedCity) === "atlantida") {
-      return `Canelones / ${normalizedNeighborhood === "Atlantida" ? "Atlántida" : normalizedNeighborhood}`;
-    }
-
-    if (
-      normalizeLocationPart(normalizedCity) === "montevideo" ||
-      montevideoNeighborhoods.has(normalizedNeighborhoodKey)
-    ) {
-      return `Montevideo / ${normalizedNeighborhood}`;
-    }
-
-    if (normalizedCity) {
-      return `${normalizedCity ?? "Montevideo"} / ${normalizedNeighborhood}`;
-    }
-  }
-
-  return normalizedCity ?? normalizedNeighborhood ?? "";
-}
-
-function normalizeLocationPart(value: string | null) {
-  return value?.trim().toLocaleLowerCase("es-UY") ?? "";
-}
-
-function formatHeroPropertyPrice(price: number | null, currency: string | null) {
-  if (!price || !currency) {
-    return "Precio a consultar";
-  }
-
-  return new Intl.NumberFormat("es-UY", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
-function getHeroPropertyHref(slug: string, operationType: "sale" | "rent") {
-  return operationType === "sale" ? `/comprar/${slug}` : `/alquileres/${slug}`;
-}
-
-function buildLocationOptions(
+function buildNeighborhoodOptions(
   ...locationGroups: Array<
     Array<{
-      city: string | null;
-      department: string | null;
       neighborhood: string | null;
       operation: "sale" | "rent" | "investment";
     }>
@@ -92,28 +36,22 @@ function buildLocationOptions(
     string,
     {
       label: string;
-      city: string | null;
-      department: string | null;
       neighborhood: string | null;
       operations: Array<"sale" | "rent" | "investment">;
     }
   >();
 
   for (const item of locationGroups.flat()) {
-    const normalizedCity = item.city?.trim() || null;
-    const normalizedDepartment = item.department?.trim() || null;
     const normalizedNeighborhood = item.neighborhood?.trim() || null;
 
-    if (!normalizedCity && !normalizedNeighborhood) {
+    if (!normalizedNeighborhood) {
       continue;
     }
 
-    const label = formatLocationLabel(normalizedCity, normalizedNeighborhood);
-    const key = label.toLocaleLowerCase("es-UY");
+    const key = normalizedNeighborhood.toLocaleLowerCase("es-UY");
     const existing = optionsMap.get(key);
 
     if (existing) {
-      existing.department = existing.department ?? normalizedDepartment;
       if (!existing.operations.includes(item.operation)) {
         existing.operations.push(item.operation);
       }
@@ -121,9 +59,7 @@ function buildLocationOptions(
     }
 
     optionsMap.set(key, {
-      label,
-      city: normalizedCity,
-      department: normalizedDepartment,
+      label: normalizedNeighborhood,
       neighborhood: normalizedNeighborhood,
       operations: [item.operation],
     });
@@ -135,47 +71,32 @@ function buildLocationOptions(
 }
 
 export async function HomeShell() {
-  const [heroProperties, rentProperties, saleProperties, investmentProjects, recentNews] =
+  const [heroSlidesFromCms, rentProperties, saleProperties, investmentProjects, recentNews] =
     await Promise.all([
-      listHeroProperties(),
+      listHomeHeroSlides(),
       listPublishedPropertiesByOperation("rent"),
       listPublishedPropertiesByOperation("sale"),
       listPublishedProjects(),
       listPublishedNews({ limit: 3 }),
     ]);
-  const heroPropertySlides = heroProperties
-    .filter((property) => property.image)
-    .map((property) => ({
-      src: property.image!,
-      alt: property.title,
-      title: property.title,
-      price: formatHeroPropertyPrice(property.price, property.currency),
-      href: getHeroPropertyHref(property.slug, property.operationType),
-    }));
   const heroSlides =
-    heroPropertySlides.length > 0
-      ? heroPropertySlides
+    heroSlidesFromCms.length > 0
+      ? heroSlidesFromCms
       : [
           { src: proyectoHeroImage, alt: "Proyecto destacado" },
           { src: propiedadHeroImage, alt: "Propiedad destacada" },
           { src: proyectoHeroImage, alt: "Proyecto destacado" },
         ];
-  const locationOptions = buildLocationOptions(
+  const locationOptions = buildNeighborhoodOptions(
     rentProperties.map((property) => ({
-      city: property.city ?? null,
-      department: property.department ?? null,
       neighborhood: property.neighborhood ?? null,
       operation: "rent" as const,
     })),
     saleProperties.map((property) => ({
-      city: property.city ?? null,
-      department: property.department ?? null,
       neighborhood: property.neighborhood ?? null,
       operation: "sale" as const,
     })),
     investmentProjects.map((project) => ({
-      city: project.city ?? null,
-      department: project.department ?? null,
       neighborhood: project.neighborhood ?? null,
       operation: "investment" as const,
     })),

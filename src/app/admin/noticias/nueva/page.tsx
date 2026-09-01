@@ -1,4 +1,4 @@
-import { Notice } from "@/components/ui/notice";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { NewsForm } from "@/features/news/news-form";
 
 interface AdminNewNewsPageProps {
@@ -13,20 +13,24 @@ export default async function AdminNewNewsPage({
   const params = await searchParams;
 
   return (
-    <div>
-      <div className="panel overflow-hidden">
-        <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
-          <div className="space-y-4">
-            <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
-              Nueva noticia
-            </h4>
+    <>
+      {params.error ? (
+        <AdminFeedbackModal message={params.error} title="No pudimos crear la noticia" variant="error" />
+      ) : null}
+      <div>
+        <div className="panel admin-form-panel overflow-hidden">
+          <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
+            <div className="space-y-4">
+              <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
+                Nueva noticia
+              </h4>
+            </div>
+          </div>
+          <div className="space-y-6 p-6 sm:p-8">
+            <NewsForm submitLabel="Crear noticia" />
           </div>
         </div>
-        <div className="space-y-6 p-6 sm:p-8">
-          {params.error ? <Notice message={params.error} tone="error" /> : null}
-          <NewsForm submitLabel="Crear noticia" />
-        </div>
       </div>
-    </div>
+    </>
   );
 }

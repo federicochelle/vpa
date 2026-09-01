@@ -9,7 +9,7 @@ interface PropertyCardProps {
 
 function PropertyOperationBadge({ operationType }: { operationType: Property["operationType"] }) {
   return (
-    <span className="absolute right-3 top-3 bg-primary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+    <span className="absolute right-3 top-3 z-10 bg-primary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
       {operationType === "rent" ? "ALQUILER" : "VENTA"}
     </span>
   );
@@ -33,7 +33,7 @@ export function PropertyCard({
 }: PropertyCardProps) {
   return (
     <article
-      className={`overflow-hidden border border-border bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(39,39,39,0.08)] ${className}`.trim()}
+      className={`flex h-full flex-col overflow-hidden border border-border bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(39,39,39,0.08)] ${className}`.trim()}
     >
       <div className="relative">
         <PropertyOperationBadge operationType={property.operationType} />
@@ -51,11 +51,11 @@ export function PropertyCard({
           )}
         </div>
       </div>
-      <div className="space-y-5 p-5">
-        <h3 className="max-h-[3.6em] overflow-hidden break-words font-display text-xl leading-[1.2] text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">
+      <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
+        <h3 className="h-[4.5rem] overflow-hidden break-words font-display text-xl leading-[1.2] text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">
           {property.title}
         </h3>
-        <div className="type-body-compact grid grid-cols-4 gap-3 text-muted">
+        <div className="type-body-compact mt-5 grid grid-cols-4 gap-3 text-muted">
           <div className="flex items-center gap-2 whitespace-nowrap">
             <BedDouble className="h-5 w-5 flex-none text-primary" />
             {property.bedrooms ?? "-"}
@@ -73,7 +73,7 @@ export function PropertyCard({
             {property.builtArea ? `${property.builtArea} m2` : "-"}
           </div>
         </div>
-        <div className="flex items-end justify-between gap-4">
+        <div className="mt-auto flex items-end justify-between gap-4 pt-6">
           <div className="type-body-compact flex min-w-0 items-center gap-2 text-muted">
             <MapPin className="h-4 w-4 flex-none text-primary" />
             <span className="truncate">{property.neighborhood ?? "Ubicación pendiente"}</span>

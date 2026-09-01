@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AdminRecordShell } from "@/components/admin/admin-record-shell";
 import { Notice } from "@/components/ui/notice";
 import { updateInquiryStatusAction } from "@/features/inquiries/inquiries.actions";
+import { AdminInquiryMeetingPanel } from "@/features/inquiries/admin-inquiry-meeting-panel";
 import { AdminInquiryStatusForm } from "@/features/inquiries/admin-inquiry-status-form";
 import { getAdminInquiryById } from "@/features/inquiries/inquiries.data";
 import type { InquiryKind } from "@/types/inquiry";
@@ -166,12 +167,7 @@ export default async function AdminInquiryDetailPage({
                   <p>{inquiry.phone || "-"}</p>
                 </div>
               </div>
-              <button
-                className="admin-button-primary w-full"
-                type="button"
-              >
-                Coordinar reunion
-              </button>
+              <AdminInquiryMeetingPanel inquiry={inquiry} />
             </div>
           </section>
         </div>

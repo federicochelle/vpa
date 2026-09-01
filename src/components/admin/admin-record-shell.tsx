@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 interface AdminRecordShellProps {
   actions?: ReactNode;
   children: ReactNode;
+  className?: string;
   subtitle?: ReactNode;
   title: string;
 }
@@ -10,11 +11,12 @@ interface AdminRecordShellProps {
 export function AdminRecordShell({
   actions,
   children,
+  className,
   subtitle,
   title,
 }: AdminRecordShellProps) {
   return (
-    <div className="panel overflow-hidden">
+    <div className={`panel overflow-hidden ${className ?? ""}`}>
       <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
         <div className="flex items-start justify-between gap-6">
           <div className="min-w-0 flex-1 space-y-4">

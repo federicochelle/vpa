@@ -4,6 +4,7 @@ import { startTransition, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ImagePlus, LoaderCircle, RefreshCcw } from "lucide-react";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { FormField } from "@/components/ui/form-field";
 import {
   IMAGE_INPUT_ACCEPT,
@@ -130,6 +131,7 @@ export function NewsForm({
   const [persistedNews, setPersistedNews] = useState<News | null>(news ?? null);
   const [submitState, setSubmitState] = useState<NewsSubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const imageInputId = useId();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const activePendingImage = useMemo(
@@ -145,6 +147,7 @@ export function NewsForm({
     }
 
     setFormError(null);
+    setFeedbackError(null);
     const pendingImageId = createPendingImageId();
 
     setPendingImages([
@@ -207,6 +210,7 @@ export function NewsForm({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
+    setFeedbackError(null);
     let nextNewsId: string | null = existingNewsId;
 
     if (activePendingImage) {
@@ -286,7 +290,7 @@ export function NewsForm({
         return;
       }
 
-      setFormError(
+      setFeedbackError(
         error instanceof Error ? error.message : "No se pudo guardar la noticia.",
       );
     }
@@ -294,6 +298,28 @@ export function NewsForm({
 
   return (
     <form className={className} onSubmit={handleSubmit}>
+      <AdminFeedbackModal
+        message={
+          submitState === "saving"
+            ? "Estamos guardando la noticia."
+            : "Estamos subiendo y guardando la imagen de la noticia."
+        }
+        open={submitState !== "idle"}
+        title={
+          submitState === "saving" ? "Guardando noticia" : "Subiendo imagen"
+        }
+        variant="loading"
+      />
+      {feedbackError ? (
+        <AdminFeedbackModal
+          message={feedbackError}
+          onClose={() => {
+            setFeedbackError(null);
+          }}
+          title="No pudimos guardar la noticia"
+          variant="error"
+        />
+      ) : null}
       {existingNewsId ? <input name="id" type="hidden" value={existingNewsId} /> : null}
 
       {formError ? (

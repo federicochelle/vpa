@@ -54,6 +54,7 @@ export interface Property {
   description?: string | null;
   investmentOpportunity?: boolean;
   heroOrder: number | null;
+  sectionOrder: number | null;
   features?: Feature[];
   image: string | null;
   videoUrl?: string | null;

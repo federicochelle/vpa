@@ -1,8 +1,7 @@
+"use client";
+
 import { Children } from "react";
-import Link from "next/link";
-import { Pencil } from "lucide-react";
-import { DeleteNewsButton } from "@/features/news/delete-news-button";
-import { deleteNewsAction } from "@/features/news/news.actions";
+import { useRouter } from "next/navigation";
 import type { News } from "@/types/news";
 import type { ReactNode } from "react";
 
@@ -30,6 +29,7 @@ export function AdminNewsTable({
   news,
   title = "Listado de noticias",
 }: AdminNewsTableProps) {
+  const router = useRouter();
   const hasVisibleChildren = Children.toArray(children).length > 0;
 
   return (
@@ -51,7 +51,7 @@ export function AdminNewsTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {["Titulo", "Estado", "Fecha", "Acciones"].map((column) => (
+              {["Titulo", "Estado", "Fecha"].map((column) => (
                 <th
                   key={column}
                   className="admin-table-head px-6 py-4 text-left"
@@ -64,20 +64,28 @@ export function AdminNewsTable({
           <tbody className="divide-y divide-border">
             {news.length === 0 ? (
               <tr>
-                <td className="admin-note px-6 py-10" colSpan={4}>
+                <td className="admin-note px-6 py-10" colSpan={3}>
                   No hay noticias cargadas todavia.
                 </td>
               </tr>
             ) : (
               news.map((item) => (
-                <tr key={item.id}>
+                <tr
+                  className="cursor-pointer transition-colors hover:bg-surface-muted/40"
+                  key={item.id}
+                  onClick={() => {
+                    router.push(`/admin/noticias/${item.id}`);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      router.push(`/admin/noticias/${item.id}`);
+                    }
+                  }}
+                  tabIndex={0}
+                >
                   <td className="px-6 py-5">
-                    <Link
-                      className="font-medium text-foreground transition-colors hover:text-primary-strong"
-                      href={`/admin/noticias/${item.id}/editar`}
-                    >
-                      {item.title}
-                    </Link>
+                    <p className="font-medium text-foreground">{item.title}</p>
                   </td>
                   <td className="admin-note px-6 py-5">
                     <span className={item.published ? "admin-status-pill" : "type-meta inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 font-semibold uppercase tracking-[0.12em] text-amber-700"}>
@@ -86,25 +94,6 @@ export function AdminNewsTable({
                   </td>
                   <td className="admin-note px-6 py-5">
                     {formatAdminDate(item.publishedAt ?? item.updatedAt ?? item.createdAt)}
-                  </td>
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        aria-label="Editar"
-                        className="group relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-foreground transition-colors hover:border-primary/30 hover:text-primary-strong"
-                        href={`/admin/noticias/${item.id}/editar`}
-                        title="Editar"
-                      >
-                        <Pencil className="h-4 w-4 stroke-[2.2]" />
-                        <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-3 py-1 text-[11px] font-semibold text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                          Editar
-                        </span>
-                      </Link>
-                      <form action={deleteNewsAction}>
-                        <input name="id" type="hidden" value={item.id} />
-                        <DeleteNewsButton label="Eliminar" />
-                      </form>
-                    </div>
                   </td>
                 </tr>
               ))

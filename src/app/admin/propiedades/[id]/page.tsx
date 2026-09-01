@@ -5,7 +5,7 @@ import { Notice } from "@/components/ui/notice";
 import { listAllFeatures } from "@/features/features/features.data";
 import { DeletePropertyButton } from "@/features/properties/delete-property-button";
 import { listAdminPropertyImages } from "@/features/properties/property-images.data";
-import { PropertyForm } from "@/features/properties/property-form";
+import { PropertyReadOnlyDetails } from "@/features/properties/property-read-only-details";
 import { deletePropertyAction } from "@/features/properties/properties.actions";
 import {
   getAdminPropertyById,
@@ -104,14 +104,11 @@ export default async function AdminPropertyDetailPage({
           </div>
         </div>
         <div className="space-y-6 p-6 sm:p-8">
-          <PropertyForm
-            allFeatures={featuresResult.data}
-            className="space-y-0"
+          <PropertyReadOnlyDetails
+            features={featuresResult.data}
+            images={propertyImagesResult.ok ? propertyImagesResult.data : []}
             property={result.data}
-            propertyImages={propertyImagesResult.ok ? propertyImagesResult.data : []}
-            readOnly
             selectedFeatureIds={selectedFeatureIds}
-            submitLabel="Guardar cambios"
           />
         </div>
       </div>

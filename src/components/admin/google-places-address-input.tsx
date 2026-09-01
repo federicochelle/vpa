@@ -50,20 +50,70 @@ interface GooglePlacePredictionSelectEvent extends Event {
 }
 
 interface GooglePlace {
+  addressComponents?: GoogleAddressComponent[];
   formattedAddress?: string;
+  location?: GooglePlaceLocation;
   fetchFields: (payload: { fields: string[] }) => Promise<void>;
+}
+
+interface GoogleAddressComponent {
+  longText?: string;
+  shortText?: string;
+  types: string[];
+}
+
+interface GooglePlaceLocation {
+  lat: () => number;
+  lng: () => number;
 }
 
 interface GooglePlacesAddressInputProps {
   id: string;
   name: string;
   defaultValue?: string | null;
+  defaultLatitude?: number | null;
+  defaultLongitude?: number | null;
+  defaultCity?: string | null;
+  defaultDepartment?: string | null;
   disabled?: boolean;
   className?: string;
 }
 
 let googleMapsLoader: Promise<void> | null = null;
 let placesLibraryLoader: Promise<GooglePlaceAutocompleteElementConstructor> | null = null;
+
+function getAddressComponentText(
+  components: GoogleAddressComponent[] | undefined,
+  types: string[],
+) {
+  for (const type of types) {
+    const component = components?.find((item) => item.types.includes(type));
+    const text = component?.longText?.trim() ?? component?.shortText?.trim();
+
+    if (text) {
+      return text;
+    }
+  }
+
+  return null;
+}
+
+function getCityFromAddressComponents(components: GoogleAddressComponent[] | undefined) {
+  // In Uruguay Google can return the city as a locality, postal town, or a lower admin area.
+  return getAddressComponentText(components, [
+    "locality",
+    "postal_town",
+    "administrative_area_level_3",
+    "administrative_area_level_2",
+    "sublocality_level_1",
+  ]);
+}
+
+function getDepartmentFromAddressComponents(
+  components: GoogleAddressComponent[] | undefined,
+) {
+  return getAddressComponentText(components, ["administrative_area_level_1"]);
+}
 
 function isGoogleMapsReady() {
   return Boolean(window.google?.maps?.importLibrary);
@@ -178,20 +228,62 @@ export function GooglePlacesAddressInput({
   id,
   name,
   defaultValue = "",
+  defaultLatitude = null,
+  defaultLongitude = null,
+  defaultCity = null,
+  defaultDepartment = null,
   disabled = false,
   className = "admin-input-base",
 }: GooglePlacesAddressInputProps) {
   const autocompleteId = useId();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<GooglePlaceAutocompleteElement | null>(null);
-  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
-  const currentValueRef = useRef(defaultValue ?? "");
+  const addressInputRef = useRef<HTMLInputElement | null>(null);
+  const latitudeInputRef = useRef<HTMLInputElement | null>(null);
+  const longitudeInputRef = useRef<HTMLInputElement | null>(null);
+  const cityInputRef = useRef<HTMLInputElement | null>(null);
+  const departmentInputRef = useRef<HTMLInputElement | null>(null);
+  const locationValuesRef = useRef({
+    address: defaultValue ?? "",
+    latitude: defaultLatitude,
+    longitude: defaultLongitude,
+    city: defaultCity,
+    department: defaultDepartment,
+  });
 
-  function syncAddressValue(nextValue: string) {
-    currentValueRef.current = nextValue;
+  function syncLocationValues({
+    address,
+    latitude,
+    longitude,
+    city,
+    department,
+  }: {
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    city: string | null;
+    department: string | null;
+  }) {
+    locationValuesRef.current = { address, latitude, longitude, city, department };
 
-    if (hiddenInputRef.current) {
-      hiddenInputRef.current.value = nextValue;
+    if (addressInputRef.current) {
+      addressInputRef.current.value = address;
+    }
+
+    if (latitudeInputRef.current) {
+      latitudeInputRef.current.value = latitude?.toString() ?? "";
+    }
+
+    if (longitudeInputRef.current) {
+      longitudeInputRef.current.value = longitude?.toString() ?? "";
+    }
+
+    if (cityInputRef.current) {
+      cityInputRef.current.value = city ?? "";
+    }
+
+    if (departmentInputRef.current) {
+      departmentInputRef.current.value = department ?? "";
     }
   }
 
@@ -213,7 +305,13 @@ export function GooglePlacesAddressInput({
     let autocompleteElement: GooglePlaceAutocompleteElement | null = null;
     const initialValue = defaultValue ?? "";
 
-    syncAddressValue(initialValue);
+    syncLocationValues({
+      address: initialValue,
+      latitude: defaultLatitude,
+      longitude: defaultLongitude,
+      city: defaultCity,
+      department: defaultDepartment,
+    });
 
     if (elementRef.current) {
       elementRef.current.value = initialValue;
@@ -221,7 +319,18 @@ export function GooglePlacesAddressInput({
 
     function handleInput() {
       const nextValue = autocompleteElement?.value ?? "";
-      syncAddressValue(nextValue);
+
+      if (nextValue === locationValuesRef.current.address) {
+        return;
+      }
+
+      syncLocationValues({
+        address: nextValue,
+        latitude: null,
+        longitude: null,
+        city: null,
+        department: null,
+      });
     }
 
     async function handlePlaceSelect(event: Event) {
@@ -235,12 +344,14 @@ export function GooglePlacesAddressInput({
       try {
         const place = placePrediction.toPlace();
         await place.fetchFields({
-          fields: ["formattedAddress"],
+          fields: ["formattedAddress", "location", "addressComponents"],
         });
 
         const nextValue = place.formattedAddress?.trim();
+        const latitude = place.location?.lat();
+        const longitude = place.location?.lng();
 
-        if (!nextValue) {
+        if (!nextValue || latitude == null || longitude == null) {
           return;
         }
 
@@ -248,7 +359,13 @@ export function GooglePlacesAddressInput({
           autocompleteElement.value = nextValue;
         }
 
-        syncAddressValue(nextValue);
+        syncLocationValues({
+          address: nextValue,
+          latitude,
+          longitude,
+          city: getCityFromAddressComponents(place.addressComponents),
+          department: getDepartmentFromAddressComponents(place.addressComponents),
+        });
       } catch (error) {
         console.error(
           "Google Places API (New): no se pudo obtener formattedAddress desde la selección.",
@@ -318,7 +435,17 @@ export function GooglePlacesAddressInput({
         autocompleteElement.removeEventListener("input", handleInput);
       }
     };
-  }, [className, defaultValue, disabled, id, name]);
+  }, [
+    className,
+    defaultCity,
+    defaultDepartment,
+    defaultLatitude,
+    defaultLongitude,
+    defaultValue,
+    disabled,
+    id,
+    name,
+  ]);
 
   useEffect(() => {
     const autocompleteElement = elementRef.current;
@@ -337,7 +464,35 @@ export function GooglePlacesAddressInput({
         defaultValue={defaultValue ?? ""}
         id={`${id}-hidden`}
         name={name}
-        ref={hiddenInputRef}
+        ref={addressInputRef}
+        type="hidden"
+      />
+      <input
+        defaultValue={defaultLatitude ?? ""}
+        id={`${id}-latitude-hidden`}
+        name="latitude"
+        ref={latitudeInputRef}
+        type="hidden"
+      />
+      <input
+        defaultValue={defaultLongitude ?? ""}
+        id={`${id}-longitude-hidden`}
+        name="longitude"
+        ref={longitudeInputRef}
+        type="hidden"
+      />
+      <input
+        defaultValue={defaultCity ?? ""}
+        id={`${id}-city-hidden`}
+        name="city"
+        ref={cityInputRef}
+        type="hidden"
+      />
+      <input
+        defaultValue={defaultDepartment ?? ""}
+        id={`${id}-department-hidden`}
+        name="department"
+        ref={departmentInputRef}
         type="hidden"
       />
       <style jsx global>{`

@@ -6,7 +6,6 @@ export const publicNavigation = [
 ] as const;
 
 export const adminNavigation = [
-  { href: "/admin", label: "Inicio" },
   { href: "/admin/propiedades", label: "Propiedades" },
   { href: "/admin/proyectos", label: "Proyectos" },
   { href: "/admin/noticias", label: "Noticias" },

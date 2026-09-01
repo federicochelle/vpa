@@ -16,26 +16,9 @@ function normalizeFilterValue(value: string | null | undefined) {
   return value?.trim().toLocaleLowerCase("es-UY") ?? "";
 }
 
-function parseLocationFilter(value: string | undefined) {
-  const normalizedValue = value?.trim();
-
-  if (!normalizedValue) {
-    return null;
-  }
-
-  const [cityPart, neighborhoodPart] = normalizedValue.split("/").map((part) => part?.trim() || "");
-
-  if (cityPart && neighborhoodPart) {
-    return {
-      city: normalizeFilterValue(cityPart),
-      neighborhood: normalizeFilterValue(neighborhoodPart),
-    };
-  }
-
-  return {
-    city: normalizeFilterValue(normalizedValue),
-    neighborhood: normalizeFilterValue(normalizedValue),
-  };
+function parseNeighborhoodFilter(value: string | undefined) {
+  const normalizedValue = normalizeFilterValue(value?.split("/").at(-1));
+  return normalizedValue || null;
 }
 
 function isPropertyType(value: string | undefined): value is PropertyType {
@@ -53,12 +36,11 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
   const params = await searchParams;
   const properties = await listPublishedPropertiesByOperation("rent");
   const selectedType = isPropertyType(params.tipo) ? params.tipo : null;
-  const selectedLocation = parseLocationFilter(params.zona);
+  const selectedNeighborhood = parseNeighborhoodFilter(params.zona);
   const filteredProperties = properties.filter((property) => {
     const matchesType = selectedType ? property.propertyType === selectedType : true;
-    const matchesZone = selectedLocation
-      ? normalizeFilterValue(property.city) === selectedLocation.city ||
-        normalizeFilterValue(property.neighborhood) === selectedLocation.neighborhood
+    const matchesZone = selectedNeighborhood
+      ? normalizeFilterValue(property.neighborhood) === selectedNeighborhood
       : true;
 
     return matchesType && matchesZone;

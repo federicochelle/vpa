@@ -6,6 +6,11 @@ import {
   createSupabaseServiceRoleClient,
 } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
+import {
+  cancelGoogleCalendarEvent,
+  createGoogleCalendarEvent,
+  updateGoogleCalendarEvent,
+} from "@/features/inquiries/google-calendar.server";
 import type { Inquiry, InquiryKind } from "@/types/inquiry";
 import type { ParsedPublicInquiryInput } from "@/features/inquiries/inquiries.form";
 
@@ -38,6 +43,11 @@ function mapInquiryRow(row: InquiryRow): Inquiry {
     email: row.email,
     phone: row.phone,
     message: row.message,
+    googleEventId: row.google_event_id,
+    meetUrl: row.meet_url,
+    meetingStart: row.meeting_start,
+    meetingEnd: row.meeting_end,
+    meetingStatus: row.meeting_status,
     propertyId: row.property_id,
     projectId: row.project_id,
     projectUnitId: row.project_unit_id,
@@ -471,6 +481,121 @@ export async function updateInquiryStatus(
     data: data ? mapInquiryRow(data) : null,
     error: null,
   };
+}
+
+export async function saveInquiryMeeting(
+  id: string,
+  start: Date,
+  end: Date,
+): Promise<InquiryResult> {
+  const supabase = await createSupabaseServerActionClient();
+  const { data: inquiryRow, error: inquiryError } = await supabase
+    .from("inquiries")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (inquiryError || !inquiryRow) {
+    return {
+      ok: false,
+      data: null,
+      error: "No se encontró la consulta para coordinar la reunión.",
+    };
+  }
+
+  const inquiry = mapInquiryRow(inquiryRow);
+  const eventInput = {
+    attendeeEmail: inquiry.email,
+    attendeeName: inquiry.name,
+    description: inquiry.message,
+    end,
+    relatedTitle: inquiry.relatedTitle,
+    start,
+  };
+
+  try {
+    const isRescheduling = Boolean(
+      inquiry.googleEventId && inquiry.meetingStatus === "scheduled",
+    );
+    const event = isRescheduling && inquiry.googleEventId
+      ? await updateGoogleCalendarEvent(inquiry.googleEventId, eventInput)
+      : await createGoogleCalendarEvent(eventInput);
+    const { data, error } = await supabase
+      .from("inquiries")
+      .update({
+        google_event_id: event.id,
+        meet_url: event.meetUrl ?? (isRescheduling ? inquiry.meetUrl : null),
+        meeting_start: start.toISOString(),
+        meeting_end: end.toISOString(),
+        meeting_status: "scheduled",
+      })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+
+    if (error || !data) {
+      return {
+        ok: false,
+        data: null,
+        error: "Google Calendar creó la reunión, pero no pudimos guardar sus datos.",
+      };
+    }
+
+    return { ok: true, data: mapInquiryRow(data), error: null };
+  } catch (error) {
+    console.error("Error saving inquiry meeting", error);
+    return {
+      ok: false,
+      data: null,
+      error: "No se pudo crear o reprogramar la reunión en Google Calendar.",
+    };
+  }
+}
+
+export async function cancelInquiryMeeting(id: string): Promise<InquiryResult> {
+  const supabase = await createSupabaseServerActionClient();
+  const { data: inquiryRow, error: inquiryError } = await supabase
+    .from("inquiries")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (inquiryError || !inquiryRow) {
+    return { ok: false, data: null, error: "No se encontró la consulta." };
+  }
+
+  const inquiry = mapInquiryRow(inquiryRow);
+
+  if (!inquiry.googleEventId || inquiry.meetingStatus !== "scheduled") {
+    return { ok: false, data: null, error: "La consulta no tiene una reunión activa." };
+  }
+
+  try {
+    await cancelGoogleCalendarEvent(inquiry.googleEventId);
+    const { data, error } = await supabase
+      .from("inquiries")
+      .update({ meeting_status: "cancelled" })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+
+    if (error || !data) {
+      return {
+        ok: false,
+        data: null,
+        error: "Google Calendar canceló la reunión, pero no pudimos guardar el estado.",
+      };
+    }
+
+    return { ok: true, data: mapInquiryRow(data), error: null };
+  } catch (error) {
+    console.error("Error cancelling inquiry meeting", error);
+    return {
+      ok: false,
+      data: null,
+      error: "No se pudo cancelar la reunión en Google Calendar.",
+    };
+  }
 }
 
 export function formatInquiryKind(kind: InquiryKind) {

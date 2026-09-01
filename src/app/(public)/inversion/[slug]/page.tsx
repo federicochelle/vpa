@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { ProjectDetailShell } from "@/features/projects/project-detail-shell";
 import { getPublishedProjectBySlug } from "@/features/projects/projects.data";
+import { normalizeLocationPart } from "@/features/properties/property-location";
+import { PROJECT_CONSTRUCTION_STATUS_LABELS } from "@/types/project";
 
 interface InvestmentDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -17,20 +19,11 @@ export default async function InvestmentDetailPage({
     notFound();
   }
 
-  const mobileLocation = project.neighborhood || project.address || "Ubicación pendiente";
-  const desktopLocation =
-    [project.neighborhood, project.city, project.department]
-      .filter(Boolean)
-      .join(", ") || "Ubicación pendiente";
+  const headerLocation = normalizeLocationPart(project.neighborhood) || "Ubicación pendiente";
 
-  const status =
-    project.constructionStatus === "planned"
-      ? "Planificado"
-      : project.constructionStatus === "under_construction"
-        ? "En construcción"
-        : project.constructionStatus === "finished"
-          ? "Finalizado"
-          : "Proyecto";
+  const status = project.constructionStatus
+    ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus]
+    : "Proyecto";
 
   return (
     <>
@@ -43,18 +36,22 @@ export default async function InvestmentDetailPage({
                   {project.name}
                 </h1>
                 <div className="flex items-start justify-between gap-4 lg:hidden">
-                  <div className="type-body-compact flex min-w-0 items-center gap-2 text-primary-strong">
-                    <MapPin className="h-4 w-4 flex-none text-primary" />
-                    <span className="truncate whitespace-nowrap">{mobileLocation}</span>
+                  <div className="flex min-w-0 items-center gap-3 text-primary-strong">
+                    <MapPin className="h-5 w-5 flex-none text-primary" />
+                    <span className="min-w-0 truncate text-lg font-medium whitespace-nowrap sm:text-xl">
+                      {headerLocation}
+                    </span>
                   </div>
                   <p className="inline-flex shrink-0 whitespace-nowrap bg-primary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
                     {status}
                   </p>
                 </div>
-                <div className="type-body-compact hidden items-start justify-between gap-4 text-muted lg:flex lg:justify-start">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <MapPin className="h-4 w-4 flex-none text-primary" />
-                    <span>{desktopLocation}</span>
+                <div className="hidden items-start justify-between gap-4 lg:flex lg:justify-start">
+                  <div className="flex min-w-0 items-center gap-3 text-primary-strong">
+                    <MapPin className="h-5 w-5 flex-none text-primary" />
+                    <span className="min-w-0 text-xl font-medium break-words [overflow-wrap:anywhere]">
+                      {headerLocation}
+                    </span>
                   </div>
                 </div>
               </div>

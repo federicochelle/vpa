@@ -1,5 +1,5 @@
 import type { ProjectMutationInput, SupabaseActionError } from "@/features/projects/projects.data";
-import { normalizeYouTubeUrl } from "@/lib/youtube";
+import { normalizeVideoUrl } from "@/lib/youtube";
 
 function toNullableString(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
@@ -69,10 +69,10 @@ export function buildProjectInput(formData: FormData): ProjectMutationInput {
   const slug = slugify(name);
   const rawVideoUrl = toRequiredString(formData.get("videoUrl"));
   const normalizedVideoUrl =
-    rawVideoUrl.length > 0 ? normalizeYouTubeUrl(rawVideoUrl) : null;
+    rawVideoUrl.length > 0 ? normalizeVideoUrl(rawVideoUrl) : null;
 
   if (rawVideoUrl.length > 0 && !normalizedVideoUrl) {
-    throw new Error("Ingresa una URL válida de YouTube para el proyecto.");
+    throw new Error("Ingresa una URL válida de YouTube o Instagram para el proyecto.");
   }
 
   return {
@@ -83,7 +83,7 @@ export function buildProjectInput(formData: FormData): ProjectMutationInput {
     developerName: toNullableString(formData.get("developerName")),
     constructionStatus: toRequiredString(
       formData.get("constructionStatus"),
-      "planned",
+      "presale",
     ) as ProjectMutationInput["constructionStatus"],
     estimatedDeliveryDate: toNullableString(formData.get("estimatedDeliveryDate")),
     address: toNullableString(formData.get("address")),

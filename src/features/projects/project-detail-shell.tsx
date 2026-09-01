@@ -1,7 +1,6 @@
 import {
   Building2,
   CalendarClock,
-  CircleDollarSign,
   Hammer,
   MapPin,
 } from "lucide-react";
@@ -9,24 +8,12 @@ import { PublicImageGallery } from "@/components/gallery/public-image-gallery";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
 import { PublicLocationMap } from "@/components/maps/public-location-map";
 import { listPublishedProjectImages } from "@/features/projects/project-images.data";
-import { parseYouTubeUrl } from "@/lib/youtube";
-import type { Project } from "@/types/project";
+import { normalizeLocationPart } from "@/features/properties/property-location";
+import { parseVideoUrl } from "@/lib/youtube";
+import { PROJECT_CONSTRUCTION_STATUS_LABELS, type Project } from "@/types/project";
 
 interface ProjectDetailShellProps {
   project: Project;
-}
-
-function formatConstructionStatus(status: Project["constructionStatus"]) {
-  switch (status) {
-    case "planned":
-      return "Planificado";
-    case "under_construction":
-      return "En construcción";
-    case "finished":
-      return "Finalizado";
-    default:
-      return "-";
-  }
 }
 
 function formatDeliveryDate(value: string | null) {
@@ -49,15 +36,15 @@ function formatDeliveryDate(value: string | null) {
 export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
   const imagesResult = await listPublishedProjectImages(project.id);
   const images = imagesResult.ok ? imagesResult.data : [];
-  const parsedVideo = project.videoUrl ? parseYouTubeUrl(project.videoUrl) : null;
+  const parsedVideo = project.videoUrl ? parseVideoUrl(project.videoUrl) : null;
   const videoEmbedUrl = parsedVideo
-    ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
+    ? parsedVideo.provider === "youtube"
+      ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
+      : parsedVideo.embedUrl
     : null;
   const mobileFullBleedClassName = "-mx-4 sm:mx-0";
-  const location =
-    [project.address, project.neighborhood, project.city, project.department]
-      .filter(Boolean)
-      .join(", ") || "Ubicación pendiente";
+  const addressLabel = normalizeLocationPart(project.address);
+  const isInstagramVideo = parsedVideo?.provider === "instagram";
 
   return (
     <div className="shell section-gap !pt-4">
@@ -74,15 +61,25 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             <div className={mobileFullBleedClassName}>
               <div className="panel !rounded-none p-6 sm:p-8">
                 <h2 className="text-xl font-display text-primary-strong">Video</h2>
-                <div className="mt-6 -mx-6 overflow-hidden border-y border-border bg-surface-muted sm:mx-0 sm:border">
-                  <div className="aspect-video">
+                <div
+                  className={`mt-6 overflow-hidden bg-surface-muted ${
+                    isInstagramVideo
+                      ? "mx-auto w-full max-w-[380px] border border-border"
+                      : "-mx-6 border-y border-border sm:mx-0 sm:border"
+                  }`}
+                >
+                  <div
+                    className={`${parsedVideo.aspectClassName} ${
+                      isInstagramVideo ? "max-h-[680px]" : ""
+                    }`}
+                  >
                     <iframe
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       className="h-full w-full"
                       referrerPolicy="strict-origin-when-cross-origin"
                       src={videoEmbedUrl ?? undefined}
-                      title={`Video de YouTube de ${project.name}`}
+                      title={`${parsedVideo.title} de ${project.name}`}
                     />
                   </div>
                 </div>
@@ -99,7 +96,11 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
                 </div>
                 <div className="type-body-compact flex items-center gap-3 text-foreground">
                   <Hammer className="h-4 w-4 flex-none text-primary" />
-                  <span>{formatConstructionStatus(project.constructionStatus)}</span>
+                  <span>
+                    {project.constructionStatus
+                      ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus]
+                      : "-"}
+                  </span>
                 </div>
                 <div className="type-body-compact flex items-center gap-3 text-foreground">
                   <CalendarClock className="h-4 w-4 flex-none text-primary" />
@@ -132,27 +133,16 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           <div className={mobileFullBleedClassName}>
             <div className="panel !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
-              <p className="type-body mt-4 text-muted">{location}</p>
               <PublicLocationMap
                 address={project.address}
-                fallbackLabel="Area lista para integrar ubicacion o mapa del proyecto en una fase posterior."
+                fallbackLabel="Ubicación pendiente."
+                latitude={project.latitude}
+                locationLabel={addressLabel}
+                longitude={project.longitude}
                 title={`Mapa de ubicación de ${project.name}`}
               />
             </div>
           </div>
-          {project.isInvestmentOpportunity ? (
-            <div className={mobileFullBleedClassName}>
-              <div className="panel !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Información de inversión</h2>
-                <div className="type-body-compact mt-6 flex items-start gap-3 text-foreground">
-                  <CircleDollarSign className="h-4 w-4 flex-none text-primary" />
-                  <p className="type-body text-muted">
-                    Este proyecto figura como oportunidad de inversión y la vista queda preparada para mostrar métricas, argumentos comerciales y documentación relevante.
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : null}
         </div>
         <aside className={`${mobileFullBleedClassName} lg:sticky lg:top-24 lg:self-start`}>
           <PublicInquirySidebar

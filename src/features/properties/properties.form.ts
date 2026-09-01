@@ -2,7 +2,7 @@ import type {
   PropertyMutationInput,
   SupabaseActionError,
 } from "@/features/properties/properties.data";
-import { normalizeYouTubeUrl } from "@/lib/youtube";
+import { normalizeVideoUrl } from "@/lib/youtube";
 import type {
   KitchenType,
   PropertyDisposition,
@@ -123,10 +123,10 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
     "other",
   ) as PropertyType;
   const normalizedVideoUrl =
-    rawVideoUrl.length > 0 ? normalizeYouTubeUrl(rawVideoUrl) : null;
+    rawVideoUrl.length > 0 ? normalizeVideoUrl(rawVideoUrl) : null;
 
   if (rawVideoUrl.length > 0 && !normalizedVideoUrl) {
-    throw new Error("Ingresa una URL válida de YouTube para la propiedad.");
+    throw new Error("Ingresa una URL válida de YouTube o Instagram para la propiedad.");
   }
 
   return {

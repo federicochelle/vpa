@@ -5,6 +5,7 @@ import {
   createSupabaseServerClient,
   createSupabaseServerComponentClient,
 } from "@/lib/supabase/server";
+import { getHomeHeroOrderMap, setHomeHeroOrder } from "@/features/home-hero/home-hero.data";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type { Property } from "@/types/property";
 import type { Feature } from "@/types/feature";
@@ -330,6 +331,7 @@ async function readPublishedPropertiesByOperation(
     .select("*")
     .eq("published", true)
     .eq("status", "published")
+    .order("section_order", { ascending: true, nullsFirst: false })
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -373,33 +375,22 @@ export async function listPublishedPropertiesByOperation(
 }
 
 export async function listHeroProperties(): Promise<Property[]> {
-  if (!hasSupabaseEnv()) {
+  const result = await readPublishedProperties();
+
+  if (!result.ok) {
     return [];
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("properties")
-    .select("*")
-    .not("hero_order", "is", null)
-    .eq("published", true)
-    .eq("status", "published")
-    .order("hero_order", { ascending: true })
-    .limit(3);
+  const heroOrderMap = await getHomeHeroOrderMap();
 
-  if (error) {
-    console.error("Error fetching hero properties", formatError(error));
-    return [];
-  }
-
-  const withCoverImages = await attachPropertyCoverImages(supabase, data.map(mapPropertyRow));
-
-  if (!withCoverImages.ok) {
-    console.error("Error attaching hero property cover images", withCoverImages.error);
-    return [];
-  }
-
-  return withCoverImages.data;
+  return result.data
+    .map((property) => ({
+      ...property,
+      heroOrder: heroOrderMap.get(`property:${property.id}`) ?? null,
+    }))
+    .filter((property) => property.heroOrder !== null)
+    .sort((a, b) => (a.heroOrder ?? 99) - (b.heroOrder ?? 99))
+    .slice(0, 3);
 }
 
 export async function getPublishedPropertyBySlug(
@@ -488,6 +479,7 @@ export async function listAdminProperties(): Promise<PropertiesReadResult> {
   const { data, error } = await supabase
     .from("properties")
     .select("*")
+    .order("section_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -498,17 +490,14 @@ export async function listAdminProperties(): Promise<PropertiesReadResult> {
     };
   }
 
-  const mappedProperties = data.map(mapPropertyRow);
-  const orderedProperties = [
-    ...mappedProperties
-      .filter((property) => property.heroOrder !== null)
-      .sort((a, b) => (a.heroOrder ?? 99) - (b.heroOrder ?? 99)),
-    ...mappedProperties.filter((property) => property.heroOrder === null),
-  ];
-
+  const heroOrderMap = await getHomeHeroOrderMap();
+  const mappedProperties = data.map((property) => ({
+    ...mapPropertyRow(property),
+    heroOrder: heroOrderMap.get(`property:${property.id}`) ?? null,
+  }));
   return {
     ok: true,
-    data: orderedProperties,
+    data: mappedProperties,
     error: null,
   };
 }
@@ -908,91 +897,26 @@ export async function setPropertyHeroOrder(
   propertyId: string,
   heroOrder: PropertyHeroOrder,
 ): Promise<PropertyWriteResult> {
-  if (!hasSupabaseEnv()) {
+  const result = await setHomeHeroOrder("property", propertyId, heroOrder);
+
+  if (!result.ok) {
     return {
       ok: false,
       data: null,
-      error: {
-        code: null,
-        details: null,
-        hint: null,
-        message:
-          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-      },
+      error: result.error,
     };
   }
 
-  const supabase = await createSupabaseServerActionClient();
-  const propertyResult = await getAdminPropertyById(propertyId);
-
-  if (!propertyResult.ok) {
-    return {
-      ok: false,
-      data: null,
-      error: propertyResult.error,
-    };
-  }
-
-  if (!propertyResult.data) {
-    return {
-      ok: false,
-      data: null,
-      error: {
-        code: null,
-        details: null,
-        hint: null,
-        message: "No se encontró la propiedad.",
-      },
-    };
-  }
-
-  if (heroOrder !== null && !propertyResult.data.published) {
-    return {
-      ok: false,
-      data: null,
-      error: {
-        code: null,
-        details: null,
-        hint: null,
-        message: "Solo las propiedades publicadas pueden ocupar una posición en el hero.",
-      },
-    };
-  }
-
-  if (heroOrder !== null) {
-    const { error: clearError } = await supabase
-      .from("properties")
-      .update({ hero_order: null } as PropertyUpdate)
-      .neq("id", propertyId)
-      .eq("hero_order", heroOrder);
-
-    if (clearError) {
-      return {
-        ok: false,
-        data: null,
-        error: formatError(clearError),
-      };
-    }
-  }
-
-  const { data, error } = await supabase
-    .from("properties")
-    .update({ hero_order: heroOrder } as PropertyUpdate)
-    .eq("id", propertyId)
-    .select("*")
-    .maybeSingle();
-
-  if (error) {
-    return {
-      ok: false,
-      data: null,
-      error: formatError(error),
-    };
-  }
+  const dataResult = await getAdminPropertyById(propertyId);
 
   return {
     ok: true,
-    data: data ? mapPropertyRow(data) : null,
+    data: dataResult.data
+      ? {
+          ...dataResult.data,
+          heroOrder,
+        }
+      : null,
     error: null,
   };
 }

@@ -3,7 +3,9 @@
 import { Children } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import type { Project } from "@/types/project";
+import { AdminHeroToggle } from "@/features/home-hero/admin-hero-toggle";
+import { AdminSectionOrderSelect } from "@/features/section-order/admin-section-order-select";
+import { PROJECT_CONSTRUCTION_STATUS_LABELS, type Project } from "@/types/project";
 
 interface AdminProjectsTableProps {
   actions?: ReactNode;
@@ -42,9 +44,10 @@ export function AdminProjectsTable({
             <tr>
               {[
                 "Proyecto",
-                "Desarrollador",
                 "Estado",
                 "Ubicación",
+                "Orden",
+                "Home",
               ].map((column) => (
                 <th
                   key={column}
@@ -58,7 +61,7 @@ export function AdminProjectsTable({
           <tbody className="divide-y divide-border">
             {projects.length === 0 ? (
               <tr>
-                <td className="admin-note px-6 py-10" colSpan={4}>
+                <td className="admin-note px-6 py-10" colSpan={5}>
                   No hay proyectos visibles para esta sesión.
                 </td>
               </tr>
@@ -82,16 +85,33 @@ export function AdminProjectsTable({
                     <p className="font-medium text-foreground">{project.name}</p>
                   </td>
                   <td className="admin-note px-6 py-5">
-                    {project.developerName || "Sin desarrollador"}
-                  </td>
-                  <td className="admin-note px-6 py-5">
                     <span className="admin-status-pill">
-                      {translateConstructionStatus(project.constructionStatus)}
+                      {project.constructionStatus
+                        ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus]
+                        : "Sin estado"}
                     </span>
                   </td>
                   <td className="admin-note px-6 py-5">
                     {[project.department, project.city].filter(Boolean).join(" / ") ||
                       "Sin ubicación"}
+                  </td>
+                  <td className="admin-note px-6 py-5">
+                    <AdminSectionOrderSelect
+                      entityId={project.id}
+                      entityType="project"
+                      key={`${project.id}:${project.sectionOrder ?? "none"}`}
+                      label={project.name}
+                      sectionOrder={project.sectionOrder}
+                    />
+                  </td>
+                  <td className="admin-note px-6 py-5">
+                    <AdminHeroToggle
+                      entityId={project.id}
+                      entityType="project"
+                      isInHero={project.heroOrder !== null}
+                      isPublished={project.published}
+                      label={project.name}
+                    />
                   </td>
                 </tr>
               ))
@@ -101,17 +121,4 @@ export function AdminProjectsTable({
       </div>
     </section>
   );
-}
-
-function translateConstructionStatus(status: Project["constructionStatus"]) {
-  switch (status) {
-    case "planned":
-      return "Planificado";
-    case "under_construction":
-      return "En construcción";
-    case "finished":
-      return "Finalizado";
-    default:
-      return "Sin estado";
-  }
 }

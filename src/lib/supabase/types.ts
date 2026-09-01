@@ -37,9 +37,14 @@ export type Database = {
         Row: {
           created_at: string;
           email: string;
+          google_event_id: string | null;
           id: string;
           kind: "property" | "project" | "project_unit" | "general";
           message: string;
+          meet_url: string | null;
+          meeting_end: string | null;
+          meeting_start: string | null;
+          meeting_status: "scheduled" | "cancelled" | null;
           name: string;
           phone: string | null;
           project_id: string | null;
@@ -53,9 +58,14 @@ export type Database = {
         Insert: {
           created_at?: string;
           email: string;
+          google_event_id?: string | null;
           id?: string;
           kind: "property" | "project" | "project_unit" | "general";
           message: string;
+          meet_url?: string | null;
+          meeting_end?: string | null;
+          meeting_start?: string | null;
+          meeting_status?: "scheduled" | "cancelled" | null;
           name: string;
           phone?: string | null;
           project_id?: string | null;
@@ -69,9 +79,14 @@ export type Database = {
         Update: {
           created_at?: string;
           email?: string;
+          google_event_id?: string | null;
           id?: string;
           kind?: "property" | "project" | "project_unit" | "general";
           message?: string;
+          meet_url?: string | null;
+          meeting_end?: string | null;
+          meeting_start?: string | null;
+          meeting_status?: "scheduled" | "cancelled" | null;
           name?: string;
           phone?: string | null;
           project_id?: string | null;
@@ -201,6 +216,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      home_hero_items: {
+        Row: {
+          created_at: string;
+          entity_type: "property" | "project";
+          id: string;
+          position: number;
+          project_id: string | null;
+          property_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          entity_type: "property" | "project";
+          id?: string;
+          position: number;
+          project_id?: string | null;
+          property_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          entity_type?: "property" | "project";
+          id?: string;
+          position?: number;
+          project_id?: string | null;
+          property_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       project_units: {
         Row: {
           bathrooms: number | null;
@@ -255,7 +300,7 @@ export type Database = {
       projects: {
         Row: {
           address: string | null;
-          construction_status: "planned" | "under_construction" | "finished";
+          construction_status: "presale" | "construction" | "immediate_occupancy";
           created_at: string;
           department: string | null;
           description: string | null;
@@ -269,6 +314,7 @@ export type Database = {
           name: string;
           neighborhood: string | null;
           published: boolean;
+          section_order: number | null;
           slug: string;
           video_url: string | null;
           city: string | null;
@@ -276,7 +322,7 @@ export type Database = {
         };
         Insert: {
           address?: string | null;
-          construction_status?: "planned" | "under_construction" | "finished";
+          construction_status?: "presale" | "construction" | "immediate_occupancy";
           created_at?: string;
           department?: string | null;
           description?: string | null;
@@ -290,6 +336,7 @@ export type Database = {
           name: string;
           neighborhood?: string | null;
           published?: boolean;
+          section_order?: number | null;
           slug: string;
           video_url?: string | null;
           city?: string | null;
@@ -297,7 +344,7 @@ export type Database = {
         };
         Update: {
           address?: string | null;
-          construction_status?: "planned" | "under_construction" | "finished";
+          construction_status?: "presale" | "construction" | "immediate_occupancy";
           created_at?: string;
           department?: string | null;
           description?: string | null;
@@ -311,6 +358,7 @@ export type Database = {
           name?: string;
           neighborhood?: string | null;
           published?: boolean;
+          section_order?: number | null;
           slug?: string;
           video_url?: string | null;
           city?: string | null;
@@ -350,6 +398,7 @@ export type Database = {
           price: number | null;
           property_type: string;
           published: boolean;
+          section_order: number | null;
           slug: string;
           status: "draft" | "published" | "archived";
           title: string;
@@ -388,6 +437,7 @@ export type Database = {
           price?: number | null;
           property_type: string;
           published?: boolean;
+          section_order?: number | null;
           slug: string;
           status?: "draft" | "published" | "archived";
           title: string;
@@ -426,6 +476,7 @@ export type Database = {
           price?: number | null;
           property_type?: string;
           published?: boolean;
+          section_order?: number | null;
           slug?: string;
           status?: "draft" | "published" | "archived";
           title?: string;
@@ -530,7 +581,16 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      set_section_order: {
+        Args: {
+          p_entity_id: string;
+          p_entity_type: "property" | "project";
+          p_section_order: number | null;
+        };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

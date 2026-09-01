@@ -109,6 +109,10 @@ textarea {
   @apply rounded-[24px] border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)];
 }
 
+.admin-form-panel {
+  @apply -mx-4 !rounded-none sm:mx-0 sm:!rounded-[24px];
+}
+
 .type-body {
   font-size: var(--type-body-size);
   line-height: var(--type-body-line);
@@ -186,7 +190,7 @@ textarea {
 }
 
 .admin-input-base {
-  @apply rounded-2xl border border-border bg-white px-4 py-3 text-foreground outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/8;
+  @apply w-full rounded-2xl border border-border bg-white px-4 py-3 text-foreground outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/8;
   font-size: var(--type-input-size);
   line-height: var(--type-input-line);
 }

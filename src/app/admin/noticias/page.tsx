@@ -1,7 +1,7 @@
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Notice } from "@/components/ui/notice";
-import { SuccessModal } from "@/components/ui/success-modal";
 import { AdminNewsTable } from "@/features/news/admin-news-table";
 import { listAdminNews } from "@/features/news/news.data";
 
@@ -20,8 +20,18 @@ export default async function AdminNewsPage({ searchParams }: AdminNewsPageProps
 
   return (
     <>
-      {params.created ? <SuccessModal message={params.created} title="Noticia creada" /> : null}
-      {params.updated ? <SuccessModal message={params.updated} title="Noticia actualizada" /> : null}
+      {params.created ? (
+        <AdminFeedbackModal message={params.created} title="Noticia creada" variant="success" />
+      ) : null}
+      {params.updated ? (
+        <AdminFeedbackModal message={params.updated} title="Noticia actualizada" variant="success" />
+      ) : null}
+      {params.success ? (
+        <AdminFeedbackModal message={params.success} title="Operación completada" variant="success" />
+      ) : null}
+      {params.error ? (
+        <AdminFeedbackModal message={params.error} title="No pudimos completar la acción" variant="error" />
+      ) : null}
       <AdminNewsTable
         actions={
           <Link
@@ -34,8 +44,6 @@ export default async function AdminNewsPage({ searchParams }: AdminNewsPageProps
         }
         news={result.data}
       >
-        {params.success ? <Notice message={params.success} tone="success" /> : null}
-        {params.error ? <Notice message={params.error} tone="error" /> : null}
         {!result.ok && result.error ? (
           <Notice
             message={`Supabase devolvio un error al listar noticias: ${result.error.message}`}

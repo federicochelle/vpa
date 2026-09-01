@@ -6,8 +6,8 @@ import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-side
 import { PublicLocationMap } from "@/components/maps/public-location-map";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
-import { buildPropertyLocationLabel } from "@/features/properties/property-location";
-import { parseYouTubeUrl } from "@/lib/youtube";
+import { buildPropertyAddressLabel } from "@/features/properties/property-location";
+import { parseVideoUrl } from "@/lib/youtube";
 import type { Property } from "@/types/property";
 
 interface PropertyDetailShellProps {
@@ -178,12 +178,15 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
   const imagesResult = await listPublishedPropertyImages(property.id);
   const images = imagesResult.ok ? imagesResult.data : [];
   const features = property.features ?? [];
-  const parsedVideo = property.videoUrl ? parseYouTubeUrl(property.videoUrl) : null;
+  const parsedVideo = property.videoUrl ? parseVideoUrl(property.videoUrl) : null;
   const videoEmbedUrl = parsedVideo
-    ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
+    ? parsedVideo.provider === "youtube"
+      ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
+      : parsedVideo.embedUrl
     : null;
   const mobileFullBleedClassName = "-mx-4 sm:mx-0";
-  const locationLabel = buildPropertyLocationLabel(property);
+  const addressLabel = buildPropertyAddressLabel(property);
+  const isInstagramVideo = parsedVideo?.provider === "instagram";
   const facts: PropertyFact[] = [
     {
       icon: BedDouble,
@@ -283,15 +286,25 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
             <div className={mobileFullBleedClassName}>
               <div className="panel !rounded-none p-6 sm:p-8">
                 <h2 className="text-xl font-display text-primary-strong">Video</h2>
-                <div className="mt-6 -mx-6 overflow-hidden border-y border-border bg-surface-muted sm:mx-0 sm:border">
-                  <div className="aspect-video">
+                <div
+                  className={`mt-6 overflow-hidden bg-surface-muted ${
+                    isInstagramVideo
+                      ? "mx-auto w-full max-w-[380px] border border-border"
+                      : "-mx-6 border-y border-border sm:mx-0 sm:border"
+                  }`}
+                >
+                  <div
+                    className={`${parsedVideo.aspectClassName} ${
+                      isInstagramVideo ? "max-h-[680px]" : ""
+                    }`}
+                  >
                     <iframe
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       className="h-full w-full"
                       referrerPolicy="strict-origin-when-cross-origin"
                       src={videoEmbedUrl ?? undefined}
-                      title={`Video de YouTube de ${property.title}`}
+                      title={`${parsedVideo.title} de ${property.title}`}
                     />
                   </div>
                 </div>
@@ -347,7 +360,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                 address={property.address}
                 fallbackLabel="Ubicación pendiente."
                 latitude={property.latitude}
-                locationLabel={locationLabel}
+                locationLabel={addressLabel}
                 longitude={property.longitude}
                 title={`Mapa de ubicación de ${property.title}`}
               />

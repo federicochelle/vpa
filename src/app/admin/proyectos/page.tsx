@@ -1,7 +1,7 @@
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Notice } from "@/components/ui/notice";
-import { SuccessModal } from "@/components/ui/success-modal";
 import { AdminProjectsTable } from "@/features/projects/admin-projects-table";
 import { listAdminProjects } from "@/features/projects/projects.data";
 
@@ -22,12 +22,17 @@ export default async function AdminProjectsPage({
 
   return (
     <>
-      {params.created ? <SuccessModal message={params.created} title="Proyecto creado" /> : null}
+      {params.created ? (
+        <AdminFeedbackModal message={params.created} title="Proyecto creado" variant="success" />
+      ) : null}
       {params.updated ? (
-        <SuccessModal
-          message={params.updated}
-          title="Proyecto actualizado"
-        />
+        <AdminFeedbackModal message={params.updated} title="Proyecto actualizado" variant="success" />
+      ) : null}
+      {params.success ? (
+        <AdminFeedbackModal message={params.success} title="Operación completada" variant="success" />
+      ) : null}
+      {params.error ? (
+        <AdminFeedbackModal message={params.error} title="No pudimos completar la acción" variant="error" />
       ) : null}
       <AdminProjectsTable
         actions={
@@ -41,8 +46,6 @@ export default async function AdminProjectsPage({
         }
         projects={result.data}
       >
-        {params.success ? <Notice message={params.success} tone="success" /> : null}
-        {params.error ? <Notice message={params.error} tone="error" /> : null}
         {!result.ok && result.error ? (
           <Notice
             message={`Supabase devolvió un error al listar proyectos: ${result.error.message}`}

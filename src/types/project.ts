@@ -1,9 +1,22 @@
 import type { Currency } from "@/types/property";
 
+export const PROJECT_CONSTRUCTION_STATUS_VALUES = [
+  "presale",
+  "construction",
+  "immediate_occupancy",
+] as const;
+
 export type ConstructionStatus =
-  | "planned"
-  | "under_construction"
-  | "finished";
+  (typeof PROJECT_CONSTRUCTION_STATUS_VALUES)[number];
+
+export const PROJECT_CONSTRUCTION_STATUS_LABELS: Record<
+  ConstructionStatus,
+  string
+> = {
+  presale: "En pozo",
+  construction: "Construcción",
+  immediate_occupancy: "Ocupación inmediata",
+};
 
 export type ProjectUnitStatus = "available" | "reserved" | "sold";
 
@@ -23,6 +36,8 @@ export interface Project {
   longitude: number | null;
   image: string | null;
   videoUrl: string | null;
+  heroOrder: number | null;
+  sectionOrder: number | null;
   featured: boolean;
   published: boolean;
   isInvestmentOpportunity: boolean;

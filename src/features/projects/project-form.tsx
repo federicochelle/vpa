@@ -4,6 +4,7 @@ import { startTransition, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { GooglePlacesAddressInput } from "@/components/admin/google-places-address-input";
 import { YouTubeVideoField } from "@/components/admin/youtube-video-field";
 import { FormField } from "@/components/ui/form-field";
@@ -13,8 +14,13 @@ import {
   type PendingImage,
 } from "@/features/images/images-picker";
 import type { Feature } from "@/types/feature";
-import type { Project, ProjectImage } from "@/types/project";
-import { parseYouTubeUrl } from "@/lib/youtube";
+import {
+  PROJECT_CONSTRUCTION_STATUS_LABELS,
+  PROJECT_CONSTRUCTION_STATUS_VALUES,
+  type Project,
+  type ProjectImage,
+} from "@/types/project";
+import { parseVideoUrl } from "@/lib/youtube";
 
 interface ProjectFormProps {
   allFeatures: Feature[];
@@ -251,6 +257,7 @@ export function ProjectForm({
   const [persistedImages, setPersistedImages] = useState<ProjectImage[]>(projectImages);
   const [submitState, setSubmitState] = useState<ProjectSubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState(project?.videoUrl ?? "");
   const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
   const [coverUpdatingImageId, setCoverUpdatingImageId] = useState<string | null>(null);
@@ -267,6 +274,7 @@ export function ProjectForm({
 
     setDeletingImageIds((current) => [...current, imageId]);
     setFormError(null);
+    setFeedbackError(null);
 
     try {
       const response = await fetch(
@@ -327,6 +335,7 @@ export function ProjectForm({
 
     setCoverUpdatingImageId(imageId);
     setFormError(null);
+    setFeedbackError(null);
 
     try {
       const response = await fetch(
@@ -373,8 +382,9 @@ export function ProjectForm({
 
     event.preventDefault();
     setFormError(null);
-    if (videoUrl.trim().length > 0 && !parseYouTubeUrl(videoUrl)) {
-      setFormError("Ingresa una URL válida de YouTube para el proyecto.");
+    setFeedbackError(null);
+    if (videoUrl.trim().length > 0 && !parseVideoUrl(videoUrl)) {
+      setFormError("Ingresa una URL válida de YouTube o Instagram para el proyecto.");
       return;
     }
 
@@ -572,7 +582,7 @@ export function ProjectForm({
       });
     } catch (error) {
       setSubmitState("idle");
-      setFormError(
+      setFeedbackError(
         error instanceof Error ? error.message : "No se pudo guardar el proyecto.",
       );
     }
@@ -580,6 +590,28 @@ export function ProjectForm({
 
   return (
     <form className={className} onSubmit={handleSubmit} ref={formRef}>
+      <AdminFeedbackModal
+        message={
+          submitState === "saving"
+            ? "Estamos guardando el proyecto."
+            : "Estamos subiendo y guardando las imágenes del proyecto."
+        }
+        open={submitState !== "idle"}
+        title={
+          submitState === "saving" ? "Guardando proyecto" : "Subiendo imágenes"
+        }
+        variant="loading"
+      />
+      {feedbackError ? (
+        <AdminFeedbackModal
+          message={feedbackError}
+          onClose={() => {
+            setFeedbackError(null);
+          }}
+          title="No pudimos guardar el proyecto"
+          variant="error"
+        />
+      ) : null}
       {existingProjectId ? <input name="id" type="hidden" value={existingProjectId} /> : null}
 
       {formError ? (
@@ -615,17 +647,19 @@ export function ProjectForm({
           </FormField>
         </div>
         <div className="xl:col-span-6 grid gap-6 md:grid-cols-2">
-          <FormField htmlFor="constructionStatus" label="Estado de construcción">
+          <FormField htmlFor="constructionStatus" label="Estado de proyecto">
             <select
               className="admin-input-base"
-              defaultValue={project?.constructionStatus ?? "planned"}
+              defaultValue={project?.constructionStatus ?? "presale"}
               disabled={readOnly}
               id="constructionStatus"
               name="constructionStatus"
             >
-              <option value="planned">Planificado</option>
-              <option value="under_construction">En construcción</option>
-              <option value="finished">Finalizado</option>
+              {PROJECT_CONSTRUCTION_STATUS_VALUES.map((status) => (
+                <option key={status} value={status}>
+                  {PROJECT_CONSTRUCTION_STATUS_LABELS[status]}
+                </option>
+              ))}
             </select>
           </FormField>
           <FormField htmlFor="estimatedDeliveryDate" label="Fecha estimada de entrega">
@@ -646,6 +680,10 @@ export function ProjectForm({
           <FormField htmlFor="address" label="Dirección">
             <GooglePlacesAddressInput
               className="admin-input-base"
+              defaultCity={project?.city ?? null}
+              defaultDepartment={project?.department ?? null}
+              defaultLatitude={project?.latitude ?? null}
+              defaultLongitude={project?.longitude ?? null}
               defaultValue={project?.address ?? ""}
               disabled={readOnly}
               id="address"

@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import {
   Building2,
   FolderKanban,
-  LayoutDashboard,
   Mail,
   Newspaper,
 } from "lucide-react";
@@ -19,7 +18,6 @@ import { adminNavigation } from "@/lib/navigation";
 import type { Database } from "@/lib/supabase/types";
 
 const icons = {
-  "/admin": LayoutDashboard,
   "/admin/propiedades": Building2,
   "/admin/proyectos": FolderKanban,
   "/admin/noticias": Newspaper,
@@ -36,20 +34,20 @@ export function AdminSidebar(_props: AdminSidebarProps) {
   const pathname = usePathname();
   const activeHref = useMemo(
     () =>
-      adminNavigation.find((item) =>
-        pathname === item.href || pathname.startsWith(`${item.href}/`),
-      )?.href ?? null,
+      adminNavigation.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+        ?.href ?? null,
     [pathname],
   );
 
   return (
     <>
       <MobileTopbarMenu
+        closeOnPanelInteract
         closeLabel="Cerrar menu admin"
         key={pathname}
         lockScroll
         logo={
-          <Link className="flex items-center" href="/admin">
+          <Link className="flex items-center" href="/admin/propiedades">
             <Image
               alt="VPA"
               className="h-auto w-64"
@@ -59,9 +57,9 @@ export function AdminSidebar(_props: AdminSidebarProps) {
           </Link>
         }
         openLabel="Abrir menu admin"
-        overlayClassName="fixed inset-x-0 bottom-0 top-20 z-50 overflow-y-auto border-t border-white/15 bg-primary/98 backdrop-blur"
+        overlayClassName="fixed inset-x-0 top-20 z-50 max-h-[calc(100dvh-5rem)] overflow-y-auto border-t border-white/15 bg-primary/98 backdrop-blur"
         panel={
-          <div className="shell flex min-h-full flex-col py-4">
+          <div className="shell py-4">
             <div className="border-b border-white/15 pb-4">
               <p className="type-body-compact text-center font-bold uppercase tracking-[0.16em] text-white">
                 Panel Administrativo
@@ -93,7 +91,7 @@ export function AdminSidebar(_props: AdminSidebarProps) {
                 );
               })}
             </nav>
-            <div className="mt-auto border-t border-white/15 pt-4">
+            <div className="border-t border-white/15 pt-4">
               <Link
                 aria-label="Ir al sitio web"
                 className="type-button flex w-full items-center justify-center gap-3 px-2 py-2 text-white/88 transition-colors hover:text-white"

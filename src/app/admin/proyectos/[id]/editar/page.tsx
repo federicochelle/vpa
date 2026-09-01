@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { PageIntro } from "@/components/layout/page-intro";
 import { Notice } from "@/components/ui/notice";
 import { listAllFeatures } from "@/features/features/features.data";
@@ -59,27 +60,31 @@ export default async function AdminEditProjectPage({
   }
 
   return (
-    <div>
-      <div className="panel overflow-hidden">
-        <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
-          <div className="space-y-4">
-            <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
-              {result.data.name}
-            </h4>
+    <>
+      {query.error ? (
+        <AdminFeedbackModal message={query.error} title="No pudimos guardar el proyecto" variant="error" />
+      ) : null}
+      <div>
+        <div className="panel admin-form-panel overflow-hidden">
+          <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
+            <div className="space-y-4">
+              <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
+                {result.data.name}
+              </h4>
+            </div>
+          </div>
+          <div className="space-y-6 p-6 sm:p-8">
+            <ProjectForm
+              allFeatures={featuresResult.data}
+              className="space-y-0"
+              project={result.data}
+              projectImages={projectImagesResult.ok ? projectImagesResult.data : []}
+              selectedFeatureIds={selectedFeatureIds}
+              submitLabel="Guardar cambios"
+            />
           </div>
         </div>
-        <div className="space-y-6 p-6 sm:p-8">
-          {query.error ? <Notice message={query.error} tone="error" /> : null}
-          <ProjectForm
-            allFeatures={featuresResult.data}
-            className="space-y-0"
-            project={result.data}
-            projectImages={projectImagesResult.ok ? projectImagesResult.data : []}
-            selectedFeatureIds={selectedFeatureIds}
-            submitLabel="Guardar cambios"
-          />
-        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -21,6 +21,8 @@ export function mapProjectRow(row: ProjectRow): Project {
     longitude: row.longitude,
     image: null,
     videoUrl: row.video_url,
+    heroOrder: null,
+    sectionOrder: row.section_order,
     featured: row.featured,
     published: row.published,
     isInvestmentOpportunity: row.is_investment_opportunity,

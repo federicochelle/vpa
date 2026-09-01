@@ -84,8 +84,8 @@ create table if not exists public.projects (
   slug text not null unique,
   description text,
   developer_name text,
-  construction_status text not null default 'planned' check (
-    construction_status in ('planned', 'under_construction', 'finished')
+  construction_status text not null default 'presale' check (
+    construction_status in ('presale', 'construction', 'immediate_occupancy')
   ),
   estimated_delivery_date date,
   address text,

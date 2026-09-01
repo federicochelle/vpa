@@ -37,6 +37,7 @@ export async function createPropertyAction(formData: FormData) {
   }
 
   revalidatePath("/admin/propiedades");
+  revalidatePath("/");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
   redirect(
@@ -59,6 +60,7 @@ export async function updatePropertyAction(formData: FormData) {
   }
 
   revalidatePath("/admin/propiedades");
+  revalidatePath("/");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
   if (result.data.slug) {
@@ -76,6 +78,7 @@ export async function deletePropertyAction(formData: FormData) {
   const result = await deleteProperty(id);
 
   revalidatePath("/admin/propiedades");
+  revalidatePath("/");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
 
@@ -102,6 +105,7 @@ export async function togglePropertyPublishedAction(formData: FormData) {
   const result = await setPropertyPublished(id, published);
 
   revalidatePath("/admin/propiedades");
+  revalidatePath("/");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
 
@@ -131,6 +135,8 @@ export async function updatePropertyHeroOrderAction(
   const result = await setPropertyHeroOrder(propertyId, heroOrder);
 
   revalidatePath("/admin/propiedades");
+  revalidatePath("/admin/proyectos");
+  revalidatePath("/");
 
   if (!result.ok) {
     throw new Error(

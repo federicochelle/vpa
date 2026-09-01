@@ -4,10 +4,11 @@ import {
   createSupabaseServerActionClient,
   createSupabaseServerComponentClient,
 } from "@/lib/supabase/server";
+import { getHomeHeroOrderMap } from "@/features/home-hero/home-hero.data";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type { Database } from "@/lib/supabase/types";
 import { mapProjectRow } from "@/features/projects/project-mappers";
-import type { Project } from "@/types/project";
+import type { ConstructionStatus, Project } from "@/types/project";
 
 type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
 type ProjectUpdate = Database["public"]["Tables"]["projects"]["Update"];
@@ -30,7 +31,7 @@ export interface ProjectMutationInput {
   description: string | null;
   videoUrl: string | null;
   developerName: string | null;
-  constructionStatus: "planned" | "under_construction" | "finished";
+  constructionStatus: ConstructionStatus;
   estimatedDeliveryDate: string | null;
   address: string | null;
   neighborhood: string | null;
@@ -153,6 +154,7 @@ async function readPublishedProjects(options?: {
     .from("projects")
     .select("*")
     .eq("published", true)
+    .order("section_order", { ascending: true, nullsFirst: false })
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -259,6 +261,7 @@ export async function listAdminProjects(): Promise<ProjectsReadResult> {
   const { data, error } = await supabase
     .from("projects")
     .select("*")
+    .order("section_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -269,9 +272,15 @@ export async function listAdminProjects(): Promise<ProjectsReadResult> {
     };
   }
 
+  const heroOrderMap = await getHomeHeroOrderMap();
+  const mappedProjects = data.map((project) => ({
+    ...mapProjectRow(project),
+    heroOrder: heroOrderMap.get(`project:${project.id}`) ?? null,
+  }));
+
   return {
     ok: true,
-    data: data.map(mapProjectRow),
+    data: mappedProjects,
     error: null,
   };
 }

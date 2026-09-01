@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
+import { AdminRecordShell } from "@/components/admin/admin-record-shell";
 import { PageIntro } from "@/components/layout/page-intro";
 import { Notice } from "@/components/ui/notice";
+import { DeleteNewsButton } from "@/features/news/delete-news-button";
+import { deleteNewsAction } from "@/features/news/news.actions";
 import { NewsForm } from "@/features/news/news-form";
 import { getAdminNewsById } from "@/features/news/news.data";
 
@@ -49,20 +53,30 @@ export default async function AdminEditNewsPage({
   }
 
   return (
-    <div>
-      <div className="panel overflow-hidden">
-        <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
-          <div className="space-y-4">
-            <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
-              Editar: {result.data.title}
-            </h4>
-          </div>
-        </div>
-        <div className="space-y-6 p-6 sm:p-8">
-          {query.error ? <Notice message={query.error} tone="error" /> : null}
-          <NewsForm news={result.data} submitLabel="Guardar cambios" />
-        </div>
-      </div>
-    </div>
+    <>
+      {query.error ? (
+        <AdminFeedbackModal message={query.error} title="No pudimos guardar la noticia" variant="error" />
+      ) : null}
+    <AdminRecordShell
+      className="admin-form-panel"
+      actions={
+          <>
+            <Link
+              className="admin-button-secondary text-primary-strong"
+              href="/admin/noticias"
+            >
+              Volver al listado
+            </Link>
+            <form action={deleteNewsAction}>
+              <input name="id" type="hidden" value={result.data.id} />
+              <DeleteNewsButton label="Eliminar noticia" />
+            </form>
+          </>
+        }
+        title={`Editar: ${result.data.title}`}
+      >
+        <NewsForm news={result.data} submitLabel="Guardar cambios" />
+      </AdminRecordShell>
+    </>
   );
 }

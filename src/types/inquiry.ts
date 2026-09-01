@@ -1,5 +1,6 @@
 export type InquiryKind = "property" | "project" | "project_unit" | "general";
 export type InquiryStatus = "new" | "contacted" | "closed";
+export type InquiryMeetingStatus = "scheduled" | "cancelled";
 
 export interface InquiryFormValues {
   name: string;
@@ -15,6 +16,11 @@ export interface Inquiry {
   email: string;
   phone: string | null;
   message: string;
+  googleEventId: string | null;
+  meetUrl: string | null;
+  meetingStart: string | null;
+  meetingEnd: string | null;
+  meetingStatus: InquiryMeetingStatus | null;
   propertyId: string | null;
   projectId: string | null;
   projectUnitId: string | null;

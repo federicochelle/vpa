@@ -13,9 +13,7 @@ const searchOperationOptions = [
 
 interface SearchLocationOption {
   label: string;
-  city: string | null;
   neighborhood: string | null;
-  department: string | null;
   operations: Array<(typeof searchOperationOptions)[number]["value"]>;
 }
 
@@ -95,19 +93,6 @@ function LocationCombobox({
           return rightOperationScore - leftOperationScore;
         }
 
-        const leftContextScore =
-          (left.city && normalizeLocation(left.city).includes(normalizedQuery) ? 2 : 0) +
-          (left.department && normalizeLocation(left.department).includes(normalizedQuery) ? 2 : 0) +
-          (left.neighborhood && normalizeLocation(left.neighborhood).includes(normalizedQuery) ? 1 : 0);
-        const rightContextScore =
-          (right.city && normalizeLocation(right.city).includes(normalizedQuery) ? 2 : 0) +
-          (right.department && normalizeLocation(right.department).includes(normalizedQuery) ? 2 : 0) +
-          (right.neighborhood && normalizeLocation(right.neighborhood).includes(normalizedQuery) ? 1 : 0);
-
-        if (leftContextScore !== rightContextScore) {
-          return rightContextScore - leftContextScore;
-        }
-
         const leftPrefixScore = Math.max(
           getCommonPrefixLength(normalizedQuery, normalizeLocation(left.label)),
           getCommonPrefixLength(normalizedQuery, normalizeLocation(left.neighborhood ?? "")),
@@ -128,7 +113,6 @@ function LocationCombobox({
 
   useEffect(() => {
     if (!isOpen) {
-      setQuery("");
       return;
     }
 
@@ -147,6 +131,7 @@ function LocationCombobox({
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
+        setQuery("");
       }
     };
 
@@ -170,11 +155,18 @@ function LocationCombobox({
         aria-controls={listboxId}
         aria-expanded={isOpen}
         className="search-field flex items-center justify-between gap-3 text-left"
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={() => {
+          if (isOpen) {
+            closeCombobox();
+            return;
+          }
+
+          setIsOpen(true);
+        }}
         type="button"
       >
         <span className={selectedOption ? "truncate text-foreground" : "truncate text-muted"}>
-          {selectedOption?.label ?? "Zona / Barrio"}
+          {selectedOption?.label ?? "Barrio"}
         </span>
         <ChevronDown
           className={`h-4 w-4 flex-none text-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -188,14 +180,14 @@ function LocationCombobox({
               ref={inputRef}
               autoComplete="off"
               className="search-field search-zone-input"
-              placeholder="Buscar ciudad o zona"
+              placeholder="Buscar barrio"
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </div>
           <div
-            aria-label="Opciones de zona"
+            aria-label="Opciones de barrio"
             className="max-h-60 overflow-y-auto"
             id={listboxId}
             role="listbox"
@@ -210,7 +202,7 @@ function LocationCombobox({
                   event.stopPropagation();
                   onSelect(option);
                   closeCombobox();
-                }}
+          }}
                 role="option"
                 type="button"
               >
@@ -220,7 +212,7 @@ function LocationCombobox({
             {filteredOptions.length === 0 && suggestedOptions.length > 0 ? (
               <div className="border-t border-border px-4 py-3">
                 <p className="type-body-compact font-medium text-foreground">
-                  No encontramos esa zona. También te puede interesar:
+                  No encontramos ese barrio. También te puede interesar:
                 </p>
                 <div className="mt-3 space-y-2">
                   {suggestedOptions.map((option) => (
@@ -244,7 +236,7 @@ function LocationCombobox({
             ) : null}
             {filteredOptions.length === 0 && suggestedOptions.length === 0 ? (
               <div className="type-body-compact px-4 py-3 text-muted">
-                No encontramos esa zona.
+                No encontramos ese barrio.
               </div>
             ) : null}
           </div>
@@ -281,7 +273,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
   }
 
   return (
-    <section className="relative z-10 -mt-24 pb-12 px-4 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
+    <section className="relative z-20 -mt-24 pb-12 px-4 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
       <div className="md:hidden">
         <div className="mx-auto max-w-xl overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">
@@ -322,7 +314,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               </label>
 
               <div className="grid gap-2 type-body-compact font-medium text-foreground">
-                <span>Zona</span>
+                <span>Barrio</span>
                 <LocationCombobox
                   options={locationOptions}
                   operation={operation}
@@ -386,7 +378,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
             </label>
 
             <div className="grid gap-2 type-body-compact font-medium text-foreground">
-              <span>Zona</span>
+              <span>Barrio</span>
               <LocationCombobox
                 options={locationOptions}
                 operation={operation}

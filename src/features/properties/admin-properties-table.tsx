@@ -1,8 +1,9 @@
 "use client";
 
-import { Children, startTransition, useEffect, useState } from "react";
+import { Children } from "react";
 import { useRouter } from "next/navigation";
-import { updatePropertyHeroOrderAction } from "@/features/properties/properties.actions";
+import { AdminHeroToggle } from "@/features/home-hero/admin-hero-toggle";
+import { AdminSectionOrderSelect } from "@/features/section-order/admin-section-order-select";
 import type { Property } from "@/types/property";
 import type { ReactNode } from "react";
 
@@ -41,7 +42,7 @@ export function AdminPropertiesTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {["Propiedad", "Operación", "Ubicación", "Inicio"].map(
+              {["Propiedad", "Operación", "Ubicación", "ORDEN", "HOME"].map(
                 (column) => (
                   <th
                     key={column}
@@ -56,7 +57,7 @@ export function AdminPropertiesTable({
           <tbody className="divide-y divide-border">
             {properties.length === 0 ? (
               <tr>
-                <td className="admin-note px-6 py-10" colSpan={4}>
+                <td className="admin-note px-6 py-10" colSpan={5}>
                   No hay propiedades visibles para esta sesion.
                 </td>
               </tr>
@@ -96,7 +97,22 @@ export function AdminPropertiesTable({
                       .join(", ") || "Sin ubicacion"}
                   </td>
                   <td className="admin-note px-6 py-5">
-                    <HeroOrderSelect property={property} />
+                    <AdminSectionOrderSelect
+                      entityId={property.id}
+                      entityType="property"
+                      key={`${property.id}:${property.sectionOrder ?? "none"}`}
+                      label={property.title}
+                      sectionOrder={property.sectionOrder}
+                    />
+                  </td>
+                  <td className="admin-note px-6 py-5">
+                    <AdminHeroToggle
+                      entityId={property.id}
+                      entityType="property"
+                      isInHero={property.heroOrder !== null}
+                      isPublished={Boolean(property.published && property.status === "published")}
+                      label={property.title}
+                    />
                   </td>
                 </tr>
               ))
@@ -105,68 +121,6 @@ export function AdminPropertiesTable({
         </table>
       </div>
     </section>
-  );
-}
-
-function HeroOrderSelect({ property }: { property: Property }) {
-  const router = useRouter();
-  const [value, setValue] = useState<string>(property.heroOrder?.toString() ?? "");
-  const [isPending, setIsPending] = useState(false);
-  const isUnpublishedWithoutHero = !property.published && property.heroOrder === null;
-
-  useEffect(() => {
-    setValue(property.heroOrder?.toString() ?? "");
-  }, [property.heroOrder]);
-
-  return (
-    <div
-      className="flex items-center gap-2"
-      onClick={(event) => {
-        event.stopPropagation();
-      }}
-      onKeyDown={(event) => {
-        event.stopPropagation();
-      }}
-    >
-      <select
-        aria-label={`Posición hero de ${property.title}`}
-        className="type-meta rounded-full border border-border bg-white px-3 py-2 font-semibold text-foreground outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={isPending || isUnpublishedWithoutHero}
-        onChange={(event) => {
-          const nextValue = event.target.value;
-          setValue(nextValue);
-          setIsPending(true);
-
-          startTransition(async () => {
-            try {
-              await updatePropertyHeroOrderAction(
-                property.id,
-                nextValue === "" ? null : (Number(nextValue) as 1 | 2 | 3),
-              );
-              router.refresh();
-            } catch {
-              setValue(property.heroOrder?.toString() ?? "");
-            } finally {
-              setIsPending(false);
-            }
-          });
-        }}
-        value={value}
-      >
-        <option value="">—</option>
-        {[1, 2, 3].map((option) => {
-          const disabled =
-            !property.published && property.heroOrder !== option && property.heroOrder !== null;
-
-          return (
-            <option disabled={disabled} key={option} value={option}>
-              {option}
-            </option>
-          );
-        })}
-      </select>
-      {!property.published ? <span className="type-meta text-muted">No publicada</span> : null}
-    </div>
   );
 }
 

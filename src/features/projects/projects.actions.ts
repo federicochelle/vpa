@@ -45,6 +45,7 @@ export async function createProjectAction(formData: FormData) {
   }
 
   revalidatePath("/admin/proyectos");
+  revalidatePath("/");
   revalidatePath("/inversion");
   redirect(
     `/admin/proyectos?created=${encodeURIComponent("Proyecto creado correctamente.")}`,
@@ -66,6 +67,7 @@ export async function updateProjectAction(formData: FormData) {
   }
 
   revalidatePath("/admin/proyectos");
+  revalidatePath("/");
   revalidatePath("/inversion");
   if (result.data.slug) {
     revalidatePath(`/inversion/${result.data.slug}`);
@@ -88,6 +90,7 @@ export async function deleteProjectAction(formData: FormData) {
 
   const result = await deleteProject(id);
   revalidatePath("/admin/proyectos");
+  revalidatePath("/");
   revalidatePath("/inversion");
 
   if (!result.ok) {

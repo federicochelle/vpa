@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
 import type { Feature } from "@/types/feature";
 import type { Property, PropertyImage } from "@/types/property";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { FormField } from "@/components/ui/form-field";
 import { GooglePlacesAddressInput } from "@/components/admin/google-places-address-input";
@@ -15,7 +16,7 @@ import {
   ImagesPicker,
   type PendingImage,
 } from "@/features/images/images-picker";
-import { parseYouTubeUrl } from "@/lib/youtube";
+import { parseVideoUrl } from "@/lib/youtube";
 import {
   currencyOptions,
   kitchenTypeOptions,
@@ -252,6 +253,7 @@ export function PropertyForm({
   const [persistedImages, setPersistedImages] = useState<PropertyImage[]>(propertyImages);
   const [submitState, setSubmitState] = useState<PropertySubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState(property?.videoUrl ?? "");
   const [propertyType, setPropertyType] = useState<Property["propertyType"]>(
     property?.propertyType ?? "apartment",
@@ -273,6 +275,7 @@ export function PropertyForm({
 
     setDeletingImageIds((current) => [...current, imageId]);
     setFormError(null);
+    setFeedbackError(null);
 
     try {
       const response = await fetch(
@@ -333,6 +336,7 @@ export function PropertyForm({
 
     setCoverUpdatingImageId(imageId);
     setFormError(null);
+    setFeedbackError(null);
 
     try {
       const response = await fetch(
@@ -379,8 +383,9 @@ export function PropertyForm({
 
     event.preventDefault();
     setFormError(null);
-    if (videoUrl.trim().length > 0 && !parseYouTubeUrl(videoUrl)) {
-      setFormError("Ingresa una URL válida de YouTube para la propiedad.");
+    setFeedbackError(null);
+    if (videoUrl.trim().length > 0 && !parseVideoUrl(videoUrl)) {
+      setFormError("Ingresa una URL válida de YouTube o Instagram para la propiedad.");
       return;
     }
 
@@ -584,7 +589,7 @@ export function PropertyForm({
       });
     } catch (error) {
       setSubmitState("idle");
-      setFormError(
+      setFeedbackError(
         error instanceof Error ? error.message : "No se pudo guardar la propiedad.",
       );
     }
@@ -592,6 +597,28 @@ export function PropertyForm({
 
   return (
     <form className={className} onSubmit={handleSubmit}>
+      <AdminFeedbackModal
+        message={
+          submitState === "saving"
+            ? "Estamos guardando la propiedad."
+            : "Estamos subiendo y guardando las imágenes de la propiedad."
+        }
+        open={submitState !== "idle"}
+        title={
+          submitState === "saving" ? "Guardando propiedad" : "Subiendo imágenes"
+        }
+        variant="loading"
+      />
+      {feedbackError ? (
+        <AdminFeedbackModal
+          message={feedbackError}
+          onClose={() => {
+            setFeedbackError(null);
+          }}
+          title="No pudimos guardar la propiedad"
+          variant="error"
+        />
+      ) : null}
       {existingPropertyId ? <input name="id" type="hidden" value={existingPropertyId} /> : null}
 
       {formError ? (
@@ -601,7 +628,7 @@ export function PropertyForm({
       ) : null}
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-6">
-        <div className="xl:col-span-3">
+        <div className="min-w-0 xl:col-span-3">
           <FormField htmlFor="title" label="Título">
             <input
               className="admin-input-base"
@@ -614,7 +641,7 @@ export function PropertyForm({
             />
           </FormField>
         </div>
-        <div className="xl:col-span-3 grid gap-6 sm:grid-cols-2">
+        <div className="min-w-0 xl:col-span-3 grid gap-6 sm:grid-cols-2">
           <FormField htmlFor="operationType" label="Operación">
             <select
               className="admin-input-base"
@@ -654,7 +681,7 @@ export function PropertyForm({
             </select>
           </FormField>
         </div>
-        <div className="xl:col-span-3">
+        <div className="min-w-0 xl:col-span-3">
           <FormField htmlFor="price" label="Precio">
             <div className="flex overflow-hidden rounded-2xl border border-border bg-white transition focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/8">
               <PriceInput defaultValue={property?.price ?? null} disabled={readOnly} />
@@ -674,7 +701,7 @@ export function PropertyForm({
             </div>
           </FormField>
         </div>
-        <div className="xl:col-span-3">
+        <div className="min-w-0 xl:col-span-3">
           <FormField htmlFor="expenses" label="Gastos comunes">
             <div className="overflow-hidden rounded-2xl border border-border bg-white transition focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/8">
               <PriceInput
@@ -834,10 +861,14 @@ export function PropertyForm({
         <div className="md:col-span-2 xl:col-span-6">
           <div className="border-t border-border" />
         </div>
-        <div className="xl:col-span-4">
+        <div className="min-w-0 xl:col-span-4">
           <FormField htmlFor="address" label="Dirección">
             <GooglePlacesAddressInput
               className="admin-input-base"
+              defaultCity={property?.city ?? null}
+              defaultDepartment={property?.department ?? null}
+              defaultLatitude={property?.latitude ?? null}
+              defaultLongitude={property?.longitude ?? null}
               defaultValue={property?.address ?? ""}
               disabled={readOnly}
               id="address"
@@ -845,7 +876,7 @@ export function PropertyForm({
             />
           </FormField>
         </div>
-        <div className="xl:col-span-2">
+        <div className="min-w-0 xl:col-span-2">
           <FormField htmlFor="neighborhood" label="Barrio">
             <input
               className="admin-input-base"
