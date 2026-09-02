@@ -49,7 +49,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
   return (
     <>
       <section className="shell w-full max-w-full min-w-0 pb-0 pt-3 sm:pb-0 sm:pt-4 lg:pb-0 lg:pt-5">
-        <div className="w-full max-w-full min-w-0">
+        <div className="-mx-4 min-w-0 sm:mx-0">
           <div className="panel w-full max-w-full min-w-0 overflow-hidden !rounded-none">
             <div className="brand-panel-header px-6 py-6 sm:px-8 lg:px-12">
               <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:justify-between">
@@ -57,15 +57,15 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                   <h1 className="detail-hero-title text-foreground">
                     {property.title}
                   </h1>
-                  <div className="flex items-start justify-between gap-4 lg:hidden">
-                    <div className="flex min-w-0 items-center gap-3 text-primary-strong">
+                  <div className="flex w-full min-w-0 flex-col items-start gap-3 lg:hidden">
+                    <div className="flex w-full min-w-0 items-center gap-3 text-primary-strong">
                       <MapPin className="h-5 w-5 flex-none text-primary" />
                       <span className="min-w-0 truncate text-lg font-medium whitespace-nowrap sm:text-xl">
                         {mobileLocation}
                       </span>
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="detail-hero-price text-primary-strong">{price}</p>
+                    <div className="w-full min-w-0 text-left">
+                      <p className="detail-hero-price whitespace-nowrap text-primary-strong">{price}</p>
                       {expenses ? (
                         <p className="mt-1 text-sm font-medium text-muted">
                           Gastos comunes: {expenses}

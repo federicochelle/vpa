@@ -111,7 +111,7 @@ export async function HomeShell() {
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading title="ALQUILERES" />
+            <SectionHeading title="ALQUILERES" titleClassName="home-section-title" />
             <Link
               href="/alquileres"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
@@ -166,7 +166,7 @@ export async function HomeShell() {
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading title="VENTAS" />
+            <SectionHeading title="VENTAS" titleClassName="home-section-title" />
             <Link
               href="/comprar"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
@@ -221,7 +221,7 @@ export async function HomeShell() {
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading title="INVERSIONES" />
+            <SectionHeading title="INVERSIONES" titleClassName="home-section-title" />
             <Link
               href="/inversion"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
@@ -284,7 +284,7 @@ export async function HomeShell() {
 
             <div className="w-full max-w-full min-w-0 space-y-6 text-center sm:text-left">
               <div className="space-y-3">
-                <h2 className="section-title min-w-0 break-words [overflow-wrap:anywhere]">
+                <h2 className="section-title home-section-title w-full max-w-full min-w-0">
                   Acompañamiento cercano para cada decisión
                 </h2>
               </div>
@@ -315,7 +315,7 @@ export async function HomeShell() {
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-3">
-              <h2 className="section-title">
+              <h2 className="section-title home-section-title w-full max-w-full min-w-0">
                 Noticias e interés
               </h2>
             </div>

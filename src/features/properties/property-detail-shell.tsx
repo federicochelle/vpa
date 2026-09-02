@@ -184,7 +184,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
       ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
       : parsedVideo.embedUrl
     : null;
-  const mobileSectionClassName = "w-full max-w-full min-w-0";
+  const mobileSectionClassName = "-mx-4 min-w-0 sm:mx-0";
   const addressLabel = buildPropertyAddressLabel(property);
   const facts: PropertyFact[] = [
     {

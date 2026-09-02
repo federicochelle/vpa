@@ -229,6 +229,20 @@ textarea {
   @apply font-display text-3xl leading-tight text-foreground sm:text-4xl;
 }
 
+.home-section-title {
+  font-size: clamp(1.7rem, 7vw, 2.4rem);
+  line-height: 0.98;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+@media (min-width: 640px) {
+  .home-section-title {
+    font-size: 36px;
+    line-height: 1.25;
+  }
+}
+
 .section-copy {
   @apply max-w-2xl text-muted;
   font-size: var(--type-body-size);

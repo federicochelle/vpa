@@ -42,13 +42,13 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
       ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
       : parsedVideo.embedUrl
     : null;
-  const mobileFullBleedClassName = "-mx-4 sm:mx-0";
+  const mobileFullBleedClassName = "-mx-4 min-w-0 sm:mx-0";
   const addressLabel = normalizeLocationPart(project.address);
 
   return (
-    <div className="shell section-gap !pt-4">
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <div className="space-y-4">
+    <div className="shell section-gap w-full max-w-full min-w-0 !pt-4">
+      <section className="grid w-full max-w-full min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+        <div className="min-w-0 space-y-4">
           <div className={mobileFullBleedClassName}>
             <PublicImageGallery
               badgeLabel={project.isInvestmentOpportunity ? "INVERSION" : "PROYECTO"}
@@ -80,14 +80,14 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             </div>
           ) : null}
           <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="type-body-compact flex items-center gap-3 text-foreground">
+              <div className="mt-8 grid w-full max-w-full min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="type-body-compact flex min-w-0 items-center gap-3 text-foreground">
                   <Building2 className="h-4 w-4 flex-none text-primary" />
                   <span>{project.developerName ?? "-"}</span>
                 </div>
-                <div className="type-body-compact flex items-center gap-3 text-foreground">
+                <div className="type-body-compact flex min-w-0 items-center gap-3 text-foreground">
                   <Hammer className="h-4 w-4 flex-none text-primary" />
                   <span>
                     {project.constructionStatus
@@ -95,11 +95,11 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
                       : "-"}
                   </span>
                 </div>
-                <div className="type-body-compact flex items-center gap-3 text-foreground">
+                <div className="type-body-compact flex min-w-0 items-center gap-3 text-foreground">
                   <CalendarClock className="h-4 w-4 flex-none text-primary" />
                   <span>{formatDeliveryDate(project.estimatedDeliveryDate)}</span>
                 </div>
-                <div className="type-body-compact flex items-center gap-3 text-foreground">
+                <div className="type-body-compact flex min-w-0 items-center gap-3 text-foreground">
                   <MapPin className="h-4 w-4 flex-none text-primary" />
                   <span>{[project.neighborhood, project.city].filter(Boolean).join(", ") || "-"}</span>
                 </div>
@@ -107,7 +107,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             </div>
           </div>
           <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
               <p className="type-body mt-4 text-muted">
                 {project.description ??
@@ -116,7 +116,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             </div>
           </div>
           <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Amenities</h2>
               <p className="type-body mt-4 text-muted">
                 La sección queda preparada para mostrar amenities, servicios y diferenciales del desarrollo cuando estén cargados.
@@ -124,7 +124,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             </div>
           </div>
           <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
               <PublicLocationMap
                 address={project.address}

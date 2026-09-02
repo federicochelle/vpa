@@ -19,9 +19,11 @@ export function SectionHeading({
   const TitleTag = titleAs;
 
   return (
-    <div className={`flex max-w-3xl flex-col gap-3 ${alignment}`}>
+    <div className={`flex w-full max-w-3xl min-w-0 flex-col gap-3 ${alignment}`}>
       {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
-      <TitleTag className={`section-title ${titleClassName}`}>{title}</TitleTag>
+      <TitleTag className={`section-title w-full max-w-full min-w-0 ${titleClassName}`}>
+        {title}
+      </TitleTag>
       {description ? <p className="section-copy">{description}</p> : null}
     </div>
   );
