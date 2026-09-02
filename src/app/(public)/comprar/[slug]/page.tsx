@@ -48,9 +48,9 @@ export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
 
   return (
     <>
-      <section className="shell pb-0 pt-3 sm:pb-0 sm:pt-4 lg:pb-0 lg:pt-5">
-        <div className="-mx-4 sm:mx-0">
-          <div className="panel overflow-hidden !rounded-none">
+      <section className="shell w-full max-w-full min-w-0 pb-0 pt-3 sm:pb-0 sm:pt-4 lg:pb-0 lg:pt-5">
+        <div className="w-full max-w-full min-w-0">
+          <div className="panel w-full max-w-full min-w-0 overflow-hidden !rounded-none">
             <div className="brand-panel-header px-6 py-6 sm:px-8 lg:px-12">
               <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 flex-1 space-y-4">

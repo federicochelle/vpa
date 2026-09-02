@@ -95,7 +95,7 @@ export function PublicImageGallery({
 
   return (
     <>
-      <div className="panel !rounded-none overflow-hidden">
+      <div className="panel w-full max-w-full min-w-0 !rounded-none overflow-hidden">
         <button
           className="relative block aspect-[4/3] w-full overflow-hidden bg-surface-strong sm:aspect-[16/10]"
           onClick={() => setLightboxIndex(activeIndex)}
@@ -116,7 +116,7 @@ export function PublicImageGallery({
           />
         </button>
 
-        <div className="flex gap-2 overflow-x-auto p-2 sm:grid sm:grid-cols-5 sm:overflow-visible">
+        <div className="grid w-full max-w-full min-w-0 grid-cols-5 gap-2 p-2">
           {visibleThumbnails.map((image, index) => {
             const isOverflowTile =
               hiddenImagesCount > 0 && index === visibleThumbnails.length - 1;
@@ -124,7 +124,7 @@ export function PublicImageGallery({
 
             return (
               <button
-                className={`relative block h-20 min-w-24 overflow-hidden border transition sm:h-24 sm:min-w-0 ${
+                className={`relative block h-20 min-w-0 w-full overflow-hidden border transition sm:h-24 ${
                   isActive ? "border-primary" : "border-border"
                 }`}
                 key={image.id}

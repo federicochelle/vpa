@@ -48,7 +48,7 @@ export function PublicInquirySidebar({
   }
 
   return (
-    <div className="panel !rounded-none p-6 sm:p-8">
+    <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
       <div className="flex items-start gap-4 pb-2">
         <div className="relative h-16 w-16 flex-none overflow-hidden border border-primary/15 bg-primary/6">
           <Image

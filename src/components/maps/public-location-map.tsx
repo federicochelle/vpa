@@ -306,7 +306,7 @@ export function PublicLocationMap({
         {normalizedLocationLabel ? (
           <p className="type-body mt-4 text-foreground">{normalizedLocationLabel}</p>
         ) : null}
-        <div className="type-body-compact mt-6 flex min-h-60 items-center justify-center rounded-none border border-dashed border-border bg-surface-strong px-6 text-center text-muted">
+        <div className="type-body-compact mt-6 flex w-full max-w-full min-h-60 items-center justify-center rounded-none border border-dashed border-border bg-surface-strong px-6 text-center text-muted">
           {normalizedLocationLabel || fallbackLabel}
         </div>
       </>
@@ -318,8 +318,8 @@ export function PublicLocationMap({
       {normalizedLocationLabel ? (
         <p className="type-body mt-4 text-foreground">{normalizedLocationLabel}</p>
       ) : null}
-      <div className="mt-6 min-h-60 overflow-hidden rounded-none border border-dashed border-border bg-surface-strong">
-        <div className="h-full min-h-60 w-full" ref={mapRef} />
+      <div className="mt-6 w-full max-w-full min-h-60 overflow-hidden rounded-none border border-dashed border-border bg-surface-strong">
+        <div className="h-full min-h-60 w-full max-w-full" ref={mapRef} />
       </div>
     </>
   );

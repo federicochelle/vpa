@@ -184,7 +184,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
       ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
       : parsedVideo.embedUrl
     : null;
-  const mobileFullBleedClassName = "-mx-4 sm:mx-0";
+  const mobileSectionClassName = "w-full max-w-full min-w-0";
   const addressLabel = buildPropertyAddressLabel(property);
   const isInstagramVideo = parsedVideo?.provider === "instagram";
   const facts: PropertyFact[] = [
@@ -272,10 +272,10 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
   }
 
   return (
-    <div className="shell section-gap !pt-4">
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <div className="space-y-4">
-          <div className={mobileFullBleedClassName}>
+    <div className="shell section-gap w-full max-w-full min-w-0 !pt-4">
+      <section className="grid w-full max-w-full min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+        <div className="min-w-0 space-y-4">
+          <div className={mobileSectionClassName}>
             <PublicImageGallery
               emptyLabel={`Galeria preparada para la propiedad: ${property.slug}`}
               images={images}
@@ -283,25 +283,21 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
             />
           </div>
           {parsedVideo ? (
-            <div className={mobileFullBleedClassName}>
-              <div className="panel !rounded-none p-6 sm:p-8">
+            <div className={mobileSectionClassName}>
+              <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
                 <h2 className="text-xl font-display text-primary-strong">Video</h2>
                 <div
-                  className={`mt-6 overflow-hidden bg-surface-muted ${
-                    isInstagramVideo
-                      ? "mx-auto w-full max-w-[380px] border border-border"
-                      : "-mx-6 border-y border-border sm:mx-0 sm:border"
-                  }`}
+                  className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
                   <div
-                    className={`${parsedVideo.aspectClassName} ${
+                    className={`w-full max-w-full min-w-0 ${parsedVideo.aspectClassName} ${
                       isInstagramVideo ? "max-h-[680px]" : ""
                     }`}
                   >
                     <iframe
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
-                      className="h-full w-full"
+                      className="h-full w-full max-w-full border-0"
                       referrerPolicy="strict-origin-when-cross-origin"
                       src={videoEmbedUrl ?? undefined}
                       title={`${parsedVideo.title} de ${property.title}`}
@@ -311,8 +307,8 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               </div>
             </div>
           ) : null}
-          <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+          <div className={mobileSectionClassName}>
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
               <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {facts.map((fact) => {
@@ -338,8 +334,8 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               </div>
             </div>
           </div>
-          <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+          <div className={mobileSectionClassName}>
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
               <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
                 {property.description ??
@@ -353,8 +349,8 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               ) : null}
             </div>
           </div>
-          <div className={mobileFullBleedClassName}>
-            <div className="panel !rounded-none p-6 sm:p-8">
+          <div className={mobileSectionClassName}>
+            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
               <PublicLocationMap
                 address={property.address}
@@ -367,7 +363,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
             </div>
           </div>
         </div>
-        <aside className={`${mobileFullBleedClassName} lg:sticky lg:top-24 lg:self-start`}>
+        <aside className={`${mobileSectionClassName} lg:sticky lg:top-24 lg:self-start`}>
           <PublicInquirySidebar
             entityId={property.id}
             initialMessage={`Hola, estoy interesado/a en ${property.title}. Quisiera recibir más información.`}
