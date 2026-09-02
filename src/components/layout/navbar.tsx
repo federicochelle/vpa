@@ -57,10 +57,10 @@ export function Navbar() {
         headerClassName="md:hidden"
         key={pathname}
         logo={
-          <Link className="flex items-center" href="/">
+          <Link className="flex min-w-0 flex-1 items-center" href="/">
             <Image
               alt="VPA"
-              className="h-auto w-64"
+              className="h-auto w-full max-w-64"
               priority
               src={logoVpa}
             />

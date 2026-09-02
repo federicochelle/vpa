@@ -225,18 +225,18 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
 
   return (
     <section
-      className="relative h-[74vh] min-h-[560px] w-full overflow-hidden sm:h-[72vh] sm:min-h-[540px] lg:h-[78vh]"
+      className="relative h-[74vh] min-h-[560px] w-full max-w-full min-w-0 overflow-hidden sm:h-[72vh] sm:min-h-[540px] lg:h-[78vh]"
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
     >
       <div
-        className={`flex h-full ease-out ${isTransitionEnabled ? "transition-transform duration-500" : ""}`}
+        className={`flex h-full min-w-0 ease-out ${isTransitionEnabled ? "transition-transform duration-500" : ""}`}
         onTransitionEnd={handleTransitionEnd}
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {loopedSlides.map((slide, index) => (
-          <div key={`${slide.alt}-${index}`} className="relative h-full w-full flex-none overflow-hidden">
+          <div key={`${slide.alt}-${index}`} className="relative h-full w-full max-w-full min-w-0 flex-none overflow-hidden">
             <div className="absolute inset-0">
               {renderSlideContent(slide, index)}
             </div>

@@ -273,9 +273,9 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
   }
 
   return (
-    <section className="relative z-20 -mt-24 pb-12 px-4 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
+    <section className="relative z-20 w-full max-w-full min-w-0 -mt-24 px-4 pb-12 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
       <div className="md:hidden">
-        <div className="mx-auto max-w-xl overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
+        <div className="mx-auto w-full max-w-full min-w-0 overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">
             <form className="grid gap-4" onSubmit={handleSubmit}>
               <label className="grid gap-2 type-body-compact font-medium text-foreground">

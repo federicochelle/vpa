@@ -103,7 +103,7 @@ export async function HomeShell() {
   );
 
   return (
-    <>
+    <div className="w-full max-w-full min-w-0 overflow-x-clip">
       <HomeHeroCarousel slides={heroSlides} />
 
       <SearchSection locationOptions={locationOptions} />
@@ -270,9 +270,9 @@ export async function HomeShell() {
       </section>
 
       <section className="bg-white py-16 sm:py-20">
-        <div className="shell">
-          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
-            <div className="relative min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
+        <div className="shell w-full max-w-full min-w-0">
+          <div className="grid w-full max-w-full min-w-0 items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
+            <div className="relative w-full max-w-full min-w-0 min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
               <Image
                 src={virginiaImage}
                 alt="Asesoramiento inmobiliario"
@@ -282,14 +282,14 @@ export async function HomeShell() {
               />
             </div>
 
-            <div className="space-y-6 text-center sm:text-left">
+            <div className="w-full max-w-full min-w-0 space-y-6 text-center sm:text-left">
               <div className="space-y-3">
-                <h2 className="section-title">
+                <h2 className="section-title min-w-0 break-words [overflow-wrap:anywhere]">
                   Acompañamiento cercano para cada decisión
                 </h2>
               </div>
 
-              <div className="space-y-5 section-copy max-w-none">
+              <div className="section-copy w-full max-w-full min-w-0 space-y-5">
                 <p>
                   En Virginia Pintos entendemos que cada búsqueda tiene un ritmo,
                   una historia y una necesidad distinta. Por eso trabajamos con
@@ -364,6 +364,6 @@ export async function HomeShell() {
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }

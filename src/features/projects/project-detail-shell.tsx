@@ -44,7 +44,6 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
     : null;
   const mobileFullBleedClassName = "-mx-4 sm:mx-0";
   const addressLabel = normalizeLocationPart(project.address);
-  const isInstagramVideo = parsedVideo?.provider === "instagram";
 
   return (
     <div className="shell section-gap !pt-4">
@@ -59,24 +58,18 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           </div>
           {parsedVideo ? (
             <div className={mobileFullBleedClassName}>
-              <div className="panel !rounded-none p-6 sm:p-8">
+              <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
                 <h2 className="text-xl font-display text-primary-strong">Video</h2>
                 <div
-                  className={`mt-6 overflow-hidden bg-surface-muted ${
-                    isInstagramVideo
-                      ? "mx-auto w-full max-w-[380px] border border-border"
-                      : "-mx-6 border-y border-border sm:mx-0 sm:border"
-                  }`}
+                  className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
                   <div
-                    className={`${parsedVideo.aspectClassName} ${
-                      isInstagramVideo ? "max-h-[680px]" : ""
-                    }`}
+                    className={`w-full max-w-full min-w-0 ${parsedVideo.aspectClassName}`}
                   >
                     <iframe
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
-                      className="h-full w-full"
+                      className="h-full w-full max-w-full border-0"
                       referrerPolicy="strict-origin-when-cross-origin"
                       src={videoEmbedUrl ?? undefined}
                       title={`${parsedVideo.title} de ${project.name}`}

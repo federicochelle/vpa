@@ -186,7 +186,6 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     : null;
   const mobileSectionClassName = "w-full max-w-full min-w-0";
   const addressLabel = buildPropertyAddressLabel(property);
-  const isInstagramVideo = parsedVideo?.provider === "instagram";
   const facts: PropertyFact[] = [
     {
       icon: BedDouble,
@@ -290,9 +289,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                   className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
                   <div
-                    className={`w-full max-w-full min-w-0 ${parsedVideo.aspectClassName} ${
-                      isInstagramVideo ? "max-h-[680px]" : ""
-                    }`}
+                    className={`w-full max-w-full min-w-0 ${parsedVideo.aspectClassName}`}
                   >
                     <iframe
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
