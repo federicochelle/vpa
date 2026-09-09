@@ -3,16 +3,23 @@
 import { startTransition, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
+import { ImagePlus, LoaderCircle } from "lucide-react";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
-import { GooglePlacesAddressInput } from "@/components/admin/google-places-address-input";
+import {
+  GooglePlacesAddressInput,
+  type GooglePlacesAddressInputHandle,
+} from "@/components/admin/google-places-address-input";
 import { YouTubeVideoField } from "@/components/admin/youtube-video-field";
 import { FormField } from "@/components/ui/form-field";
-import { FeaturesPicker } from "@/features/features/features-picker";
+import {
+  FeaturesPicker,
+  type FeaturesPickerHandle,
+} from "@/features/features/features-picker";
 import {
   ImagesPicker,
   type PendingImage,
 } from "@/features/images/images-picker";
+import { ImageCardActions } from "@/features/images/image-card-actions";
 import type { Feature } from "@/types/feature";
 import {
   PROJECT_CONSTRUCTION_STATUS_LABELS,
@@ -37,8 +44,16 @@ interface PersistedProjectImageItemProps {
   onDelete: (imageId: string) => Promise<void>;
   onSetCover: (imageId: string) => Promise<void>;
   deleting: boolean;
+  disabled: boolean;
+  isCover: boolean;
   updatingCover: boolean;
   readOnly?: boolean;
+}
+
+interface ProjectImagesSnapshot {
+  pendingImages: PendingImage[];
+  pendingCoverImageId: string | null;
+  persistedImages: ProjectImage[];
 }
 
 type ProjectSubmitState = "idle" | "saving" | "uploading";
@@ -168,6 +183,8 @@ function PersistedProjectImageItem({
   onDelete,
   onSetCover,
   deleting,
+  disabled,
+  isCover,
   updatingCover,
   readOnly = false,
 }: PersistedProjectImageItemProps) {
@@ -183,60 +200,26 @@ function PersistedProjectImageItem({
           unoptimized
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2 text-[11px]">
-          {image.isCover ? <span className="admin-status-pill">Portada</span> : null}
+          {isCover ? <span className="admin-status-pill">Portada</span> : null}
         </div>
         {readOnly ? null : (
-          <div className="absolute right-3 top-3 z-10 flex items-start gap-2">
-            <button
-              aria-label={image.isCover ? "Imagen de portada" : "Marcar como portada"}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-white/95 text-foreground shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={deleting || updatingCover}
-              onClick={() => {
-                if (!image.isCover) {
-                  void onSetCover(image.id);
-                }
-              }}
-              title={image.isCover ? "Imagen de portada" : "Marcar como portada"}
-              type="button"
-            >
-              {updatingCover ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <Star
-                  className={
-                    image.isCover
-                      ? "h-4 w-4 fill-current text-primary"
-                      : "h-4 w-4 text-foreground"
-                  }
-                />
-              )}
-            </button>
-            <button
-              aria-label="Eliminar imagen guardada"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-white/95 text-foreground shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 md:opacity-0 md:group-hover:opacity-100"
-              disabled={deleting || updatingCover}
-              onClick={() => {
-                void onDelete(image.id);
-              }}
-              type="button"
-            >
-              {deleting ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
-            </button>
-          </div>
+          <ImageCardActions
+            deleteLabel="Eliminar imagen guardada"
+            deleting={deleting}
+            disabled={disabled}
+            isCover={isCover}
+            onDelete={() => {
+              void onDelete(image.id);
+            }}
+            onSetCover={() => {
+              if (!isCover) {
+                void onSetCover(image.id);
+              }
+            }}
+            updatingCover={updatingCover}
+          />
         )}
       </div>
-      {readOnly ? null : (
-        <div className="space-y-2 px-4 py-4">
-          <p className="type-body-compact font-semibold text-foreground">Imagen guardada</p>
-          <div className="type-caption flex flex-wrap gap-2 text-muted">
-            <span>{image.publicId ?? "Sin public_id"}</span>
-          </div>
-        </div>
-      )}
     </article>
   );
 }
@@ -252,8 +235,12 @@ export function ProjectForm({
 }: ProjectFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const addressInputRef = useRef<GooglePlacesAddressInputHandle | null>(null);
+  const featuresPickerRef = useRef<FeaturesPickerHandle | null>(null);
+  const imagesSnapshotRef = useRef<ProjectImagesSnapshot | null>(null);
   const existingProjectId = project?.id ?? null;
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [pendingCoverImageId, setPendingCoverImageId] = useState<string | null>(null);
   const [persistedImages, setPersistedImages] = useState<ProjectImage[]>(projectImages);
   const [submitState, setSubmitState] = useState<ProjectSubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
@@ -362,6 +349,7 @@ export function ProjectForm({
           isCover: image.id === payload.coverImage?.id,
         })),
       );
+      setPendingCoverImageId(null);
       startTransition(() => {
         router.refresh();
       });
@@ -389,10 +377,17 @@ export function ProjectForm({
     }
 
     const form = event.currentTarget;
-    const formData = new FormData(form);
     const isEditing = Boolean(existingProjectId);
 
     try {
+      imagesSnapshotRef.current = {
+        pendingImages: [...pendingImages],
+        pendingCoverImageId,
+        persistedImages: [...persistedImages],
+      };
+      await addressInputRef.current?.waitForPendingResolution();
+      await featuresPickerRef.current?.waitForPendingCreation();
+      const formData = new FormData(form);
       setSubmitState("saving");
 
       const projectResponse = await fetch(
@@ -483,6 +478,9 @@ export function ProjectForm({
         )) {
           if (!uploadResult.ok) {
             failedImagesCount += 1;
+            setPendingCoverImageId((currentId) =>
+              currentId === uploadResult.pendingImageId ? null : currentId,
+            );
             setPendingImages((currentImages) =>
               currentImages.map((currentImage) =>
                 currentImage.id === uploadResult.pendingImageId
@@ -499,6 +497,9 @@ export function ProjectForm({
 
           if (!uploadResult.publicId) {
             failedImagesCount += 1;
+            setPendingCoverImageId((currentId) =>
+              currentId === uploadResult.pendingImageId ? null : currentId,
+            );
             setPendingImages((currentImages) =>
               currentImages.map((currentImage) =>
                 currentImage.id === uploadResult.pendingImageId
@@ -514,21 +515,35 @@ export function ProjectForm({
           }
 
           try {
+            const shouldBecomeCover = pendingCoverImageId === uploadResult.pendingImageId;
             const persistedImage = await persistProjectImage(nextProject.id, {
               publicId: uploadResult.publicId,
               sortOrder: uploadResult.sortOrder,
-              isCover: !hasCover,
+              isCover: shouldBecomeCover || !hasCover,
             });
 
             hasCover = hasCover || persistedImage.isCover;
-            setPersistedImages((currentImages) => [...currentImages, persistedImage]);
+            setPersistedImages((currentImages) => [
+              ...currentImages.map((currentImage) =>
+                persistedImage.isCover
+                  ? { ...currentImage, isCover: false }
+                  : currentImage,
+              ),
+              persistedImage,
+            ]);
             setPendingImages((currentImages) =>
               currentImages.filter(
                 (currentImage) => currentImage.id !== uploadResult.pendingImageId,
               ),
             );
+            if (shouldBecomeCover) {
+              setPendingCoverImageId(null);
+            }
           } catch (error) {
             failedImagesCount += 1;
+            setPendingCoverImageId((currentId) =>
+              currentId === uploadResult.pendingImageId ? null : currentId,
+            );
             setPendingImages((currentImages) =>
               currentImages.map((currentImage) =>
                 currentImage.id === uploadResult.pendingImageId
@@ -547,6 +562,7 @@ export function ProjectForm({
         }
 
         if (failedImagesCount > 0) {
+          imagesSnapshotRef.current = null;
           setSubmitState("idle");
 
           if (!isEditing) {
@@ -571,7 +587,6 @@ export function ProjectForm({
         }
       }
 
-      setSubmitState("idle");
       startTransition(() => {
         router.push(
           isEditing
@@ -581,11 +596,31 @@ export function ProjectForm({
         router.refresh();
       });
     } catch (error) {
+      imagesSnapshotRef.current = null;
       setSubmitState("idle");
       setFeedbackError(
         error instanceof Error ? error.message : "No se pudo guardar el proyecto.",
       );
     }
+  }
+
+  const imagesSnapshot = submitState === "idle" ? null : imagesSnapshotRef.current;
+  const visualPendingImages = imagesSnapshot?.pendingImages ?? pendingImages;
+  const visualPersistedImages = imagesSnapshot?.persistedImages ?? persistedImages;
+  const visualPendingCoverImageId = imagesSnapshot
+    ? imagesSnapshot.pendingCoverImageId
+    : pendingCoverImageId;
+  const hasVisualPendingCover = visualPendingImages.some(
+    (image) => image.id === visualPendingCoverImageId && image.status === "ready",
+  );
+
+  function handlePendingImagesChange(nextImages: PendingImage[]) {
+    setPendingImages(nextImages);
+    setPendingCoverImageId((currentId) =>
+      currentId && nextImages.some((image) => image.id === currentId && image.status === "ready")
+        ? currentId
+        : null,
+    );
   }
 
   return (
@@ -688,6 +723,7 @@ export function ProjectForm({
               disabled={readOnly}
               id="address"
               name="address"
+              ref={addressInputRef}
             />
           </FormField>
         </div>
@@ -740,6 +776,7 @@ export function ProjectForm({
             <FeaturesPicker
               allFeatures={allFeatures}
               initialSelectedIds={selectedFeatureIds}
+              ref={featuresPickerRef}
             />
           )}
         </div>
@@ -759,16 +796,18 @@ export function ProjectForm({
               </label>
             )}
           </div>
-          {persistedImages.length > 0 ? (
+          {visualPersistedImages.length > 0 ? (
             <div className="space-y-3">
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {persistedImages
+                {visualPersistedImages
                   .slice()
                   .sort((left, right) => left.sortOrder - right.sortOrder)
                   .map((image) => (
                     <PersistedProjectImageItem
                       deleting={!readOnly && deletingImageIds.includes(image.id)}
+                      disabled={submitState !== "idle"}
                       image={image}
+                      isCover={!hasVisualPendingCover && image.isCover}
                       key={image.id}
                       onDelete={handleDeletePersistedImage}
                       onSetCover={handleSetCoverImage}
@@ -782,13 +821,15 @@ export function ProjectForm({
 
           {readOnly ? null : (
             <ImagesPicker
+              coverImageId={visualPendingCoverImageId}
               disabled={submitState !== "idle"}
               hideEmptyState
               inputId={galleryInputId}
               label="Galeria de imagenes"
-              onChange={setPendingImages}
+              onChange={handlePendingImagesChange}
+              onSetCover={setPendingCoverImageId}
               showHeader={false}
-              value={pendingImages}
+              value={visualPendingImages}
             />
           )}
         </div>

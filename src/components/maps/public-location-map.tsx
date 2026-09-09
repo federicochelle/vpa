@@ -9,26 +9,13 @@ interface GoogleMapsNamespace {
   };
 }
 
-interface GoogleGeocoder {
-  geocode: (request: {
-    address: string;
-    region?: string;
-  }) => Promise<{
-    results: Array<{
-      geometry: {
-        location: GoogleLatLng;
-      };
-    }>;
-  }>;
-}
-
-interface GoogleLatLng {
-  lat: () => number;
-  lng: () => number;
+interface GoogleLatLngLiteral {
+  lat: number;
+  lng: number;
 }
 
 interface GoogleMap {
-  setCenter: (location: GoogleLatLng) => void;
+  setCenter: (location: GoogleLatLngLiteral) => void;
   setZoom: (zoom: number) => void;
 }
 
@@ -47,7 +34,7 @@ interface GoogleMapOptions {
 
 interface GoogleMarkerOptions {
   map: GoogleMap;
-  position: GoogleLatLng;
+  position: GoogleLatLngLiteral;
   title: string;
 }
 
@@ -56,19 +43,23 @@ interface GoogleMarker {
 }
 
 interface PublicLocationMapProps {
-  address?: string | null;
   fallbackLabel: string;
   latitude?: number | null;
-  locationLabel?: string | null;
   longitude?: number | null;
   title: string;
 }
 
+const DEFAULT_MAP_CENTER: GoogleLatLngLiteral = {
+  lat: -34.9011,
+  lng: -56.1645,
+};
+const DEFAULT_MAP_ZOOM = 11;
+const LOCATION_MAP_ZOOM = 15;
+
 let googleMapsLoader: Promise<void> | null = null;
 let mapsLibrariesLoader: Promise<{
-  Geocoder: new () => GoogleGeocoder;
   Map: new (element: HTMLElement, options: GoogleMapOptions) => GoogleMap;
-  Marker: new (options: GoogleMarkerOptions) => GoogleMarker;
+  Marker: (new (options: GoogleMarkerOptions) => GoogleMarker) | null;
 }> | null = null;
 
 function getGoogleMapsWindow() {
@@ -167,25 +158,19 @@ async function loadMapsLibraries(apiKey: string) {
     throw new Error("Google Maps no expuso importLibrary para cargar las librerías.");
   }
 
-  mapsLibrariesLoader = Promise.all([
-    googleMapsWindow.google.maps.importLibrary("maps"),
-    googleMapsWindow.google.maps.importLibrary("geocoding"),
-  ])
-    .then(([mapsLibrary, geocodingLibrary]) => {
+  mapsLibrariesLoader = googleMapsWindow.google.maps
+    .importLibrary("maps")
+    .then((mapsLibrary) => {
       const Map = (mapsLibrary as {
         Map?: new (element: HTMLElement, options: GoogleMapOptions) => GoogleMap;
       }).Map;
-      const Geocoder = (geocodingLibrary as {
-        Geocoder?: new () => GoogleGeocoder;
-      }).Geocoder;
-      const Marker = googleMapsWindow.google?.maps?.Marker;
+      const Marker = googleMapsWindow.google?.maps?.Marker ?? null;
 
-      if (!Map || !Geocoder || !Marker) {
-        throw new Error("No se pudieron cargar Map, Geocoder o Marker.");
+      if (!Map) {
+        throw new Error("No se pudo cargar Map.");
       }
 
       return {
-        Geocoder,
         Map,
         Marker,
       };
@@ -198,39 +183,46 @@ async function loadMapsLibraries(apiKey: string) {
   return mapsLibrariesLoader;
 }
 
+function normalizeCoordinate(value: number | null | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
 export function PublicLocationMap({
-  address,
   fallbackLabel,
   latitude,
-  locationLabel,
   longitude,
   title,
 }: PublicLocationMapProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const normalizedAddress = address?.trim() ?? "";
-  const normalizedLocationLabel = locationLabel?.trim() ?? "";
+  const normalizedLatitude = normalizeCoordinate(latitude);
+  const normalizedLongitude = normalizeCoordinate(longitude);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<GoogleMarker | null>(null);
   const [hasMapError, setHasMapError] = useState(false);
 
   useEffect(() => {
-    if (!apiKey || (!normalizedAddress && (latitude == null || longitude == null)) || !mapRef.current) {
+    if (!apiKey || !mapRef.current) {
       return;
     }
 
     let isCancelled = false;
+    const markerLocation: GoogleLatLngLiteral | null =
+      normalizedLatitude !== null && normalizedLongitude !== null
+        ? {
+            lat: normalizedLatitude,
+            lng: normalizedLongitude,
+          }
+        : null;
+    const mapCenter = markerLocation ?? DEFAULT_MAP_CENTER;
 
     void loadMapsLibraries(apiKey)
-      .then(async ({ Geocoder, Map, Marker }) => {
+      .then(({ Map, Marker }) => {
         if (isCancelled || !mapRef.current) {
           return;
         }
 
         const map = new Map(mapRef.current, {
-          center: {
-            lat: latitude ?? -34.9011,
-            lng: longitude ?? -56.1645,
-          },
+          center: mapCenter,
           disableDefaultUI: true,
           fullscreenControl: false,
           gestureHandling: "cooperative",
@@ -239,44 +231,25 @@ export function PublicLocationMap({
           zoomControl: false,
         });
 
-        let markerLocation: GoogleLatLng | null = null;
-
-        if (latitude != null && longitude != null) {
-          markerLocation = {
-            lat: () => latitude,
-            lng: () => longitude,
-          };
-        } else {
-          const geocoder = new Geocoder();
-          const response = await geocoder.geocode({
-            address: normalizedAddress,
-            region: "UY",
-          });
-          const result = response.results[0];
-
-          if (isCancelled || !result) {
-            throw new Error("Google Maps no devolvió resultados para la dirección.");
-          }
-
-          markerLocation = result.geometry.location;
-        }
-
-        if (isCancelled || !markerLocation) {
-          return;
-        }
-
-        map.setCenter(markerLocation);
-        map.setZoom(15);
+        map.setCenter(mapCenter);
+        map.setZoom(markerLocation ? LOCATION_MAP_ZOOM : DEFAULT_MAP_ZOOM);
 
         if (markerRef.current) {
           markerRef.current.map = null;
+          markerRef.current = null;
         }
 
-        markerRef.current = new Marker({
-          map,
-          position: markerLocation,
-          title,
-        });
+        if (markerLocation) {
+          if (!Marker) {
+            throw new Error("No se pudo cargar Marker.");
+          }
+
+          markerRef.current = new Marker({
+            map,
+            position: markerLocation,
+            title,
+          });
+        }
 
         setHasMapError(false);
       })
@@ -294,33 +267,21 @@ export function PublicLocationMap({
         markerRef.current.map = null;
       }
     };
-  }, [apiKey, latitude, longitude, normalizedAddress, title]);
+  }, [apiKey, normalizedLatitude, normalizedLongitude, title]);
 
-  const hasRenderableMap = Boolean(
-    apiKey && ((latitude != null && longitude != null) || normalizedAddress),
-  );
+  const hasRenderableMap = Boolean(apiKey);
 
   if (!hasRenderableMap || hasMapError) {
     return (
-      <div className="w-full max-w-full min-w-0">
-        {normalizedLocationLabel ? (
-          <p className="type-body mt-4 text-foreground">{normalizedLocationLabel}</p>
-        ) : null}
-        <div className="type-body-compact mt-6 flex w-full max-w-full min-w-0 min-h-60 items-center justify-center rounded-none border border-dashed border-border bg-surface-strong px-6 text-center text-muted">
-          {normalizedLocationLabel || fallbackLabel}
-        </div>
+      <div className="type-body-compact mt-6 flex w-full max-w-full min-w-0 min-h-60 items-center justify-center rounded-none border border-dashed border-border bg-surface-strong px-6 text-center text-muted">
+        {fallbackLabel}
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-full min-w-0">
-      {normalizedLocationLabel ? (
-        <p className="type-body mt-4 text-foreground">{normalizedLocationLabel}</p>
-      ) : null}
-      <div className="mt-6 w-full max-w-full min-w-0 min-h-60 overflow-hidden rounded-none border border-dashed border-border bg-surface-strong">
-        <div className="h-full min-h-60 w-full max-w-full min-w-0" ref={mapRef} />
-      </div>
+    <div className="mt-6 w-full max-w-full min-w-0 min-h-60 overflow-hidden rounded-none border border-dashed border-border bg-surface-strong">
+      <div className="h-full min-h-60 w-full max-w-full min-w-0" ref={mapRef} />
     </div>
   );
 }

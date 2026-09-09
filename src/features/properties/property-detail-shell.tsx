@@ -6,7 +6,6 @@ import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-side
 import { PublicLocationMap } from "@/components/maps/public-location-map";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
-import { buildPropertyAddressLabel } from "@/features/properties/property-location";
 import { parseVideoUrl } from "@/lib/youtube";
 import type { Property } from "@/types/property";
 
@@ -177,7 +176,9 @@ function getOrientationLabel(value: Property["orientation"]) {
 export async function PropertyDetailShell({ property }: PropertyDetailShellProps) {
   const imagesResult = await listPublishedPropertyImages(property.id);
   const images = imagesResult.ok ? imagesResult.data : [];
-  const features = property.features ?? [];
+  const features = (property.features ?? []).filter(
+    (feature) => feature.name.trim().length > 0,
+  );
   const parsedVideo = property.videoUrl ? parseVideoUrl(property.videoUrl) : null;
   const videoEmbedUrl = parsedVideo
     ? parsedVideo.provider === "youtube"
@@ -185,33 +186,44 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
       : parsedVideo.embedUrl
     : null;
   const mobileSectionClassName = "-mx-4 min-w-0 sm:mx-0";
-  const addressLabel = buildPropertyAddressLabel(property);
-  const facts: PropertyFact[] = [
-    {
+  const description = property.description?.trim() || null;
+  const facts: PropertyFact[] = [];
+
+  if (property.bedrooms != null) {
+    facts.push({
       icon: BedDouble,
       key: "bedrooms",
       label: "Dormitorios",
-      value: property.bedrooms != null ? String(property.bedrooms) : "-",
-    },
-    {
+      value: String(property.bedrooms),
+    });
+  }
+
+  if (property.bathrooms != null) {
+    facts.push({
       icon: Bath,
       key: "bathrooms",
       label: "Baños",
-      value: property.bathrooms != null ? String(property.bathrooms) : "-",
-    },
-    {
+      value: String(property.bathrooms),
+    });
+  }
+
+  if (property.garages != null) {
+    facts.push({
       icon: CarFront,
       key: "garages",
       label: "Garajes",
-      value: property.garages != null ? String(property.garages) : "-",
-    },
-    {
+      value: String(property.garages),
+    });
+  }
+
+  if (property.totalArea != null) {
+    facts.push({
       icon: Ruler,
       key: "totalArea",
       label: "Área total",
-      value: property.totalArea != null ? `${property.totalArea} m2` : "-",
-    },
-  ];
+      value: `${property.totalArea} m2`,
+    });
+  }
   const kitchenLabel = getKitchenLabel(property.kitchenType);
   const dispositionLabel = getDispositionLabel(property.disposition);
   const orientationLabel = getOrientationLabel(property.orientation);
@@ -274,13 +286,15 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     <div className="shell section-gap w-full max-w-full min-w-0 !pt-4">
       <section className="grid w-full max-w-full min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
         <div className="min-w-0 space-y-4">
-          <div className={mobileSectionClassName}>
-            <PublicImageGallery
-              emptyLabel={`Galeria preparada para la propiedad: ${property.slug}`}
-              images={images}
-              operationType={property.operationType}
-            />
-          </div>
+          {images.length > 0 ? (
+            <div className={mobileSectionClassName}>
+              <PublicImageGallery
+                emptyLabel=""
+                images={images}
+                operationType={property.operationType}
+              />
+            </div>
+          ) : null}
           {parsedVideo ? (
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
@@ -304,56 +318,61 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               </div>
             </div>
           ) : null}
-          <div className={mobileSectionClassName}>
-            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-              <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
-              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {facts.map((fact) => {
-                  const Icon = fact.icon;
+          {facts.length > 0 ? (
+            <div className={mobileSectionClassName}>
+              <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
+                <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
+                <div className="mt-8 grid w-full max-w-full min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
+                  {facts.map((fact) => {
+                    const Icon = fact.icon;
 
-                  return (
-                    <div
-                      key={fact.key}
-                      className="flex min-w-0 items-center gap-4 rounded-2xl border border-border px-4 py-3 text-foreground"
-                    >
-                      <Icon className="h-6 w-6 flex-none text-primary" />
-                      <div className="min-w-0">
-                        <p className="type-micro uppercase tracking-[0.16em] text-muted">
-                          {fact.label}
-                        </p>
-                        <p className="type-body-compact break-words [overflow-wrap:anywhere]">
-                          {fact.value}
-                        </p>
+                    return (
+                      <div
+                        key={fact.key}
+                        className="flex min-w-0 items-center gap-4 rounded-2xl border border-border px-4 py-3 text-foreground"
+                      >
+                        <Icon className="h-6 w-6 flex-none text-primary" />
+                        <div className="min-w-0">
+                          <p className="type-micro uppercase tracking-[0.16em] text-muted">
+                            {fact.label}
+                          </p>
+                          <p className="type-body-compact break-words [overflow-wrap:anywhere]">
+                            {fact.value}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-          <div className={mobileSectionClassName}>
-            <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-              <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
-              <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
-                {property.description ??
-                  "Espacio preparado para descripcion, caracteristicas destacadas y atributos complementarios."}
-              </p>
-              {features.length > 0 ? (
-                <div className="mt-8 space-y-4">
-                  <h3 className="type-body-compact font-medium text-primary-strong">Amenities</h3>
-                  <FeatureChipList features={features} />
-                </div>
-              ) : null}
+          ) : null}
+          {description || features.length > 0 ? (
+            <div className={mobileSectionClassName}>
+              <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
+                {description ? (
+                  <>
+                    <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
+                    <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
+                      {description}
+                    </p>
+                  </>
+                ) : null}
+                {features.length > 0 ? (
+                  <div className={description ? "mt-8 space-y-4" : "space-y-4"}>
+                    <h2 className="text-xl font-display text-primary-strong">Amenities</h2>
+                    <FeatureChipList features={features} />
+                  </div>
+                ) : null}
+              </div>
             </div>
-          </div>
+          ) : null}
           <div className={mobileSectionClassName}>
             <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
               <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
               <PublicLocationMap
-                address={property.address}
-                fallbackLabel="Ubicación pendiente."
+                fallbackLabel="No se pudo mostrar el mapa."
                 latitude={property.latitude}
-                locationLabel={addressLabel}
                 longitude={property.longitude}
                 title={`Mapa de ubicación de ${property.title}`}
               />

@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
-import { AlertCircle, ImagePlus, LoaderCircle, Trash2 } from "lucide-react";
+import { AlertCircle, ImagePlus, LoaderCircle } from "lucide-react";
+import { ImageCardActions } from "@/features/images/image-card-actions";
 import {
   assertSupportedImageFile,
   IMAGE_INPUT_ACCEPT,
@@ -34,6 +35,8 @@ interface ImagesPickerProps {
   inputId?: string;
   hideEmptyState?: boolean;
   showHeader?: boolean;
+  coverImageId?: string | null;
+  onSetCover?: (imageId: string) => void;
 }
 
 function createPendingImageId() {
@@ -81,6 +84,8 @@ export function ImagesPicker({
   inputId: providedInputId,
   hideEmptyState = false,
   showHeader = true,
+  coverImageId = null,
+  onSetCover,
 }: ImagesPickerProps) {
   const generatedInputId = useId();
   const inputId = providedInputId ?? generatedInputId;
@@ -333,10 +338,7 @@ export function ImagesPicker({
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {images.map((image) => (
-            <article
-              key={image.id}
-              className="overflow-hidden border border-border bg-white"
-            >
+            <article key={image.id} className="group overflow-hidden border border-border bg-white">
               <div className="relative aspect-[4/3] bg-surface-muted">
                 {image.previewUrl ? (
                   <Image
@@ -358,16 +360,17 @@ export function ImagesPicker({
                     )}
                   </div>
                 )}
-                <div className="absolute right-3 top-3">
-                  <button
-                    aria-label={`Eliminar ${image.file?.name ?? image.originalFileName}`}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm transition hover:bg-white"
-                    onClick={() => handleRemoveImage(image.id)}
-                    type="button"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+                {coverImageId === image.id && image.status === "ready" ? (
+                  <span className="admin-status-pill absolute left-3 top-3">Portada</span>
+                ) : null}
+                <ImageCardActions
+                  coverEligible={image.status === "ready"}
+                  deleteLabel={`Eliminar ${image.file?.name ?? image.originalFileName}`}
+                  disabled={disabled}
+                  isCover={coverImageId === image.id}
+                  onDelete={() => handleRemoveImage(image.id)}
+                  onSetCover={onSetCover ? () => onSetCover(image.id) : undefined}
+                />
               </div>
               {image.error ? (
                 <div className="px-4 py-4">

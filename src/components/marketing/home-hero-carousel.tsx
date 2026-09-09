@@ -60,7 +60,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         className="object-cover object-center"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/58 via-black/34 to-black/24" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/42 via-black/24 to-black/12" />
       {(slide.title || slide.price) ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center sm:px-8">
           {slide.href ? (

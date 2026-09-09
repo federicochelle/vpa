@@ -4,17 +4,23 @@ import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { PublicScrollToTop } from "@/components/layout/public-scroll-to-top";
 import { PublicWhatsAppButton } from "@/components/layout/public-whatsapp-button";
+import { PublicLocaleProvider } from "@/i18n/public/locale-provider";
+import { getPublicLocale } from "@/i18n/public/locale.server";
 
-export default function PublicLayout({ children }: { children: ReactNode }) {
+export default async function PublicLayout({ children }: { children: ReactNode }) {
+  const locale = await getPublicLocale();
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <Suspense fallback={null}>
-        <PublicScrollToTop />
-      </Suspense>
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <PublicWhatsAppButton />
-    </div>
+    <PublicLocaleProvider locale={locale}>
+      <div className="flex min-h-screen flex-col" lang={locale}>
+        <Suspense fallback={null}>
+          <PublicScrollToTop />
+        </Suspense>
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <PublicWhatsAppButton />
+      </div>
+    </PublicLocaleProvider>
   );
 }

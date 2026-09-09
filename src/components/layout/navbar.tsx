@@ -6,14 +6,16 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import logoVpa from "../../../logovpa.webp";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
+import { usePublicLocale } from "@/i18n/public/locale-provider";
 import { publicNavigation } from "@/lib/navigation";
 
 const mobileNavigation = [
   ...publicNavigation,
-  { href: "/noticias", label: "NOTICIAS" },
+  { href: "/noticias", messageKey: "nav.news" },
 ] as const;
 
 export function Navbar() {
+  const { t } = usePublicLocale();
   const pathname = usePathname();
   const desktopNavRef = useRef<HTMLElement | null>(null);
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
@@ -53,7 +55,7 @@ export function Navbar() {
   return (
     <>
       <MobileTopbarMenu
-        closeLabel="Cerrar menu"
+        closeLabel={t("nav.closeMenu")}
         headerClassName="md:hidden"
         key={pathname}
         logo={
@@ -66,7 +68,7 @@ export function Navbar() {
             />
           </Link>
         }
-        openLabel="Abrir menu"
+        openLabel={t("nav.openMenu")}
         panel={
           <nav className="shell flex flex-col items-center py-4 text-center">
             {mobileNavigation.map((item) => {
@@ -82,7 +84,7 @@ export function Navbar() {
                   }`}
                   href={item.href}
                 >
-                  {item.label}
+                  {t(item.messageKey)}
                 </Link>
               );
             })}
@@ -128,7 +130,7 @@ export function Navbar() {
                   }`}
                   href={item.href}
                 >
-                  {item.label}
+                  {t(item.messageKey)}
                 </Link>
               );
             })}

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { startTransition, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
@@ -9,9 +9,15 @@ import type { Property, PropertyImage } from "@/types/property";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { FormField } from "@/components/ui/form-field";
-import { GooglePlacesAddressInput } from "@/components/admin/google-places-address-input";
+import {
+  GooglePlacesAddressInput,
+  type GooglePlacesAddressInputHandle,
+} from "@/components/admin/google-places-address-input";
 import { YouTubeVideoField } from "@/components/admin/youtube-video-field";
-import { FeaturesPicker } from "@/features/features/features-picker";
+import {
+  FeaturesPicker,
+  type FeaturesPickerHandle,
+} from "@/features/features/features-picker";
 import {
   ImagesPicker,
   type PendingImage,
@@ -44,6 +50,11 @@ interface PersistedPropertyImageItemProps {
   deleting: boolean;
   updatingCover: boolean;
   readOnly?: boolean;
+}
+
+interface PropertyImagesSnapshot {
+  pendingImages: PendingImage[];
+  persistedImages: PropertyImage[];
 }
 
 type PropertySubmitState = "idle" | "saving" | "uploading";
@@ -248,6 +259,9 @@ export function PropertyForm({
   readOnly = false,
 }: PropertyFormProps) {
   const router = useRouter();
+  const addressInputRef = useRef<GooglePlacesAddressInputHandle | null>(null);
+  const featuresPickerRef = useRef<FeaturesPickerHandle | null>(null);
+  const imagesSnapshotRef = useRef<PropertyImagesSnapshot | null>(null);
   const existingPropertyId = property?.id ?? null;
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const [persistedImages, setPersistedImages] = useState<PropertyImage[]>(propertyImages);
@@ -390,10 +404,16 @@ export function PropertyForm({
     }
 
     const form = event.currentTarget;
-    const formData = new FormData(form);
     const isEditing = Boolean(existingPropertyId);
 
     try {
+      await addressInputRef.current?.waitForPendingResolution();
+      await featuresPickerRef.current?.waitForPendingCreation();
+      const formData = new FormData(form);
+      imagesSnapshotRef.current = {
+        pendingImages: [...pendingImages],
+        persistedImages: [...persistedImages],
+      };
       setSubmitState("saving");
 
       const propertyResponse = await fetch(
@@ -548,6 +568,7 @@ export function PropertyForm({
         }
 
         if (failedImagesCount > 0) {
+          imagesSnapshotRef.current = null;
           setSubmitState("idle");
 
           if (!isEditing) {
@@ -572,7 +593,6 @@ export function PropertyForm({
         }
       }
 
-      setSubmitState("idle");
       startTransition(() => {
         if (isEditing) {
           router.push(
@@ -588,12 +608,17 @@ export function PropertyForm({
         router.refresh();
       });
     } catch (error) {
+      imagesSnapshotRef.current = null;
       setSubmitState("idle");
       setFeedbackError(
         error instanceof Error ? error.message : "No se pudo guardar la propiedad.",
       );
     }
   }
+
+  const imagesSnapshot = submitState === "idle" ? null : imagesSnapshotRef.current;
+  const visualPendingImages = imagesSnapshot?.pendingImages ?? pendingImages;
+  const visualPersistedImages = imagesSnapshot?.persistedImages ?? persistedImages;
 
   return (
     <form className={className} onSubmit={handleSubmit}>
@@ -873,6 +898,7 @@ export function PropertyForm({
               disabled={readOnly}
               id="address"
               name="address"
+              ref={addressInputRef}
             />
           </FormField>
         </div>
@@ -917,6 +943,7 @@ export function PropertyForm({
             <FeaturesPicker
               allFeatures={allFeatures}
               initialSelectedIds={selectedFeatureIds}
+              ref={featuresPickerRef}
             />
           )}
         </div>
@@ -935,10 +962,10 @@ export function PropertyForm({
               </label>
             )}
           </div>
-          {persistedImages.length > 0 ? (
+          {visualPersistedImages.length > 0 ? (
             <div className="space-y-3">
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {persistedImages
+                {visualPersistedImages
                   .slice()
                   .sort((left, right) => left.sortOrder - right.sortOrder)
                   .map((image) => (
@@ -964,7 +991,7 @@ export function PropertyForm({
               label="Galeria de imagenes"
               onChange={setPendingImages}
               showHeader={false}
-              value={pendingImages}
+              value={visualPendingImages}
             />
           )}
         </div>

@@ -20,6 +20,14 @@ function formatInquiryDate(value: string) {
   }).format(date);
 }
 
+function getRelatedEntityLabel(inquiry: Inquiry) {
+  if (inquiry.kind === "property" && !inquiry.propertyId) {
+    return "Propiedad eliminada";
+  }
+
+  return inquiry.relatedTitle || "-";
+}
+
 export function AdminInquiriesTable({
   inquiries,
 }: AdminInquiriesTableProps) {
@@ -91,7 +99,7 @@ export function AdminInquiriesTable({
                   {inquiry.phone || "-"}
                 </td>
                 <td className="admin-note px-6 py-4">
-                  {inquiry.relatedTitle || "-"}
+                  {getRelatedEntityLabel(inquiry)}
                 </td>
               </tr>
             ))}

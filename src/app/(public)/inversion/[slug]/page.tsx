@@ -19,11 +19,12 @@ export default async function InvestmentDetailPage({
     notFound();
   }
 
-  const headerLocation = normalizeLocationPart(project.neighborhood) || "Ubicación pendiente";
+  const headerLocation = normalizeLocationPart(project.neighborhood);
 
   const status = project.constructionStatus
     ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus]
-    : "Proyecto";
+    : null;
+  const hasHeaderDetails = Boolean(headerLocation || status);
 
   return (
     <>
@@ -35,31 +36,41 @@ export default async function InvestmentDetailPage({
                 <h1 className="detail-hero-title text-foreground">
                   {project.name}
                 </h1>
-                <div className="flex items-start justify-between gap-4 lg:hidden">
-                  <div className="flex min-w-0 items-center gap-3 text-primary-strong">
-                    <MapPin className="h-5 w-5 flex-none text-primary" />
-                    <span className="min-w-0 truncate text-lg font-medium whitespace-nowrap sm:text-xl">
-                      {headerLocation}
-                    </span>
+                {hasHeaderDetails ? (
+                  <div className="flex items-start justify-between gap-4 lg:hidden">
+                    {headerLocation ? (
+                      <div className="flex min-w-0 items-center gap-3 text-primary-strong">
+                        <MapPin className="h-5 w-5 flex-none text-primary" />
+                        <span className="min-w-0 truncate text-lg font-medium whitespace-nowrap sm:text-xl">
+                          {headerLocation}
+                        </span>
+                      </div>
+                    ) : null}
+                    {status ? (
+                      <p className="inline-flex shrink-0 whitespace-nowrap bg-primary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
+                        {status}
+                      </p>
+                    ) : null}
                   </div>
-                  <p className="inline-flex shrink-0 whitespace-nowrap bg-primary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
+                ) : null}
+                {headerLocation ? (
+                  <div className="hidden items-start justify-between gap-4 lg:flex lg:justify-start">
+                    <div className="flex min-w-0 items-center gap-3 text-primary-strong">
+                      <MapPin className="h-5 w-5 flex-none text-primary" />
+                      <span className="min-w-0 text-xl font-medium break-words [overflow-wrap:anywhere]">
+                        {headerLocation}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              {status ? (
+                <div className="hidden text-right lg:block">
+                  <p className="type-body-compact inline-flex bg-primary px-3 py-1 font-semibold uppercase tracking-[0.14em] text-white">
                     {status}
                   </p>
                 </div>
-                <div className="hidden items-start justify-between gap-4 lg:flex lg:justify-start">
-                  <div className="flex min-w-0 items-center gap-3 text-primary-strong">
-                    <MapPin className="h-5 w-5 flex-none text-primary" />
-                    <span className="min-w-0 text-xl font-medium break-words [overflow-wrap:anywhere]">
-                      {headerLocation}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="hidden text-right lg:block">
-                <p className="type-body-compact inline-flex bg-primary px-3 py-1 font-semibold uppercase tracking-[0.14em] text-white">
-                  {status}
-                </p>
-              </div>
+              ) : null}
             </div>
           </div>
         </div>

@@ -1,9 +1,13 @@
 import "server-only";
 
 import { hasSupabaseEnv } from "@/lib/supabase/env";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
+import {
+  createSupabaseServerActionClient,
+  createSupabaseServerComponentClient,
+} from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 import type { Feature } from "@/types/feature";
+import type { ValidFeatureName } from "@/features/features/features.form";
 
 export interface FeaturesReadResult {
   ok: boolean;
@@ -14,6 +18,13 @@ export interface FeaturesReadResult {
     hint: string | null;
     message: string;
   } | null;
+}
+
+export interface FeatureWriteResult {
+  ok: boolean;
+  data: Feature | null;
+  created: boolean;
+  error: FeaturesReadResult["error"];
 }
 
 function mapFeatureRow(
@@ -76,6 +87,90 @@ export async function listAllFeatures(): Promise<FeaturesReadResult> {
   return {
     ok: true,
     data: data.map(mapFeatureRow),
+    error: null,
+  };
+}
+
+export async function createOrGetFeature(
+  input: ValidFeatureName,
+): Promise<FeatureWriteResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: null,
+      created: false,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerActionClient();
+  const { data, error } = await supabase
+    .from("features")
+    .insert({
+      category: null,
+      name: input.name,
+      slug: input.slug,
+    })
+    .select("id, name, slug, category")
+    .maybeSingle();
+
+  if (!error && data) {
+    return {
+      ok: true,
+      data: mapFeatureRow(data),
+      created: true,
+      error: null,
+    };
+  }
+
+  if (error?.code !== "23505") {
+    return {
+      ok: false,
+      data: null,
+      created: false,
+      error: error
+        ? formatError(error)
+        : {
+            code: null,
+            details: null,
+            hint: null,
+            message: "No se pudo crear el amenity.",
+          },
+    };
+  }
+
+  const { data: existingFeature, error: existingFeatureError } = await supabase
+    .from("features")
+    .select("id, name, slug, category")
+    .eq("slug", input.slug)
+    .maybeSingle();
+
+  if (existingFeatureError || !existingFeature) {
+    return {
+      ok: false,
+      data: null,
+      created: false,
+      error: existingFeatureError
+        ? formatError(existingFeatureError)
+        : {
+            code: null,
+            details: null,
+            hint: null,
+            message: "El amenity ya existe, pero no se pudo recuperar.",
+          },
+    };
+  }
+
+  return {
+    ok: true,
+    data: mapFeatureRow(existingFeature),
+    created: false,
     error: null,
   };
 }

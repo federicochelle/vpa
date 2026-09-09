@@ -79,7 +79,7 @@ export async function POST(
     publicId,
     url: imageUrl,
     sortOrder,
-    isCover: !hasCover && (requestedCover || existingImagesResult.data.length === 0),
+    isCover: requestedCover || (!hasCover && existingImagesResult.data.length === 0),
     altText: null,
   });
 

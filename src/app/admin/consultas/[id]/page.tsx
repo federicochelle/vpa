@@ -76,6 +76,7 @@ export default async function AdminInquiryDetailPage({
   }
 
   const inquiry = result.data;
+  const propertyWasDeleted = inquiry.kind === "property" && !inquiry.propertyId;
 
   return (
     <AdminRecordShell
@@ -109,7 +110,9 @@ export default async function AdminInquiryDetailPage({
                 <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
                   Propiedad / Proyecto relacionado
                 </p>
-                {inquiry.relatedTitle ? (
+                {propertyWasDeleted ? (
+                  <p className="type-body-compact text-muted">Propiedad eliminada</p>
+                ) : inquiry.relatedTitle ? (
                   (() => {
                     const publicOriginPath = isOriginPathPublic(inquiry.originPath)
                       ? inquiry.originPath

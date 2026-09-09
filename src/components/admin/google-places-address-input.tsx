@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { forwardRef, useEffect, useId, useImperativeHandle, useRef } from "react";
 
 declare global {
   interface Window {
@@ -77,6 +77,16 @@ interface GooglePlacesAddressInputProps {
   defaultDepartment?: string | null;
   disabled?: boolean;
   className?: string;
+}
+
+export interface GooglePlacesAddressInputHandle {
+  waitForPendingResolution: () => Promise<void>;
+}
+
+interface PendingPlaceResolution {
+  id: number;
+  promise: Promise<void>;
+  resolve: () => void;
 }
 
 let googleMapsLoader: Promise<void> | null = null;
@@ -224,17 +234,23 @@ async function loadPlaceAutocompleteElement(apiKey: string) {
   return placesLibraryLoader;
 }
 
-export function GooglePlacesAddressInput({
-  id,
-  name,
-  defaultValue = "",
-  defaultLatitude = null,
-  defaultLongitude = null,
-  defaultCity = null,
-  defaultDepartment = null,
-  disabled = false,
-  className = "admin-input-base",
-}: GooglePlacesAddressInputProps) {
+export const GooglePlacesAddressInput = forwardRef<
+  GooglePlacesAddressInputHandle,
+  GooglePlacesAddressInputProps
+>(function GooglePlacesAddressInput(
+  {
+    id,
+    name,
+    defaultValue = "",
+    defaultLatitude = null,
+    defaultLongitude = null,
+    defaultCity = null,
+    defaultDepartment = null,
+    disabled = false,
+    className = "admin-input-base",
+  },
+  ref,
+) {
   const autocompleteId = useId();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<GooglePlaceAutocompleteElement | null>(null);
@@ -243,6 +259,8 @@ export function GooglePlacesAddressInput({
   const longitudeInputRef = useRef<HTMLInputElement | null>(null);
   const cityInputRef = useRef<HTMLInputElement | null>(null);
   const departmentInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingResolutionRef = useRef<PendingPlaceResolution | null>(null);
+  const selectionIdRef = useRef(0);
   const locationValuesRef = useRef({
     address: defaultValue ?? "",
     latitude: defaultLatitude,
@@ -287,6 +305,14 @@ export function GooglePlacesAddressInput({
     }
   }
 
+  useImperativeHandle(ref, () => ({
+    async waitForPendingResolution() {
+      while (pendingResolutionRef.current) {
+        await pendingResolutionRef.current.promise;
+      }
+    },
+  }), []);
+
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -324,6 +350,11 @@ export function GooglePlacesAddressInput({
         return;
       }
 
+      selectionIdRef.current += 1;
+      const pendingResolution = pendingResolutionRef.current;
+      pendingResolutionRef.current = null;
+      pendingResolution?.resolve();
+
       syncLocationValues({
         address: nextValue,
         latitude: null,
@@ -333,7 +364,7 @@ export function GooglePlacesAddressInput({
       });
     }
 
-    async function handlePlaceSelect(event: Event) {
+    function handlePlaceSelect(event: Event) {
       const selectEvent = event as GooglePlacePredictionSelectEvent;
       const placePrediction = selectEvent.placePrediction;
 
@@ -341,37 +372,80 @@ export function GooglePlacesAddressInput({
         return;
       }
 
-      try {
-        const place = placePrediction.toPlace();
-        await place.fetchFields({
-          fields: ["formattedAddress", "location", "addressComponents"],
-        });
+      const selectionId = selectionIdRef.current + 1;
+      selectionIdRef.current = selectionId;
+      pendingResolutionRef.current?.resolve();
 
-        const nextValue = place.formattedAddress?.trim();
-        const latitude = place.location?.lat();
-        const longitude = place.location?.lng();
+      let resolvePendingResolution = () => {};
+      const pendingPromise = new Promise<void>((resolve) => {
+        resolvePendingResolution = resolve;
+      });
+      const pendingResolution: PendingPlaceResolution = {
+        id: selectionId,
+        promise: pendingPromise,
+        resolve: resolvePendingResolution,
+      };
+      pendingResolutionRef.current = pendingResolution;
 
-        if (!nextValue || latitude == null || longitude == null) {
-          return;
+      syncLocationValues({
+        address: autocompleteElement?.value ?? "",
+        latitude: null,
+        longitude: null,
+        city: null,
+        department: null,
+      });
+
+      void (async () => {
+        try {
+          const place = placePrediction.toPlace();
+          await place.fetchFields({
+            fields: ["formattedAddress", "location", "addressComponents"],
+          });
+
+          if (isCancelled || selectionId !== selectionIdRef.current) {
+            return;
+          }
+
+          const nextValue = place.formattedAddress?.trim();
+          const latitude = place.location?.lat();
+          const longitude = place.location?.lng();
+
+          if (!nextValue || latitude == null || longitude == null) {
+            return;
+          }
+
+          if (autocompleteElement) {
+            autocompleteElement.value = nextValue;
+          }
+
+          syncLocationValues({
+            address: nextValue,
+            latitude,
+            longitude,
+            city: getCityFromAddressComponents(place.addressComponents),
+            department: getDepartmentFromAddressComponents(place.addressComponents),
+          });
+        } catch (error) {
+          if (!isCancelled && selectionId === selectionIdRef.current) {
+            syncLocationValues({
+              address: autocompleteElement?.value ?? "",
+              latitude: null,
+              longitude: null,
+              city: null,
+              department: null,
+            });
+          }
+          console.error(
+            "Google Places API (New): no se pudo obtener formattedAddress desde la selección.",
+            error,
+          );
+        } finally {
+          if (pendingResolutionRef.current?.id === selectionId) {
+            pendingResolutionRef.current = null;
+          }
+          pendingResolution.resolve();
         }
-
-        if (autocompleteElement) {
-          autocompleteElement.value = nextValue;
-        }
-
-        syncLocationValues({
-          address: nextValue,
-          latitude,
-          longitude,
-          city: getCityFromAddressComponents(place.addressComponents),
-          department: getDepartmentFromAddressComponents(place.addressComponents),
-        });
-      } catch (error) {
-        console.error(
-          "Google Places API (New): no se pudo obtener formattedAddress desde la selección.",
-          error,
-        );
-      }
+      })();
     }
 
     function handleGoogleError(event: Event) {
@@ -428,6 +502,10 @@ export function GooglePlacesAddressInput({
 
     return () => {
       isCancelled = true;
+      selectionIdRef.current += 1;
+      const pendingResolution = pendingResolutionRef.current;
+      pendingResolutionRef.current = null;
+      pendingResolution?.resolve();
 
       if (autocompleteElement) {
         autocompleteElement.removeEventListener("gmp-select", handlePlaceSelect);
@@ -549,4 +627,4 @@ export function GooglePlacesAddressInput({
       `}</style>
     </>
   );
-}
+});

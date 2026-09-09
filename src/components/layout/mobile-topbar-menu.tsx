@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 interface MobileTopbarMenuProps {
   closeOnPanelInteract?: boolean;
   closeLabel: string;
+  headerActions?: ReactNode;
   headerClassName?: string;
   lockScroll?: boolean;
   logo: ReactNode;
@@ -18,6 +19,7 @@ interface MobileTopbarMenuProps {
 export function MobileTopbarMenu({
   closeOnPanelInteract = false,
   closeLabel,
+  headerActions,
   headerClassName,
   lockScroll = false,
   logo,
@@ -46,15 +48,18 @@ export function MobileTopbarMenu({
       >
         <div className="shell flex h-20 items-center justify-between gap-6">
           {logo}
-          <button
-            aria-expanded={isOpen}
-            aria-label={isOpen ? closeLabel : openLabel}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white"
-            onClick={() => setIsOpen((open) => !open)}
-            type="button"
-          >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            {headerActions}
+            <button
+              aria-expanded={isOpen}
+              aria-label={isOpen ? closeLabel : openLabel}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white"
+              onClick={() => setIsOpen((open) => !open)}
+              type="button"
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </header>
 
