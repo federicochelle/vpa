@@ -174,28 +174,32 @@ export async function HomeShell() {
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading title={t("home.investments")} titleClassName="home-section-title" />
+            <SectionHeading title={t("home.rentals")} titleClassName="home-section-title" />
             <Link
-              href="/inversion"
+              href="/alquileres"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               {t("common.viewMore")}
             </Link>
           </div>
 
-          {investmentProjects.length > 0 ? (
+          {rentProperties.length > 0 ? (
             <>
               <div className="grid gap-6 sm:hidden">
-                {investmentProjects.slice(0, 3).map((project) => (
-                  <Link key={project.id} href={`/inversion/${project.slug}`}>
-                    <ProjectCard className="w-full" project={project} />
+                {rentProperties.slice(0, 3).map((property) => (
+                  <Link
+                    key={property.id}
+                    href={`/alquileres/${property.slug}`}
+                    className="block w-full"
+                  >
+                    <PropertyCard className="w-full" property={property} />
                   </Link>
                 ))}
               </div>
 
               <div className="sm:hidden">
                 <Link
-                  href="/inversion"
+                  href="/alquileres"
                   className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   {t("common.viewMore")}
@@ -204,20 +208,20 @@ export async function HomeShell() {
 
               <div className="hidden sm:block">
                 <HomeCarousel>
-                  {investmentProjects.slice(0, 6).map((project) => (
+                  {rentProperties.slice(0, 6).map((property) => (
                     <Link
-                      key={project.id}
-                      href={`/inversion/${project.slug}`}
+                      key={property.id}
+                      href={`/alquileres/${property.slug}`}
                       className="basis-[280px] flex-none snap-start sm:basis-[340px] lg:basis-[calc((100%-3rem)/3)]"
                     >
-                      <ProjectCard project={project} />
+                      <PropertyCard property={property} />
                     </Link>
                   ))}
                 </HomeCarousel>
               </div>
             </>
           ) : (
-            <EmptyCarouselCard message="Todavía no hay proyectos de inversión publicados." />
+            <EmptyCarouselCard message="Todavía no hay alquileres publicados." />
           )}
         </div>
       </section>
@@ -280,32 +284,28 @@ export async function HomeShell() {
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading title={t("home.rentals")} titleClassName="home-section-title" />
+            <SectionHeading title={t("home.investments")} titleClassName="home-section-title" />
             <Link
-              href="/alquileres"
+              href="/inversion"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
             >
               {t("common.viewMore")}
             </Link>
           </div>
 
-          {rentProperties.length > 0 ? (
+          {investmentProjects.length > 0 ? (
             <>
               <div className="grid gap-6 sm:hidden">
-                {rentProperties.slice(0, 3).map((property) => (
-                  <Link
-                    key={property.id}
-                    href={`/alquileres/${property.slug}`}
-                    className="block w-full"
-                  >
-                    <PropertyCard className="w-full" property={property} />
+                {investmentProjects.slice(0, 3).map((project) => (
+                  <Link key={project.id} href={`/inversion/${project.slug}`}>
+                    <ProjectCard className="w-full" project={project} />
                   </Link>
                 ))}
               </div>
 
               <div className="sm:hidden">
                 <Link
-                  href="/alquileres"
+                  href="/inversion"
                   className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                 >
                   {t("common.viewMore")}
@@ -314,20 +314,20 @@ export async function HomeShell() {
 
               <div className="hidden sm:block">
                 <HomeCarousel>
-                  {rentProperties.slice(0, 6).map((property) => (
+                  {investmentProjects.slice(0, 6).map((project) => (
                     <Link
-                      key={property.id}
-                      href={`/alquileres/${property.slug}`}
+                      key={project.id}
+                      href={`/inversion/${project.slug}`}
                       className="basis-[280px] flex-none snap-start sm:basis-[340px] lg:basis-[calc((100%-3rem)/3)]"
                     >
-                      <PropertyCard property={property} />
+                      <ProjectCard project={project} />
                     </Link>
                   ))}
                 </HomeCarousel>
               </div>
             </>
           ) : (
-            <EmptyCarouselCard message="Todavía no hay alquileres publicados." />
+            <EmptyCarouselCard message="Todavía no hay proyectos de inversión publicados." />
           )}
         </div>
       </section>
