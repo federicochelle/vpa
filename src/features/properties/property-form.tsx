@@ -3,7 +3,7 @@
 import { startTransition, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
+import { ImagePlus, LoaderCircle } from "lucide-react";
 import type { Feature } from "@/types/feature";
 import type { Property, PropertyImage } from "@/types/property";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
@@ -22,6 +22,7 @@ import {
   ImagesPicker,
   type PendingImage,
 } from "@/features/images/images-picker";
+import { ImageCardActions } from "@/features/images/image-card-actions";
 import { parseVideoUrl } from "@/lib/youtube";
 import {
   currencyOptions,
@@ -32,9 +33,11 @@ import {
   propertyTypeOptions,
 } from "@/features/properties/property-options";
 import { PriceInput } from "@/features/properties/price-input";
+import type { Project } from "@/types/project";
 
 interface PropertyFormProps {
   allFeatures: Feature[];
+  allProjects?: Project[];
   selectedFeatureIds?: string[];
   property?: Property | null;
   propertyImages?: PropertyImage[];
@@ -48,12 +51,15 @@ interface PersistedPropertyImageItemProps {
   onDelete: (imageId: string) => Promise<void>;
   onSetCover: (imageId: string) => Promise<void>;
   deleting: boolean;
+  disabled: boolean;
+  isCover: boolean;
   updatingCover: boolean;
   readOnly?: boolean;
 }
 
 interface PropertyImagesSnapshot {
   pendingImages: PendingImage[];
+  pendingCoverImageId: string | null;
   persistedImages: PropertyImage[];
 }
 
@@ -74,6 +80,23 @@ type UploadTaskResult =
     };
 
 const MAX_PARALLEL_UPLOADS = 3;
+const LOCATION_DEBUG_PREFIX = "PROPERTY_LOCATION_DEBUG";
+
+function readLocationFields(form: HTMLFormElement) {
+  const formData = new FormData(form);
+
+  return {
+    address: formData.get("address"),
+    latitude: formData.get("latitude"),
+    longitude: formData.get("longitude"),
+    city: formData.get("city"),
+    department: formData.get("department"),
+  };
+}
+
+function logLocationDebug(step: string, payload: Record<string, unknown>) {
+  console.info(`[${LOCATION_DEBUG_PREFIX}] ${step}`, payload);
+}
 
 async function uploadProcessedFileToCloudflare(propertyId: string, image: PendingImage) {
   const directUploadResponse = await fetch(
@@ -184,6 +207,8 @@ function PersistedPropertyImageItem({
   onDelete,
   onSetCover,
   deleting,
+  disabled,
+  isCover,
   updatingCover,
   readOnly = false,
 }: PersistedPropertyImageItemProps) {
@@ -199,50 +224,24 @@ function PersistedPropertyImageItem({
           unoptimized
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2 text-[11px]">
-          {image.isCover ? <span className="admin-status-pill">Portada</span> : null}
+          {isCover ? <span className="admin-status-pill">Portada</span> : null}
         </div>
         {readOnly ? null : (
-          <div className="absolute right-3 top-3 z-10 flex items-start gap-2">
-            <button
-              aria-label={image.isCover ? "Imagen de portada" : "Marcar como portada"}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-white/95 text-foreground shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={deleting || updatingCover}
-              onClick={() => {
-                if (!image.isCover) {
-                  void onSetCover(image.id);
-                }
-              }}
-              title={image.isCover ? "Imagen de portada" : "Marcar como portada"}
-              type="button"
-            >
-              {updatingCover ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <Star
-                  className={
-                    image.isCover
-                      ? "h-4 w-4 fill-current text-primary"
-                      : "h-4 w-4 text-foreground"
-                  }
-                />
-              )}
-            </button>
-            <button
-              aria-label="Eliminar imagen guardada"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-white/95 text-foreground shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 md:opacity-0 md:group-hover:opacity-100"
-              disabled={deleting || updatingCover}
-              onClick={() => {
-                void onDelete(image.id);
-              }}
-              type="button"
-            >
-              {deleting ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
-            </button>
-          </div>
+          <ImageCardActions
+            deleteLabel="Eliminar imagen guardada"
+            deleting={deleting}
+            disabled={disabled}
+            isCover={isCover}
+            onDelete={() => {
+              void onDelete(image.id);
+            }}
+            onSetCover={() => {
+              if (!isCover) {
+                void onSetCover(image.id);
+              }
+            }}
+            updatingCover={updatingCover}
+          />
         )}
       </div>
     </article>
@@ -251,6 +250,7 @@ function PersistedPropertyImageItem({
 
 export function PropertyForm({
   allFeatures,
+  allProjects = [],
   property,
   propertyImages = [],
   selectedFeatureIds = [],
@@ -264,6 +264,7 @@ export function PropertyForm({
   const imagesSnapshotRef = useRef<PropertyImagesSnapshot | null>(null);
   const existingPropertyId = property?.id ?? null;
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [pendingCoverImageId, setPendingCoverImageId] = useState<string | null>(null);
   const [persistedImages, setPersistedImages] = useState<PropertyImage[]>(propertyImages);
   const [submitState, setSubmitState] = useState<PropertySubmitState>("idle");
   const [formError, setFormError] = useState<string | null>(null);
@@ -377,6 +378,7 @@ export function PropertyForm({
           isCover: image.id === payload.coverImage?.id,
         })),
       );
+      setPendingCoverImageId(null);
       startTransition(() => {
         router.refresh();
       });
@@ -407,13 +409,22 @@ export function PropertyForm({
     const isEditing = Boolean(existingPropertyId);
 
     try {
-      await addressInputRef.current?.waitForPendingResolution();
-      await featuresPickerRef.current?.waitForPendingCreation();
-      const formData = new FormData(form);
       imagesSnapshotRef.current = {
         pendingImages: [...pendingImages],
+        pendingCoverImageId,
         persistedImages: [...persistedImages],
       };
+      await addressInputRef.current?.waitForPendingResolution();
+      logLocationDebug("form:after-waitForPendingResolution", readLocationFields(form));
+      await featuresPickerRef.current?.waitForPendingCreation();
+      const formData = new FormData(form);
+      logLocationDebug("form:after-FormData", {
+        address: formData.get("address"),
+        latitude: formData.get("latitude"),
+        longitude: formData.get("longitude"),
+        city: formData.get("city"),
+        department: formData.get("department"),
+      });
       setSubmitState("saving");
 
       const propertyResponse = await fetch(
@@ -504,6 +515,9 @@ export function PropertyForm({
         )) {
           if (!uploadResult.ok) {
             failedImagesCount += 1;
+            setPendingCoverImageId((currentId) =>
+              currentId === uploadResult.pendingImageId ? null : currentId,
+            );
             setPendingImages((currentImages) =>
               currentImages.map((currentImage) =>
                 currentImage.id === uploadResult.pendingImageId
@@ -520,6 +534,9 @@ export function PropertyForm({
 
           if (!uploadResult.publicId) {
             failedImagesCount += 1;
+            setPendingCoverImageId((currentId) =>
+              currentId === uploadResult.pendingImageId ? null : currentId,
+            );
             setPendingImages((currentImages) =>
               currentImages.map((currentImage) =>
                 currentImage.id === uploadResult.pendingImageId
@@ -535,21 +552,35 @@ export function PropertyForm({
           }
 
           try {
+            const shouldBecomeCover = pendingCoverImageId === uploadResult.pendingImageId;
             const persistedImage = await persistPropertyImage(nextProperty.id, {
               publicId: uploadResult.publicId,
               sortOrder: uploadResult.sortOrder,
-              isCover: !hasCover,
+              isCover: shouldBecomeCover || !hasCover,
             });
 
             hasCover = hasCover || persistedImage.isCover;
-            setPersistedImages((currentImages) => [...currentImages, persistedImage]);
+            setPersistedImages((currentImages) => [
+              ...currentImages.map((currentImage) =>
+                persistedImage.isCover
+                  ? { ...currentImage, isCover: false }
+                  : currentImage,
+              ),
+              persistedImage,
+            ]);
             setPendingImages((currentImages) =>
               currentImages.filter(
                 (currentImage) => currentImage.id !== uploadResult.pendingImageId,
               ),
             );
+            if (shouldBecomeCover) {
+              setPendingCoverImageId(null);
+            }
           } catch (error) {
             failedImagesCount += 1;
+            setPendingCoverImageId((currentId) =>
+              currentId === uploadResult.pendingImageId ? null : currentId,
+            );
             setPendingImages((currentImages) =>
               currentImages.map((currentImage) =>
                 currentImage.id === uploadResult.pendingImageId
@@ -600,7 +631,7 @@ export function PropertyForm({
           );
         } else {
           router.push(
-            `/admin/propiedades/${nextProperty.id}/editar?success=${encodeURIComponent(
+            `/admin/propiedades?created=${encodeURIComponent(
               "Propiedad creada correctamente.",
             )}`,
           );
@@ -619,6 +650,21 @@ export function PropertyForm({
   const imagesSnapshot = submitState === "idle" ? null : imagesSnapshotRef.current;
   const visualPendingImages = imagesSnapshot?.pendingImages ?? pendingImages;
   const visualPersistedImages = imagesSnapshot?.persistedImages ?? persistedImages;
+  const visualPendingCoverImageId = imagesSnapshot
+    ? imagesSnapshot.pendingCoverImageId
+    : pendingCoverImageId;
+  const hasVisualPendingCover = visualPendingImages.some(
+    (image) => image.id === visualPendingCoverImageId && image.status === "ready",
+  );
+
+  function handlePendingImagesChange(nextImages: PendingImage[]) {
+    setPendingImages(nextImages);
+    setPendingCoverImageId((currentId) =>
+      currentId && nextImages.some((image) => image.id === currentId && image.status === "ready")
+        ? currentId
+        : null,
+    );
+  }
 
   return (
     <form className={className} onSubmit={handleSubmit}>
@@ -857,34 +903,48 @@ export function PropertyForm({
             type="number"
           />
         </FormField>
-        <div className="md:col-span-2 xl:col-span-6">
-          <div className="grid gap-4 sm:grid-cols-2 xl:max-w-xl">
-            <label className="type-body-compact flex items-center gap-3 border border-border bg-white px-4 py-3 text-foreground">
-              <input
-                className="h-4 w-4 accent-primary"
-                defaultChecked={property?.hasBalcony ?? false}
-                disabled={readOnly}
-                id="hasBalcony"
-                name="hasBalcony"
-                type="checkbox"
-              />
-              <span>Balcón</span>
-            </label>
-            <label className="type-body-compact flex items-center gap-3 border border-border bg-white px-4 py-3 text-foreground">
-              <input
-                className="h-4 w-4 accent-primary"
-                defaultChecked={property?.hasTerrace ?? false}
-                disabled={readOnly}
-                id="hasTerrace"
-                name="hasTerrace"
-                type="checkbox"
-              />
-              <span>Terraza</span>
-            </label>
-          </div>
-        </div>
+        <label className="type-body-compact flex min-h-12 items-center gap-3 self-end rounded-2xl border border-border bg-white px-4 py-3 text-foreground">
+          <input
+            className="h-4 w-4 accent-primary"
+            defaultChecked={property?.hasBalcony ?? false}
+            disabled={readOnly}
+            id="hasBalcony"
+            name="hasBalcony"
+            type="checkbox"
+          />
+          <span>Balcón</span>
+        </label>
+        <label className="type-body-compact flex min-h-12 items-center gap-3 self-end rounded-2xl border border-border bg-white px-4 py-3 text-foreground">
+          <input
+            className="h-4 w-4 accent-primary"
+            defaultChecked={property?.hasTerrace ?? false}
+            disabled={readOnly}
+            id="hasTerrace"
+            name="hasTerrace"
+            type="checkbox"
+          />
+          <span>Terraza</span>
+        </label>
         <div className="md:col-span-2 xl:col-span-6">
           <div className="border-t border-border" />
+        </div>
+        <div className="min-w-0 xl:col-span-3">
+          <FormField htmlFor="projectId" label="Proyecto asociado">
+            <select
+              className="admin-input-base"
+              defaultValue={property?.projectId ?? ""}
+              disabled={readOnly}
+              id="projectId"
+              name="projectId"
+            >
+              <option value="">Ninguno</option>
+              {allProjects.map((projectOption) => (
+                <option key={projectOption.id} value={projectOption.id}>
+                  {projectOption.name}
+                </option>
+              ))}
+            </select>
+          </FormField>
         </div>
         <div className="min-w-0 xl:col-span-4">
           <FormField htmlFor="address" label="Dirección">
@@ -903,7 +963,7 @@ export function PropertyForm({
           </FormField>
         </div>
         <div className="min-w-0 xl:col-span-2">
-          <FormField htmlFor="neighborhood" label="Barrio">
+          <FormField htmlFor="neighborhood" label="Zona">
             <input
               className="admin-input-base"
               defaultValue={property?.neighborhood ?? ""}
@@ -970,13 +1030,15 @@ export function PropertyForm({
                   .sort((left, right) => left.sortOrder - right.sortOrder)
                   .map((image) => (
                     <PersistedPropertyImageItem
-                      deleting={deletingImageIds.includes(image.id)}
+                      deleting={!readOnly && deletingImageIds.includes(image.id)}
+                      disabled={submitState !== "idle"}
                       image={image}
+                      isCover={!hasVisualPendingCover && image.isCover}
                       key={image.id}
                       onDelete={handleDeletePersistedImage}
                       onSetCover={handleSetCoverImage}
                       readOnly={readOnly}
-                      updatingCover={coverUpdatingImageId === image.id}
+                      updatingCover={!readOnly && coverUpdatingImageId === image.id}
                     />
                   ))}
               </div>
@@ -985,11 +1047,13 @@ export function PropertyForm({
 
           {readOnly ? null : (
             <ImagesPicker
+              coverImageId={visualPendingCoverImageId}
               disabled={submitState !== "idle"}
               hideEmptyState
               inputId={galleryInputId}
               label="Galeria de imagenes"
-              onChange={setPendingImages}
+              onChange={handlePendingImagesChange}
+              onSetCover={setPendingCoverImageId}
               showHeader={false}
               value={visualPendingImages}
             />

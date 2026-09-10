@@ -40,6 +40,7 @@ export async function createPropertyAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
+  revalidatePath("/inversion");
   redirect(
     `/admin/propiedades?created=${encodeURIComponent("Propiedad creada correctamente.")}`,
   );
@@ -63,6 +64,7 @@ export async function updatePropertyAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
+  revalidatePath("/inversion");
   if (result.data.slug) {
     revalidatePath(`/comprar/${result.data.slug}`);
     revalidatePath(`/alquileres/${result.data.slug}`);

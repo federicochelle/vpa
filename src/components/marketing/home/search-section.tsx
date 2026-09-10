@@ -3,7 +3,7 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { propertyTypeOptions } from "@/features/properties/property-options";
+import type { PropertyType } from "@/types/property";
 
 const searchOperationOptions = [
   { value: "sale", label: "Compra" },
@@ -17,8 +17,15 @@ interface SearchLocationOption {
   operations: Array<(typeof searchOperationOptions)[number]["value"]>;
 }
 
+interface SearchPropertyTypeOption {
+  label: string;
+  operations: Array<"sale" | "rent">;
+  value: PropertyType;
+}
+
 interface SearchSectionProps {
   locationOptions: SearchLocationOption[];
+  propertyTypeOptions: SearchPropertyTypeOption[];
 }
 
 function normalizeLocation(value: string) {
@@ -166,7 +173,7 @@ function LocationCombobox({
         type="button"
       >
         <span className={selectedOption ? "truncate text-foreground" : "truncate text-muted"}>
-          {selectedOption?.label ?? "Barrio"}
+          {selectedOption?.label ?? "Zona"}
         </span>
         <ChevronDown
           className={`h-4 w-4 flex-none text-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -180,14 +187,14 @@ function LocationCombobox({
               ref={inputRef}
               autoComplete="off"
               className="search-field search-zone-input"
-              placeholder="Buscar barrio"
+              placeholder="Buscar zona"
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </div>
           <div
-            aria-label="Opciones de barrio"
+            aria-label="Opciones de zona"
             className="max-h-60 overflow-y-auto"
             id={listboxId}
             role="listbox"
@@ -212,7 +219,7 @@ function LocationCombobox({
             {filteredOptions.length === 0 && suggestedOptions.length > 0 ? (
               <div className="border-t border-border px-4 py-3">
                 <p className="type-body-compact font-medium text-foreground">
-                  No encontramos ese barrio. También te puede interesar:
+                  No encontramos esa zona. También te puede interesar:
                 </p>
                 <div className="mt-3 space-y-2">
                   {suggestedOptions.map((option) => (
@@ -236,7 +243,7 @@ function LocationCombobox({
             ) : null}
             {filteredOptions.length === 0 && suggestedOptions.length === 0 ? (
               <div className="type-body-compact px-4 py-3 text-muted">
-                No encontramos ese barrio.
+                No encontramos esa zona.
               </div>
             ) : null}
           </div>
@@ -246,15 +253,46 @@ function LocationCombobox({
   );
 }
 
-export function SearchSection({ locationOptions }: SearchSectionProps) {
+export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSectionProps) {
   const router = useRouter();
   const [operation, setOperation] = useState<(typeof searchOperationOptions)[number]["value"]>("sale");
   const [propertyType, setPropertyType] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption | null>(null);
+  const operationLocationOptions = useMemo(
+    () => locationOptions.filter((option) => option.operations.includes(operation)),
+    [locationOptions, operation],
+  );
+  const operationPropertyTypeOptions = useMemo(
+    () =>
+      operation === "investment"
+        ? []
+        : propertyTypeOptions.filter((option) => option.operations.includes(operation)),
+    [operation, propertyTypeOptions],
+  );
+
+  function handleOperationChange(nextOperation: (typeof searchOperationOptions)[number]["value"]) {
+    setOperation(nextOperation);
+
+    if (selectedLocation && !selectedLocation.operations.includes(nextOperation)) {
+      setSelectedLocation(null);
+    }
+
+    if (
+      propertyType &&
+      (
+        nextOperation === "investment" ||
+        !propertyTypeOptions.some(
+          (option) => option.value === propertyType && option.operations.includes(nextOperation),
+        )
+      )
+    ) {
+      setPropertyType("");
+    }
+  }
 
   function buildSearchHref(location: SearchLocationOption | null = selectedLocation) {
     const params = new URLSearchParams();
-    if (propertyType) {
+    if (operation !== "investment" && propertyType) {
       params.set("tipo", propertyType);
     }
     if (location) {
@@ -272,28 +310,35 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
     router.push(buildSearchHref());
   }
 
+  const desktopGridClassName =
+    operation === "investment"
+      ? "gap-4 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto]"
+      : "gap-4 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto]";
+
   return (
     <section className="relative z-20 w-full max-w-full min-w-0 -mt-24 px-4 pb-12 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
       <div className="md:hidden">
         <div className="mx-auto w-full max-w-full min-w-0 overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">
             <form className="grid gap-4" onSubmit={handleSubmit}>
-              <label className="grid gap-2 type-body-compact font-medium text-foreground">
-                Tipo de propiedad
-                <select
-                  className="search-field search-select"
-                  value={propertyType}
-                  onChange={(event) => setPropertyType(event.target.value)}
-                  name="tipo"
-                >
-                  <option value="">Todos</option>
-                  {propertyTypeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {operation === "investment" ? null : (
+                <label className="grid gap-2 type-body-compact font-medium text-foreground">
+                  Tipo de propiedad
+                  <select
+                    className="search-field search-select"
+                    value={propertyType}
+                    onChange={(event) => setPropertyType(event.target.value)}
+                    name="tipo"
+                  >
+                    <option value="">Todos</option>
+                    {operationPropertyTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
 
               <label className="grid gap-2 type-body-compact font-medium text-foreground">
                 Operación
@@ -301,7 +346,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                   className="search-field search-select"
                   value={operation}
                   onChange={(event) =>
-                    setOperation(event.target.value as (typeof searchOperationOptions)[number]["value"])
+                    handleOperationChange(event.target.value as (typeof searchOperationOptions)[number]["value"])
                   }
                   name="operacion"
                 >
@@ -314,9 +359,9 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
               </label>
 
               <div className="grid gap-2 type-body-compact font-medium text-foreground">
-                <span>Barrio</span>
+                <span>Zona</span>
                 <LocationCombobox
-                  options={locationOptions}
+                  options={operationLocationOptions}
                   operation={operation}
                   selectedOption={selectedLocation}
                   onSelect={setSelectedLocation}
@@ -339,25 +384,27 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
       <div className="hidden md:mx-auto md:block md:w-full md:max-w-6xl">
         <div className="border border-border bg-surface p-6 shadow-[0_14px_40px_rgba(39,39,39,0.05)] sm:p-8">
           <form
-            className="gap-4 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto]"
+            className={desktopGridClassName}
             onSubmit={handleSubmit}
           >
-            <label className="grid gap-2 type-body-compact font-medium text-foreground">
-              Tipo de propiedad
-              <select
-                className="search-field search-select"
-                value={propertyType}
-                onChange={(event) => setPropertyType(event.target.value)}
-                name="tipo"
-              >
-                <option value="">Todos</option>
-                {propertyTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {operation === "investment" ? null : (
+              <label className="grid gap-2 type-body-compact font-medium text-foreground">
+                Tipo de propiedad
+                <select
+                  className="search-field search-select"
+                  value={propertyType}
+                  onChange={(event) => setPropertyType(event.target.value)}
+                  name="tipo"
+                >
+                  <option value="">Todos</option>
+                  {operationPropertyTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             <label className="grid gap-2 type-body-compact font-medium text-foreground">
               Operación
@@ -365,7 +412,7 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
                 className="search-field search-select"
                 value={operation}
                 onChange={(event) =>
-                  setOperation(event.target.value as (typeof searchOperationOptions)[number]["value"])
+                  handleOperationChange(event.target.value as (typeof searchOperationOptions)[number]["value"])
                 }
                 name="operacion"
               >
@@ -378,9 +425,9 @@ export function SearchSection({ locationOptions }: SearchSectionProps) {
             </label>
 
             <div className="grid gap-2 type-body-compact font-medium text-foreground">
-              <span>Barrio</span>
+              <span>Zona</span>
               <LocationCombobox
-                options={locationOptions}
+                options={operationLocationOptions}
                 operation={operation}
                 selectedOption={selectedLocation}
                 onSelect={setSelectedLocation}

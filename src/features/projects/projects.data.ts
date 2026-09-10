@@ -211,6 +211,38 @@ export async function getPublishedProjectBySlug(
   return data ? mapProjectRow(data) : null;
 }
 
+export async function getPublishedProjectById(id: string): Promise<Project | null> {
+  if (!hasSupabaseEnv()) {
+    return null;
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .eq("published", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching published project by id", formatError(error));
+    return null;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const result = await attachProjectCoverImages(supabase, [mapProjectRow(data)]);
+
+  if (!result.ok) {
+    console.error("Error fetching published project cover by id", result.error);
+    return null;
+  }
+
+  return result.data[0] ?? null;
+}
+
 async function resolveUniqueProjectSlug(
   slug: string,
   options?: { excludeId?: string },

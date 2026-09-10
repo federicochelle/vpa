@@ -1,4 +1,5 @@
 import type { ProjectMutationInput, SupabaseActionError } from "@/features/projects/projects.data";
+import { toProjectDeliveryDateValue } from "@/features/projects/project-delivery-date";
 import { normalizeVideoUrl } from "@/lib/youtube";
 
 function toNullableString(value: FormDataEntryValue | null) {
@@ -85,7 +86,7 @@ export function buildProjectInput(formData: FormData): ProjectMutationInput {
       formData.get("constructionStatus"),
       "presale",
     ) as ProjectMutationInput["constructionStatus"],
-    estimatedDeliveryDate: toNullableString(formData.get("estimatedDeliveryDate")),
+    estimatedDeliveryDate: toProjectDeliveryDateValue(formData.get("estimatedDeliveryDate")),
     address: toNullableString(formData.get("address")),
     neighborhood: toNullableString(formData.get("neighborhood")),
     city: toNullableString(formData.get("city")),

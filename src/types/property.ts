@@ -2,6 +2,12 @@ import type { Feature } from "@/types/feature";
 
 export type OperationType = "sale" | "rent";
 
+export interface PropertyProjectSummary {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export type PropertyType =
   | "apartment"
   | "house"
@@ -25,6 +31,8 @@ export type PropertyOrientation =
 
 export interface Property {
   id: string;
+  projectId?: string | null;
+  project?: PropertyProjectSummary | null;
   slug: string;
   title: string;
   operationType: OperationType;

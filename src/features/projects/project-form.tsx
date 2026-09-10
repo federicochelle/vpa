@@ -20,6 +20,7 @@ import {
   type PendingImage,
 } from "@/features/images/images-picker";
 import { ImageCardActions } from "@/features/images/image-card-actions";
+import { toProjectDeliveryMonthInputValue } from "@/features/projects/project-delivery-date";
 import type { Feature } from "@/types/feature";
 import {
   PROJECT_CONSTRUCTION_STATUS_LABELS,
@@ -246,6 +247,9 @@ export function ProjectForm({
   const [formError, setFormError] = useState<string | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState(project?.videoUrl ?? "");
+  const [constructionStatus, setConstructionStatus] = useState(
+    project?.constructionStatus ?? "presale",
+  );
   const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
   const [coverUpdatingImageId, setCoverUpdatingImageId] = useState<string | null>(null);
   const galleryInputId = "project-gallery-input";
@@ -685,10 +689,15 @@ export function ProjectForm({
           <FormField htmlFor="constructionStatus" label="Estado de proyecto">
             <select
               className="admin-input-base"
-              defaultValue={project?.constructionStatus ?? "presale"}
               disabled={readOnly}
               id="constructionStatus"
               name="constructionStatus"
+              onChange={(event) =>
+                setConstructionStatus(
+                  event.target.value as (typeof PROJECT_CONSTRUCTION_STATUS_VALUES)[number],
+                )
+              }
+              value={constructionStatus}
             >
               {PROJECT_CONSTRUCTION_STATUS_VALUES.map((status) => (
                 <option key={status} value={status}>
@@ -697,16 +706,18 @@ export function ProjectForm({
               ))}
             </select>
           </FormField>
-          <FormField htmlFor="estimatedDeliveryDate" label="Fecha estimada de entrega">
-            <input
-              className="admin-input-base"
-              defaultValue={project?.estimatedDeliveryDate ?? ""}
-              disabled={readOnly}
-              id="estimatedDeliveryDate"
-              name="estimatedDeliveryDate"
-              type="date"
-            />
-          </FormField>
+          {constructionStatus === "immediate_occupancy" ? null : (
+            <FormField htmlFor="estimatedDeliveryDate" label="Fecha estimada de entrega">
+              <input
+                className="admin-input-base"
+                defaultValue={toProjectDeliveryMonthInputValue(project?.estimatedDeliveryDate ?? null)}
+                disabled={readOnly}
+                id="estimatedDeliveryDate"
+                name="estimatedDeliveryDate"
+                type="month"
+              />
+            </FormField>
+          )}
         </div>
         <div className="md:col-span-2 xl:col-span-6">
           <div className="border-t border-border" />
@@ -728,7 +739,7 @@ export function ProjectForm({
           </FormField>
         </div>
         <div className="xl:col-span-2">
-          <FormField htmlFor="neighborhood" label="Barrio">
+          <FormField htmlFor="neighborhood" label="Zona">
             <input
               className="admin-input-base"
               defaultValue={project?.neighborhood ?? ""}

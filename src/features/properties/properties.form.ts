@@ -54,6 +54,24 @@ function toNullableEnumString(value: FormDataEntryValue | null) {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function toNullableUuid(value: FormDataEntryValue | null, fieldLabel: string) {
+  const normalizedValue = toNullableString(value);
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      normalizedValue,
+    )
+  ) {
+    throw new Error(`El campo ${fieldLabel} tiene un valor inválido.`);
+  }
+
+  return normalizedValue;
+}
+
 function toEnumValue<T extends string>(
   value: FormDataEntryValue | null,
   allowedValues: readonly T[],
@@ -132,6 +150,7 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
   return {
     title,
     slug,
+    projectId: toNullableUuid(formData.get("projectId"), "proyecto asociado"),
     operationType: toRequiredString(
       formData.get("operationType"),
       "sale",

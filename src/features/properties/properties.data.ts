@@ -34,6 +34,7 @@ export interface SupabaseActionError {
 export interface PropertyMutationInput {
   title: string;
   slug: string;
+  projectId: string | null;
   operationType: "sale" | "rent";
   propertyType: string;
   status: "draft" | "published" | "archived";
@@ -241,6 +242,7 @@ function toPropertyPayload(
   Database["public"]["Tables"]["properties"]["Insert"],
   | "title"
   | "slug"
+  | "project_id"
   | "operation_type"
   | "property_type"
   | "status"
@@ -273,6 +275,7 @@ function toPropertyPayload(
   return {
     title: input.title,
     slug: input.slug,
+    project_id: input.projectId,
     operation_type: input.operationType,
     property_type: input.propertyType,
     status: input.status,
@@ -302,6 +305,36 @@ function toPropertyPayload(
     construction_year: input.constructionYear,
     investment_opportunity: input.investmentOpportunity,
   };
+}
+
+async function ensureProjectExists(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>,
+  projectId: string | null,
+) {
+  if (!projectId) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .maybeSingle();
+
+  if (error) {
+    return formatError(error);
+  }
+
+  if (!data) {
+    return {
+      code: null,
+      details: null,
+      hint: null,
+      message: "El proyecto asociado no existe o no está disponible.",
+    };
+  }
+
+  return null;
 }
 
 async function readPublishedProperties(): Promise<PropertiesReadResult> {
@@ -368,6 +401,39 @@ export async function listPublishedPropertiesByOperation(
   const result = await readPublishedPropertiesByOperation(operationType);
 
   if (!result.ok) {
+    return [];
+  }
+
+  return result.data;
+}
+
+export async function listPublishedPropertiesByProject(
+  projectId: string,
+): Promise<Property[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("project_id", projectId)
+    .eq("published", true)
+    .eq("status", "published")
+    .order("section_order", { ascending: true, nullsFirst: false })
+    .order("featured", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error listing published properties by project", formatError(error));
+    return [];
+  }
+
+  const result = await attachPropertyCoverImages(supabase, data.map(mapPropertyRow));
+
+  if (!result.ok) {
+    console.error("Error listing published property covers by project", result.error);
     return [];
   }
 
@@ -608,6 +674,16 @@ export async function createProperty(
   }
 
   const supabase = await createSupabaseServerActionClient();
+  const projectError = await ensureProjectExists(supabase, input.projectId);
+
+  if (projectError) {
+    return {
+      ok: false,
+      data: null,
+      error: projectError,
+    };
+  }
+
   let uniqueSlug = input.slug;
 
   try {
@@ -629,6 +705,7 @@ export async function createProperty(
   const insertPayload: PropertyInsert = {
     title: payload.title,
     slug: payload.slug,
+    project_id: payload.project_id,
     operation_type: payload.operation_type,
     property_type: payload.property_type,
     status: payload.status,
@@ -658,6 +735,7 @@ export async function createProperty(
     construction_year: payload.construction_year,
     investment_opportunity: payload.investment_opportunity,
   };
+
   const { data, error } = await supabase
     .from("properties")
     .insert(insertPayload)
@@ -711,6 +789,16 @@ export async function updateProperty(
   }
 
   const supabase = await createSupabaseServerActionClient();
+  const projectError = await ensureProjectExists(supabase, input.projectId);
+
+  if (projectError) {
+    return {
+      ok: false,
+      data: null,
+      error: projectError,
+    };
+  }
+
   let uniqueSlug = input.slug;
 
   try {
@@ -755,6 +843,7 @@ export async function updateProperty(
   const updatePayload: PropertyUpdate = {
     title: payload.title,
     slug: payload.slug,
+    project_id: payload.project_id,
     operation_type: payload.operation_type,
     property_type: payload.property_type,
     status: payload.status,
@@ -784,6 +873,7 @@ export async function updateProperty(
     construction_year: payload.construction_year,
     investment_opportunity: payload.investment_opportunity,
   };
+
   const { data, error } = await supabase
     .from("properties")
     .update(updatePayload)

@@ -4,10 +4,13 @@ import type { ComponentType } from "react";
 import { PublicImageGallery } from "@/components/gallery/public-image-gallery";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
 import { PublicLocationMap } from "@/components/maps/public-location-map";
+import { ProjectCard } from "@/components/projects/project-card";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
+import { getPublishedProjectById } from "@/features/projects/projects.data";
 import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
 import { parseVideoUrl } from "@/lib/youtube";
 import type { Property } from "@/types/property";
+import Link from "next/link";
 
 interface PropertyDetailShellProps {
   property: Property;
@@ -174,7 +177,10 @@ function getOrientationLabel(value: Property["orientation"]) {
 }
 
 export async function PropertyDetailShell({ property }: PropertyDetailShellProps) {
-  const imagesResult = await listPublishedPropertyImages(property.id);
+  const [imagesResult, associatedProject] = await Promise.all([
+    listPublishedPropertyImages(property.id),
+    property.projectId ? getPublishedProjectById(property.projectId) : Promise.resolve(null),
+  ]);
   const images = imagesResult.ok ? imagesResult.data : [];
   const features = (property.features ?? []).filter(
     (feature) => feature.name.trim().length > 0,
@@ -378,6 +384,20 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               />
             </div>
           </div>
+          {associatedProject ? (
+            <div className={mobileSectionClassName}>
+              <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
+                <h2 className="text-xl font-display text-primary-strong">
+                  Proyecto asociado
+                </h2>
+                <div className="mt-6 max-w-2xl">
+                  <Link href={`/inversion/${associatedProject.slug}`}>
+                    <ProjectCard project={associatedProject} variant="compact" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
         <aside className={`${mobileSectionClassName} lg:sticky lg:top-24 lg:self-start`}>
           <PublicInquirySidebar

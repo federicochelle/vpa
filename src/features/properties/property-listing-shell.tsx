@@ -29,7 +29,7 @@ export function PropertyListingShell({
             description={description}
           />
           <div className="mt-8 grid gap-4 lg:grid-cols-5">
-            {["Operacion", "Tipo", "Barrio", "Dormitorios", "Precio"].map((item) => (
+            {["Operacion", "Tipo", "Zona", "Dormitorios", "Precio"].map((item) => (
               <div
                 key={item}
                 className="type-body-compact rounded-2xl border border-border bg-white/70 px-4 py-3 text-muted"

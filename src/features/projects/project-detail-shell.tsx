@@ -4,15 +4,19 @@ import {
   Hammer,
   MapPin,
 } from "lucide-react";
+import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { PublicImageGallery } from "@/components/gallery/public-image-gallery";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
 import { PublicLocationMap } from "@/components/maps/public-location-map";
+import { PropertyCard } from "@/components/properties/property-card";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
+import { formatProjectDeliveryDate } from "@/features/projects/project-delivery-date";
 import { listAllFeatures } from "@/features/features/features.data";
 import { listPublishedProjectImages } from "@/features/projects/project-images.data";
 import { getProjectFeatureIds } from "@/features/projects/projects.data";
 import { normalizeLocationPart } from "@/features/properties/property-location";
+import { listPublishedPropertiesByProject } from "@/features/properties/properties.data";
 import { parseVideoUrl } from "@/lib/youtube";
 import { PROJECT_CONSTRUCTION_STATUS_LABELS, type Project } from "@/types/project";
 
@@ -26,30 +30,17 @@ interface ProjectFact {
   value: string;
 }
 
-function formatDeliveryDate(value: string | null) {
-  const normalizedValue = value?.trim();
-
-  if (!normalizedValue) {
-    return null;
-  }
-
-  const date = new Date(normalizedValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return normalizedValue;
-  }
-
-  return new Intl.DateTimeFormat("es-UY", {
-    year: "numeric",
-    month: "long",
-  }).format(date);
-}
-
 export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
-  const [imagesResult, featuresResult, selectedFeatureIds] = await Promise.all([
+  const [
+    imagesResult,
+    featuresResult,
+    selectedFeatureIds,
+    projectProperties,
+  ] = await Promise.all([
     listPublishedProjectImages(project.id),
     listAllFeatures(),
     getProjectFeatureIds(project.id),
+    listPublishedPropertiesByProject(project.id),
   ]);
   const images = imagesResult.ok ? imagesResult.data : [];
   const selectedFeatureIdSet = new Set(selectedFeatureIds);
@@ -66,7 +57,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
     : null;
   const mobileFullBleedClassName = "-mx-4 min-w-0 sm:mx-0";
   const developerName = normalizeLocationPart(project.developerName);
-  const deliveryDate = formatDeliveryDate(project.estimatedDeliveryDate);
+  const deliveryDate = formatProjectDeliveryDate(project.estimatedDeliveryDate);
   const projectLocation = [
     normalizeLocationPart(project.neighborhood),
     normalizeLocationPart(project.city),
@@ -185,6 +176,25 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
               />
             </div>
           </div>
+          {projectProperties.length > 0 ? (
+            <div className={mobileFullBleedClassName}>
+              <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
+                <h2 className="text-xl font-display text-primary-strong">
+                  Propiedades disponibles
+                </h2>
+                <div className="mt-6 grid gap-4">
+                  {projectProperties.map((property) => (
+                    <Link
+                      href={`/${property.operationType === "rent" ? "alquileres" : "comprar"}/${property.slug}`}
+                      key={property.id}
+                    >
+                      <PropertyCard property={property} variant="compact" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
         <aside className={`${mobileFullBleedClassName} lg:sticky lg:top-24 lg:self-start`}>
           <PublicInquirySidebar

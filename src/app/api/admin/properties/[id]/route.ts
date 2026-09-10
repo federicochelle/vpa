@@ -49,6 +49,7 @@ export async function PATCH(
   revalidatePath(`/admin/propiedades/${id}/editar`);
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
+  revalidatePath("/inversion");
 
   if (result.data.slug) {
     revalidatePath(`/comprar/${result.data.slug}`);

@@ -11,6 +11,7 @@ import { NewsCard } from "@/features/news/news-card";
 import { NewsListItem } from "@/features/news/news-list-item";
 import { listPublishedNews } from "@/features/news/news.data";
 import { listPublishedPropertiesByOperation } from "@/features/properties/properties.data";
+import { propertyTypeOptions } from "@/features/properties/property-options";
 import { listPublishedProjects } from "@/features/projects/projects.data";
 import propiedadHeroImage from "../../../propiedad.jpg";
 import proyectoHeroImage from "../../../proyecto.jpg";
@@ -72,6 +73,51 @@ function buildNeighborhoodOptions(
   );
 }
 
+function buildPropertyTypeOptions(
+  ...propertyGroups: Array<
+    Array<{
+      propertyType: string;
+      operation: "sale" | "rent";
+    }>
+  >
+) {
+  const optionsMap = new Map<
+    string,
+    {
+      label: string;
+      operations: Array<"sale" | "rent">;
+      value: (typeof propertyTypeOptions)[number]["value"];
+    }
+  >();
+
+  for (const item of propertyGroups.flat()) {
+    const option = propertyTypeOptions.find((type) => type.value === item.propertyType);
+
+    if (!option) {
+      continue;
+    }
+
+    const existing = optionsMap.get(option.value);
+
+    if (existing) {
+      if (!existing.operations.includes(item.operation)) {
+        existing.operations.push(item.operation);
+      }
+      continue;
+    }
+
+    optionsMap.set(option.value, {
+      label: option.label,
+      operations: [item.operation],
+      value: option.value,
+    });
+  }
+
+  return Array.from(optionsMap.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, "es-UY"),
+  );
+}
+
 export async function HomeShell() {
   const locale = await getPublicLocale();
   const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
@@ -105,12 +151,25 @@ export async function HomeShell() {
       operation: "investment" as const,
     })),
   );
+  const searchPropertyTypeOptions = buildPropertyTypeOptions(
+    rentProperties.map((property) => ({
+      operation: "rent" as const,
+      propertyType: property.propertyType,
+    })),
+    saleProperties.map((property) => ({
+      operation: "sale" as const,
+      propertyType: property.propertyType,
+    })),
+  );
 
   return (
     <div className="w-full max-w-full min-w-0 overflow-x-clip">
       <HomeHeroCarousel slides={heroSlides} />
 
-      <SearchSection locationOptions={locationOptions} />
+      <SearchSection
+        locationOptions={locationOptions}
+        propertyTypeOptions={searchPropertyTypeOptions}
+      />
 
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">

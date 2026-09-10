@@ -42,7 +42,7 @@ export function AdminPropertiesTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {["Propiedad", "Operación", "Ubicación", "ORDEN", "HOME"].map(
+              {["Propiedad", "Operación", "Zona", "ORDEN", "HOME"].map(
                 (column) => (
                   <th
                     key={column}
@@ -92,9 +92,7 @@ export function AdminPropertiesTable({
                     </span>
                   </td>
                   <td className="admin-note px-6 py-5">
-                    {[property.neighborhood, property.city]
-                      .filter(Boolean)
-                      .join(", ") || "Sin ubicacion"}
+                    {property.neighborhood ?? "Sin zona"}
                   </td>
                   <td className="admin-note px-6 py-5">
                     <AdminSectionOrderSelect

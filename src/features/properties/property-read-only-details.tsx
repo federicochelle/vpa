@@ -9,10 +9,12 @@ import {
 } from "@/features/properties/property-options";
 import type { Feature } from "@/types/feature";
 import type { Property, PropertyImage } from "@/types/property";
+import type { Project } from "@/types/project";
 
 interface PropertyReadOnlyDetailsProps {
   features: Feature[];
   images: PropertyImage[];
+  projects?: Project[];
   property: Property;
   selectedFeatureIds: string[];
 }
@@ -43,12 +45,16 @@ function formatCommonExpenses(value: number | null | undefined) {
 export function PropertyReadOnlyDetails({
   features,
   images,
+  projects = [],
   property,
   selectedFeatureIds,
 }: PropertyReadOnlyDetailsProps) {
   const selectedFeatures = selectedFeatureIds
     .map((featureId) => features.find((feature) => feature.id === featureId))
     .filter((feature): feature is Feature => Boolean(feature));
+  const associatedProject = property.projectId
+    ? projects.find((project) => project.id === property.projectId)
+    : null;
 
   return (
     <div className="min-w-0">
@@ -82,15 +88,17 @@ export function PropertyReadOnlyDetails({
         <AdminReadOnlyField label="Orientación" value={optionLabel(propertyOrientationOptions, property.orientation ?? null)} />
         {property.propertyType === "apartment" ? <AdminReadOnlyField label="Piso" value={property.floor ?? ""} /> : null}
         <AdminReadOnlyField label="Año de construcción" value={property.constructionYear ?? null} />
-        <div className="md:col-span-2 xl:col-span-6">
-          <div className="grid gap-4 sm:grid-cols-2 xl:max-w-xl">
-            <AdminReadOnlyField label="Balcón" value={property.hasBalcony ? "Sí" : "No"} />
-            <AdminReadOnlyField label="Terraza" value={property.hasTerrace ? "Sí" : "No"} />
-          </div>
-        </div>
+        <AdminReadOnlyField label="Balcón" value={property.hasBalcony ? "Sí" : "No"} />
+        <AdminReadOnlyField label="Terraza" value={property.hasTerrace ? "Sí" : "No"} />
         <div className="md:col-span-2 xl:col-span-6"><div className="border-t border-border" /></div>
+        <div className="xl:col-span-3">
+          <AdminReadOnlyField
+            label="Proyecto asociado"
+            value={associatedProject?.name ?? "Sin proyecto asociado"}
+          />
+        </div>
         <div className="xl:col-span-4"><AdminReadOnlyField label="Dirección" value={property.address ?? ""} /></div>
-        <div className="xl:col-span-2"><AdminReadOnlyField label="Barrio" value={property.neighborhood ?? ""} /></div>
+        <div className="xl:col-span-2"><AdminReadOnlyField label="Zona" value={property.neighborhood ?? ""} /></div>
       </div>
       <div className="mt-6">
         <AdminReadOnlyField className="min-h-40" label="Descripción" multiline value={property.description ?? ""} />

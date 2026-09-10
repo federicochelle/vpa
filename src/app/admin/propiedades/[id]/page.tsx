@@ -11,6 +11,7 @@ import {
   getAdminPropertyById,
   getPropertyFeatureIds,
 } from "@/features/properties/properties.data";
+import { listAdminProjects } from "@/features/projects/projects.data";
 
 interface AdminPropertyDetailPageProps {
   params: Promise<{ id: string }>;
@@ -28,12 +29,19 @@ export default async function AdminPropertyDetailPage({
   params,
 }: AdminPropertyDetailPageProps) {
   const { id } = await params;
-  const [result, featuresResult, selectedFeatureIds, propertyImagesResult] =
+  const [
+    result,
+    featuresResult,
+    selectedFeatureIds,
+    propertyImagesResult,
+    projectsResult,
+  ] =
     await Promise.all([
       getAdminPropertyById(id),
       listAllFeatures(),
       getPropertyFeatureIds(id),
       listAdminPropertyImages(id),
+      listAdminProjects(),
     ]);
 
   if (!result.ok && result.error) {
@@ -107,6 +115,7 @@ export default async function AdminPropertyDetailPage({
           <PropertyReadOnlyDetails
             features={featuresResult.data}
             images={propertyImagesResult.ok ? propertyImagesResult.data : []}
+            projects={projectsResult.data}
             property={result.data}
             selectedFeatureIds={selectedFeatureIds}
           />

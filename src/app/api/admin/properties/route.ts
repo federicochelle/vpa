@@ -44,6 +44,7 @@ export async function POST(request: Request) {
   revalidatePath("/admin/propiedades");
   revalidatePath("/comprar");
   revalidatePath("/alquileres");
+  revalidatePath("/inversion");
 
   return Response.json({
     message: "Propiedad creada correctamente.",

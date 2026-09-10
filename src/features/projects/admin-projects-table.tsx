@@ -1,7 +1,8 @@
 "use client";
 
-import { Children } from "react";
+import { Children, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowDownAZ } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdminHeroToggle } from "@/features/home-hero/admin-hero-toggle";
 import { AdminSectionOrderSelect } from "@/features/section-order/admin-section-order-select";
@@ -22,6 +23,16 @@ export function AdminProjectsTable({
 }: AdminProjectsTableProps) {
   const router = useRouter();
   const hasVisibleChildren = Children.toArray(children).length > 0;
+  const [sortByName, setSortByName] = useState(false);
+  const visibleProjects = useMemo(
+    () =>
+      sortByName
+        ? [...projects].sort((left, right) =>
+            left.name.localeCompare(right.name, "es-UY", { sensitivity: "base" }),
+          )
+        : projects,
+    [projects, sortByName],
+  );
 
   return (
     <section className="panel overflow-hidden">
@@ -42,13 +53,25 @@ export function AdminProjectsTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {[
-                "Proyecto",
-                "Estado",
-                "Ubicación",
-                "Orden",
-                "Home",
-              ].map((column) => (
+              <th className="admin-table-head px-6 py-4 text-left">
+                <span className="inline-flex items-center gap-2">
+                  Proyecto
+                  <button
+                    aria-pressed={sortByName}
+                    className={`inline-flex size-8 items-center justify-center rounded-full border transition-colors ${
+                      sortByName
+                        ? "border-primary/30 bg-primary/10 text-primary-strong"
+                        : "border-border bg-white text-muted hover:border-primary/30 hover:text-primary-strong"
+                    }`}
+                    onClick={() => setSortByName((current) => !current)}
+                    title={sortByName ? "Volver al orden manual" : "Ordenar alfabéticamente"}
+                    type="button"
+                  >
+                    <ArrowDownAZ className="h-4 w-4" />
+                  </button>
+                </span>
+              </th>
+              {["Estado", "Zona", "Orden", "Home"].map((column) => (
                 <th
                   key={column}
                   className="admin-table-head px-6 py-4 text-left"
@@ -59,14 +82,14 @@ export function AdminProjectsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {projects.length === 0 ? (
+            {visibleProjects.length === 0 ? (
               <tr>
                 <td className="admin-note px-6 py-10" colSpan={5}>
                   No hay proyectos visibles para esta sesión.
                 </td>
               </tr>
             ) : (
-              projects.map((project) => (
+              visibleProjects.map((project) => (
                 <tr
                   className="cursor-pointer transition-colors hover:bg-surface-muted/40"
                   key={project.id}
@@ -92,8 +115,7 @@ export function AdminProjectsTable({
                     </span>
                   </td>
                   <td className="admin-note px-6 py-5">
-                    {[project.department, project.city].filter(Boolean).join(" / ") ||
-                      "Sin ubicación"}
+                    {project.neighborhood ?? "Sin zona"}
                   </td>
                   <td className="admin-note px-6 py-5">
                     <AdminSectionOrderSelect

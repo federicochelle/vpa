@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { AdminReadOnlyField } from "@/components/admin/admin-read-only-field";
+import { formatProjectDeliveryDate } from "@/features/projects/project-delivery-date";
 import { PROJECT_CONSTRUCTION_STATUS_LABELS } from "@/types/project";
 import type { Feature } from "@/types/feature";
 import type { Project, ProjectImage } from "@/types/project";
@@ -21,11 +22,11 @@ export function ProjectReadOnlyDetails({ features, images, project, selectedFeat
         <div className="xl:col-span-3"><AdminReadOnlyField label="Desarrollador" plain value={project.developerName ?? ""} /></div>
         <div className="xl:col-span-6 grid gap-6 md:grid-cols-2">
           <AdminReadOnlyField label="Estado de proyecto" plain value={project.constructionStatus ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus] : ""} />
-          <AdminReadOnlyField label="Fecha estimada de entrega" plain value={project.estimatedDeliveryDate ?? ""} />
+          <AdminReadOnlyField label="Fecha estimada de entrega" plain value={formatProjectDeliveryDate(project.estimatedDeliveryDate) ?? ""} />
         </div>
         <div className="md:col-span-2 xl:col-span-6"><div className="border-t border-border" /></div>
         <div className="xl:col-span-4"><AdminReadOnlyField label="Dirección" plain value={project.address ?? ""} /></div>
-        <div className="xl:col-span-2"><AdminReadOnlyField label="Barrio" plain value={project.neighborhood ?? ""} /></div>
+        <div className="xl:col-span-2"><AdminReadOnlyField label="Zona" plain value={project.neighborhood ?? ""} /></div>
       </div>
       <div className="mt-6 border-t border-border pt-6"><AdminReadOnlyField className="min-h-40" label="Descripción" multiline plain value={project.description ?? ""} /></div>
       <div className="mt-6 pt-6"><div className="flex flex-col gap-2"><span className="type-body-compact font-medium text-primary-strong">Amenities</span>{selectedFeatures.length > 0 ? <div className="flex flex-wrap gap-2">{selectedFeatures.map((feature) => <span className="type-body-compact inline-flex items-center rounded-full border border-primary/12 bg-primary/8 px-3 py-2 font-medium text-primary-strong" key={feature.id}>{feature.name}</span>)}</div> : <p className="type-body-compact text-muted">Sin amenities seleccionados.</p>}</div></div>

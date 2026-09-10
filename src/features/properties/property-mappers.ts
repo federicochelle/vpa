@@ -7,6 +7,7 @@ type PropertyImageRow = Database["public"]["Tables"]["property_images"]["Row"];
 export function mapPropertyRow(row: PropertyRow): Property {
   return {
     id: row.id,
+    projectId: row.project_id,
     slug: row.slug,
     title: row.title,
     operationType: row.operation_type,

@@ -396,6 +396,7 @@ export type Database = {
           operation_type: "sale" | "rent";
           orientation: string | null;
           price: number | null;
+          project_id: string | null;
           property_type: string;
           published: boolean;
           section_order: number | null;
@@ -435,6 +436,7 @@ export type Database = {
           operation_type: "sale" | "rent";
           orientation?: string | null;
           price?: number | null;
+          project_id?: string | null;
           property_type: string;
           published?: boolean;
           section_order?: number | null;
@@ -474,6 +476,7 @@ export type Database = {
           operation_type?: "sale" | "rent";
           orientation?: string | null;
           price?: number | null;
+          project_id?: string | null;
           property_type?: string;
           published?: boolean;
           section_order?: number | null;
