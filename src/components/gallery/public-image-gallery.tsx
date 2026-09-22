@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 
 export interface PublicGalleryImage {
   id: string;
@@ -19,6 +20,8 @@ interface PublicImageGalleryProps {
 }
 
 const MAX_VISIBLE_THUMBNAILS = 5;
+const LIGHTBOX_SWIPE_THRESHOLD = 56;
+const LIGHTBOX_SWIPE_VERTICAL_TOLERANCE = 1.5;
 
 function getInitialIndex(images: PublicGalleryImage[]) {
   const coverIndex = images.findIndex((image) => image.isCover);
@@ -34,6 +37,11 @@ export function PublicImageGallery({
   const orderedImages = useMemo(() => images, [images]);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const swipeStartRef = useRef<{
+    pointerId: number;
+    x: number;
+    y: number;
+  } | null>(null);
   const activeIndex = useMemo(() => {
     if (selectedImageId) {
       const selectedIndex = orderedImages.findIndex(
@@ -48,6 +56,73 @@ export function PublicImageGallery({
     return getInitialIndex(orderedImages);
   }, [orderedImages, selectedImageId]);
 
+  const showPreviousImage = useCallback(() => {
+    setLightboxIndex((current) =>
+      current === null
+        ? current
+        : (current - 1 + orderedImages.length) % orderedImages.length,
+    );
+  }, [orderedImages.length]);
+
+  const showNextImage = useCallback(() => {
+    setLightboxIndex((current) =>
+      current === null ? current : (current + 1) % orderedImages.length,
+    );
+  }, [orderedImages.length]);
+
+  const handleLightboxPointerDown = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (event.pointerType === "mouse" || orderedImages.length <= 1) {
+      return;
+    }
+
+    swipeStartRef.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+    };
+  };
+
+  const handleLightboxPointerUp = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    const swipeStart = swipeStartRef.current;
+
+    if (!swipeStart || swipeStart.pointerId !== event.pointerId) {
+      return;
+    }
+
+    swipeStartRef.current = null;
+
+    const deltaX = event.clientX - swipeStart.x;
+    const deltaY = event.clientY - swipeStart.y;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+    const isHorizontalSwipe =
+      absX >= LIGHTBOX_SWIPE_THRESHOLD &&
+      absX > absY * LIGHTBOX_SWIPE_VERTICAL_TOLERANCE;
+
+    if (!isHorizontalSwipe) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      showNextImage();
+      return;
+    }
+
+    showPreviousImage();
+  };
+
+  const handleLightboxPointerCancel = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (swipeStartRef.current?.pointerId === event.pointerId) {
+      swipeStartRef.current = null;
+    }
+  };
+
   useEffect(() => {
     if (lightboxIndex === null) {
       return;
@@ -60,23 +135,17 @@ export function PublicImageGallery({
       }
 
       if (event.key === "ArrowLeft") {
-        setLightboxIndex((current) =>
-          current === null
-            ? current
-            : (current - 1 + orderedImages.length) % orderedImages.length,
-        );
+        showPreviousImage();
       }
 
       if (event.key === "ArrowRight") {
-        setLightboxIndex((current) =>
-          current === null ? current : (current + 1) % orderedImages.length,
-        );
+        showNextImage();
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [lightboxIndex, orderedImages.length]);
+  }, [lightboxIndex, orderedImages.length, showNextImage, showPreviousImage]);
 
   if (orderedImages.length === 0) {
     return (
@@ -173,7 +242,13 @@ export function PublicImageGallery({
             </div>
 
             <div className="relative min-h-0 flex-1">
-              <div className="relative h-full overflow-hidden bg-black">
+              <div
+                className="relative h-full overflow-hidden bg-black [touch-action:pan-y]"
+                onPointerCancel={handleLightboxPointerCancel}
+                onPointerDown={handleLightboxPointerDown}
+                onPointerLeave={handleLightboxPointerCancel}
+                onPointerUp={handleLightboxPointerUp}
+              >
                 <Image
                   alt={orderedImages[lightboxIndex]?.altText ?? ""}
                   className="object-contain"
@@ -187,20 +262,14 @@ export function PublicImageGallery({
                 <>
                   <button
                     className="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
-                    onClick={() =>
-                      setLightboxIndex(
-                        (lightboxIndex - 1 + orderedImages.length) % orderedImages.length,
-                      )
-                    }
+                    onClick={showPreviousImage}
                     type="button"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
-                    onClick={() =>
-                      setLightboxIndex((lightboxIndex + 1) % orderedImages.length)
-                    }
+                    onClick={showNextImage}
                     type="button"
                   >
                     <ChevronRight className="h-5 w-5" />
