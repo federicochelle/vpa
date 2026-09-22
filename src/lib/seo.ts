@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const siteName = "Virginia Pintos Arquitectura";
+export const siteName = "Virginia Pintos & Asociados";
 
 export const siteDescription =
   "Proyectos de arquitectura, propiedades e inversiones inmobiliarias en Uruguay con asesoramiento personalizado de Virginia Pintos.";
@@ -12,7 +12,7 @@ export const openGraphImage = {
   width: 850,
   height: 224,
   type: "image/jpeg",
-  alt: "Virginia Pintos Arquitectura",
+  alt: "Virginia Pintos & Asociados",
 };
 
 function normalizeSiteUrl(value: string | undefined) {
