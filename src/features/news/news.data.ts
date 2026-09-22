@@ -53,6 +53,12 @@ export interface PublishedNewsPageResult {
   totalPages: number;
 }
 
+export interface NewsSitemapEntry {
+  slug: string;
+  updatedAt: string | null;
+  publishedAt: string | null;
+}
+
 function getMissingEnvError(): SupabaseActionError {
   return {
     code: null,
@@ -177,6 +183,31 @@ export async function listPublishedNews(options?: {
   }
 
   return data.map(mapNewsRow);
+}
+
+export async function listPublishedNewsSitemapEntries(): Promise<NewsSitemapEntry[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("news")
+    .select("slug, updated_at, published_at")
+    .eq("published", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Error listing published news sitemap entries", formatError(error));
+    return [];
+  }
+
+  return data.map((news) => ({
+    slug: news.slug,
+    updatedAt: news.updated_at,
+    publishedAt: news.published_at,
+  }));
 }
 
 export async function listPublishedNewsPage(options?: {

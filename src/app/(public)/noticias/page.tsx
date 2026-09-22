@@ -1,6 +1,14 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { listPublishedNewsPage } from "@/features/news/news.data";
 import { NewsListItem } from "@/features/news/news-list-item";
+import { createSeoMetadata } from "@/lib/seo";
+
+export const metadata = createSeoMetadata({
+  title: "Noticias",
+  description:
+    "Actualidad y contenido de interés sobre propiedades, inversión y el mercado inmobiliario.",
+  path: "/noticias",
+});
 
 interface NewsPageProps {
   searchParams: Promise<{

@@ -1,6 +1,14 @@
 import Image from "next/image";
+import { createSeoMetadata } from "@/lib/seo";
 import virginiaImage from "../../../../virginia.jpeg";
 import virginiaSecondaryImage from "../../../../virgina2.jpeg";
+
+export const metadata = createSeoMetadata({
+  title: "Asesoramiento",
+  description:
+    "Asesoramiento personalizado para comprar, vender, alquilar o invertir, con experiencia y cercanía de Virginia Pintos.",
+  path: "/asesoramiento",
+});
 
 export default function AdvisoryPage() {
   return (

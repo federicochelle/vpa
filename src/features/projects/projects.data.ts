@@ -62,6 +62,11 @@ interface ProjectWriteResult {
   error: SupabaseActionError | null;
 }
 
+export interface ProjectSitemapEntry {
+  slug: string;
+  updatedAt: string | null;
+}
+
 function formatError(error: {
   code: string | null;
   details: string | null;
@@ -186,6 +191,29 @@ export async function listPublishedProjects(options?: {
   }
 
   return result.data;
+}
+
+export async function listPublishedProjectSitemapEntries(): Promise<ProjectSitemapEntry[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select("slug, updated_at")
+    .eq("published", true)
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Error listing published project sitemap entries", formatError(error));
+    return [];
+  }
+
+  return data.map((project) => ({
+    slug: project.slug,
+    updatedAt: project.updated_at,
+  }));
 }
 
 export async function getPublishedProjectBySlug(

@@ -7,7 +7,15 @@ import {
   buildRelatedPropertyResults,
   parseZoneFilter,
 } from "@/features/search/related-results";
+import { createSeoMetadata } from "@/lib/seo";
 import type { PropertyType } from "@/types/property";
+
+export const metadata = createSeoMetadata({
+  title: "Propiedades en venta",
+  description:
+    "Propiedades en venta en Uruguay seleccionadas para quienes buscan comprar o invertir con asesoramiento personalizado.",
+  path: "/comprar",
+});
 
 interface BuyPageProps {
   searchParams: Promise<{

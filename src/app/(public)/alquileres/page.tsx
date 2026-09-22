@@ -7,7 +7,15 @@ import {
   buildRelatedPropertyResults,
   parseZoneFilter,
 } from "@/features/search/related-results";
+import { createSeoMetadata } from "@/lib/seo";
 import type { PropertyType } from "@/types/property";
+
+export const metadata = createSeoMetadata({
+  title: "Propiedades en alquiler",
+  description:
+    "Propiedades en alquiler en Uruguay con opciones publicadas y acompañamiento para encontrar la alternativa adecuada.",
+  path: "/alquileres",
+});
 
 interface RentalsPageProps {
   searchParams: Promise<{

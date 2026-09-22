@@ -7,6 +7,14 @@ import {
   buildRelatedProjectResults,
   parseZoneFilter,
 } from "@/features/search/related-results";
+import { createSeoMetadata } from "@/lib/seo";
+
+export const metadata = createSeoMetadata({
+  title: "Proyectos de inversión",
+  description:
+    "Proyectos de inversión y desarrollos publicados en Uruguay para evaluar oportunidades con asesoramiento personalizado.",
+  path: "/inversion",
+});
 
 interface InvestmentPageProps {
   searchParams: Promise<{

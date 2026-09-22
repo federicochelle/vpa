@@ -1,1 +1,1 @@
-export const siteName = "Portal Inmobiliario";
+export { siteName } from "@/lib/seo";

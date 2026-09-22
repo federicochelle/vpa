@@ -1,15 +1,48 @@
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
 import { formatNewsDate } from "@/features/news/news.utils";
 import { getPublishedNewsBySlug } from "@/features/news/news.data";
+import {
+  buildAbsoluteUrl,
+  createNotFoundSeoMetadata,
+  createSeoMetadata,
+  getFallbackSeoImage,
+} from "@/lib/seo";
 
 interface NewsDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+const getNewsBySlug = cache(getPublishedNewsBySlug);
+
+export async function generateMetadata({ params }: NewsDetailPageProps) {
+  const { slug } = await params;
+  const news = await getNewsBySlug(slug);
+
+  if (!news) {
+    return createNotFoundSeoMetadata("Noticia no encontrada");
+  }
+
+  const image = news.imageUrl
+    ? {
+        url: buildAbsoluteUrl(news.imageUrl),
+        alt: news.title,
+      }
+    : getFallbackSeoImage(news.title);
+
+  return createSeoMetadata({
+    title: news.title,
+    description: news.excerpt ?? news.content,
+    path: `/noticias/${news.slug}`,
+    image,
+    type: "article",
+  });
+}
+
 export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   const { slug } = await params;
-  const news = await getPublishedNewsBySlug(slug);
+  const news = await getNewsBySlug(slug);
 
   if (!news) {
     notFound();

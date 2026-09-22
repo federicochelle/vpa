@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Notice } from "@/components/ui/notice";
 import { LoginForm } from "@/features/auth/login-form";
 import { redirectIfAuthenticatedAdmin } from "@/lib/supabase/auth";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface LoginPageProps {
   searchParams: Promise<{

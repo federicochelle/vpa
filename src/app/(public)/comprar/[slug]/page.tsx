@@ -1,20 +1,51 @@
 import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
+import { cache } from "react";
 import { getPublishedPropertyBySlug } from "@/features/properties/properties.data";
+import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
 import { PropertyDetailShell } from "@/features/properties/property-detail-shell";
 import { buildPropertyHeaderLocation } from "@/features/properties/property-location";
 import {
   formatPublicCommonExpenses,
   formatPublicPropertyMoney,
 } from "@/features/properties/property-public-format";
+import {
+  createNotFoundSeoMetadata,
+  createSeoMetadata,
+  resolveContentSeoImage,
+} from "@/lib/seo";
 
 interface BuyDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+const getPropertyBySlug = cache(getPublishedPropertyBySlug);
+
+export async function generateMetadata({ params }: BuyDetailPageProps) {
+  const { slug } = await params;
+  const property = await getPropertyBySlug(slug);
+
+  if (!property || property.operationType !== "sale") {
+    return createNotFoundSeoMetadata("Propiedad no encontrada");
+  }
+
+  const imagesResult = await listPublishedPropertyImages(property.id);
+  const image = resolveContentSeoImage(
+    imagesResult.ok ? imagesResult.data : [],
+    property.title,
+  );
+
+  return createSeoMetadata({
+    title: property.title,
+    description: property.description,
+    path: `/comprar/${property.slug}`,
+    image,
+  });
+}
+
 export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
   const { slug } = await params;
-  const property = await getPublishedPropertyBySlug(slug);
+  const property = await getPropertyBySlug(slug);
 
   if (!property || property.operationType !== "sale") {
     notFound();

@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
 import { Unbounded } from "next/font/google";
+import {
+  buildAbsoluteUrl,
+  openGraphImage,
+  siteDescription,
+  siteLocale,
+  siteName,
+  siteUrl,
+} from "@/lib/seo";
 import "./globals.css";
 
 const unbounded = Unbounded({
@@ -9,11 +17,50 @@ const unbounded = Unbounded({
 });
 
 export const metadata: Metadata = {
+  ...(siteUrl ? { metadataBase: siteUrl } : {}),
+  applicationName: siteName,
   title: {
-    default: "Portal Inmobiliario",
-    template: "%s | Portal Inmobiliario",
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description: "Base de portal inmobiliario con web publica y panel administrativo.",
+  description: siteDescription,
+  icons: {
+    icon: "/favicon.ico",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: siteLocale,
+    siteName,
+    title: siteName,
+    description: siteDescription,
+    ...(siteUrl ? { url: siteUrl.toString() } : {}),
+    images: [
+      {
+        url: buildAbsoluteUrl(openGraphImage.path),
+        width: openGraphImage.width,
+        height: openGraphImage.height,
+        type: openGraphImage.type,
+        alt: openGraphImage.alt,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+    images: [
+      {
+        url: buildAbsoluteUrl(openGraphImage.path),
+        width: openGraphImage.width,
+        height: openGraphImage.height,
+        alt: openGraphImage.alt,
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

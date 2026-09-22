@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { listAdminInquiries } from "@/features/inquiries/inquiries.data";
 import { requireAdminSession } from "@/lib/supabase/auth";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const [session, inquiriesResult] = await Promise.all([

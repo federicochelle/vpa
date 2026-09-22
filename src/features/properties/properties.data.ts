@@ -85,6 +85,12 @@ interface PropertyWriteResult {
   error: SupabaseActionError | null;
 }
 
+export interface PropertySitemapEntry {
+  slug: string;
+  operationType: Property["operationType"];
+  updatedAt: string | null;
+}
+
 function formatError(error: {
   code: string | null;
   details: string | null;
@@ -438,6 +444,32 @@ export async function listPublishedPropertiesByProject(
   }
 
   return result.data;
+}
+
+export async function listPublishedPropertySitemapEntries(): Promise<PropertySitemapEntry[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("slug, operation_type, updated_at")
+    .eq("published", true)
+    .eq("status", "published")
+    .order("operation_type", { ascending: true })
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Error listing published property sitemap entries", formatError(error));
+    return [];
+  }
+
+  return data.map((property) => ({
+    slug: property.slug,
+    operationType: property.operation_type,
+    updatedAt: property.updated_at,
+  }));
 }
 
 export async function listHeroProperties(): Promise<Property[]> {

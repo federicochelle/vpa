@@ -1,19 +1,50 @@
 import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
+import { cache } from "react";
 import { ProjectDetailShell } from "@/features/projects/project-detail-shell";
+import { listPublishedProjectImages } from "@/features/projects/project-images.data";
 import { getPublishedProjectBySlug } from "@/features/projects/projects.data";
 import { normalizeLocationPart } from "@/features/properties/property-location";
+import {
+  createNotFoundSeoMetadata,
+  createSeoMetadata,
+  resolveContentSeoImage,
+} from "@/lib/seo";
 import { PROJECT_CONSTRUCTION_STATUS_LABELS } from "@/types/project";
 
 interface InvestmentDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+const getProjectBySlug = cache(getPublishedProjectBySlug);
+
+export async function generateMetadata({ params }: InvestmentDetailPageProps) {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
+
+  if (!project) {
+    return createNotFoundSeoMetadata("Proyecto no encontrado");
+  }
+
+  const imagesResult = await listPublishedProjectImages(project.id);
+  const image = resolveContentSeoImage(
+    imagesResult.ok ? imagesResult.data : [],
+    project.name,
+  );
+
+  return createSeoMetadata({
+    title: project.name,
+    description: project.description,
+    path: `/inversion/${project.slug}`,
+    image,
+  });
+}
+
 export default async function InvestmentDetailPage({
   params,
 }: InvestmentDetailPageProps) {
   const { slug } = await params;
-  const project = await getPublishedProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
