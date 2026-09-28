@@ -9,6 +9,7 @@ import {
   FolderKanban,
   Mail,
   Newspaper,
+  UserRound,
 } from "lucide-react";
 import logoVpa from "../../../logovpa.webp";
 import logoVpaCorto from "../../../logovpacorto.webp";
@@ -20,6 +21,7 @@ import type { Database } from "@/lib/supabase/types";
 const icons = {
   "/admin/propiedades": Building2,
   "/admin/proyectos": FolderKanban,
+  "/admin/asesores": UserRound,
   "/admin/noticias": Newspaper,
   "/admin/consultas": Mail,
 };

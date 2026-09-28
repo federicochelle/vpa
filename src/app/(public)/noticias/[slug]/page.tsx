@@ -9,6 +9,8 @@ import {
   createSeoMetadata,
   getFallbackSeoImage,
 } from "@/lib/seo";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
 
 interface NewsDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -48,6 +50,9 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     notFound();
   }
 
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+
   return (
     <div className="shell section-gap !pt-4">
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
@@ -63,7 +68,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
                 </p>
               ) : null}
               <p className="type-body-compact uppercase tracking-[0.16em] text-muted">
-                {formatNewsDate(news.publishedAt ?? news.createdAt)}
+                {formatNewsDate(news.publishedAt ?? news.createdAt, locale) ?? t("news.pendingDate")}
               </p>
             </div>
           </div>
@@ -89,7 +94,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         </div>
         <aside className="-mx-4 w-[calc(100%+2rem)] sm:mx-0 sm:w-auto lg:sticky lg:top-24 lg:self-start">
           <PublicInquirySidebar
-            initialMessage={`Hola, leí la noticia "${news.title}" y quisiera recibir más información.`}
+            initialMessage={t("news.initialMessage").replace("{title}", news.title)}
             kind="general"
             originPath={`/noticias/${news.slug}`}
             relatedTitle={news.title}

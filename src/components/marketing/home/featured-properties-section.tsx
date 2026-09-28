@@ -1,18 +1,23 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { getPublicMessage } from "@/i18n/public/messages";
+import { getPublicLocale } from "@/i18n/public/locale.server";
 
-export function FeaturedPropertiesSection() {
+export async function FeaturedPropertiesSection() {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+
   return (
     <section className="shell section-gap">
       <SectionHeading
-        eyebrow="Propiedades destacadas"
-        title="Seccion lista para destacar oportunidades"
-        description="La grilla y las tarjetas se agregaran cuando exista una fuente de datos real para las propiedades publicadas."
+        eyebrow={t("home.featuredPropertiesEyebrow")}
+        title={t("home.featuredPropertiesTitle")}
+        description={t("home.featuredPropertiesDescription")}
       />
       <div className="mt-8">
         <EmptyState
-          title="Sin propiedades destacadas cargadas"
-          description="La composicion ya queda preparada para renderizar cards destacadas sin depender de datos mockeados."
+          title={t("home.featuredPropertiesEmptyTitle")}
+          description={t("home.featuredPropertiesEmptyDescription")}
         />
       </div>
     </section>

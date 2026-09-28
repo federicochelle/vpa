@@ -1,15 +1,26 @@
 import type { Database } from "@/lib/supabase/types";
-import type { Project, ProjectImage } from "@/types/project";
+import { mapProjectAdvisorRow } from "@/features/projects/project-advisors";
+import type { Project, ProjectAdvisor, ProjectImage } from "@/types/project";
 
 type ProjectRow = Database["public"]["Tables"]["projects"]["Row"];
+type ProjectAdvisorRow = Database["public"]["Tables"]["project_advisors"]["Row"];
 type ProjectImageRow = Database["public"]["Tables"]["project_images"]["Row"];
 
-export function mapProjectRow(row: ProjectRow): Project {
+export function mapProjectRow(
+  row: ProjectRow,
+  advisor: ProjectAdvisor | ProjectAdvisorRow | null = null,
+): Project {
   return {
     id: row.id,
+    advisorId: row.advisor_id,
+    advisor: advisor && "photo_url" in advisor ? mapProjectAdvisorRow(advisor) : advisor,
     slug: row.slug,
     name: row.name,
+    nameEn: row.name_en,
+    nameDe: row.name_de,
     description: row.description,
+    descriptionEn: row.description_en,
+    descriptionDe: row.description_de,
     address: row.address,
     city: row.city,
     department: row.department,

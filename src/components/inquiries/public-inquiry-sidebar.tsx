@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { MessageCircle, Phone } from "lucide-react";
 import { useState } from "react";
+import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
+import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { PublicInquiryPayload } from "@/types/inquiry";
-import virginiaImage from "../../../virginia.jpeg";
+import type { ProjectAdvisor } from "@/types/project";
 
 interface PublicInquirySidebarProps {
   entityId?: string;
@@ -12,13 +14,8 @@ interface PublicInquirySidebarProps {
   kind: "property" | "project" | "general";
   originPath: string;
   relatedTitle: string;
+  advisor?: ProjectAdvisor | null;
 }
-
-const advisor = {
-  name: "Virginia Pintos",
-  phoneLabel: "+598 99 000 000",
-  phoneHref: "https://wa.me/59899000000",
-};
 
 export function PublicInquirySidebar({
   entityId,
@@ -26,7 +23,13 @@ export function PublicInquirySidebar({
   kind,
   originPath,
   relatedTitle,
+  advisor,
 }: PublicInquirySidebarProps) {
+  const { locale, t } = usePublicLocale();
+  const phoneHref = advisor?.phone ? `tel:${advisor.phone.replace(/\s/g, "")}` : null;
+  const whatsappHref = advisor?.whatsapp
+    ? `https://wa.me/${advisor.whatsapp.replace(/\D/g, "")}`
+    : null;
   const [formData, setFormData] = useState(() => ({
     fullName: "",
     phone: "",
@@ -49,31 +52,53 @@ export function PublicInquirySidebar({
 
   return (
     <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-      <div className="flex items-start gap-4 pb-2">
-        <div className="relative h-16 w-16 flex-none overflow-hidden border border-primary/15 bg-primary/6">
-          <Image
-            src={virginiaImage}
-            alt={advisor.name}
-            fill
-            className="object-cover object-center"
-            sizes="64px"
-          />
+      {advisor ? (
+        <div className="flex items-start gap-4 pb-2">
+          <div className="relative h-16 w-16 flex-none overflow-hidden border border-primary/15 bg-primary/6">
+            {advisor.photoUrl ? (
+              <Image
+                src={advisor.photoUrl}
+                alt={advisor.name}
+                fill
+                className="object-cover object-center"
+                sizes="64px"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-primary/8 font-display text-xl text-primary-strong">
+                {advisor.name.slice(0, 1)}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h5 className="text-xl font-display leading-tight text-primary-strong sm:text-[1.35rem]">
+              {advisor.name}
+            </h5>
+            <div className="mt-3 flex flex-col items-start gap-2">
+              {phoneHref ? (
+                <a
+                  className="type-body-compact inline-flex items-center gap-2 text-muted transition-colors hover:text-primary-strong"
+                  href={phoneHref}
+                >
+                  <Phone className="h-4 w-4 text-primary" />
+                  <span>{advisor.phone}</span>
+                </a>
+              ) : null}
+              {whatsappHref ? (
+                <a
+                  className="type-body-compact inline-flex items-center gap-2 text-muted transition-colors hover:text-primary-strong"
+                  href={whatsappHref}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <MessageCircle className="h-4 w-4 text-primary" />
+                  <span>{advisor.whatsapp}</span>
+                </a>
+              ) : null}
+            </div>
+          </div>
         </div>
-        <div className="min-w-0 flex-1">
-          <h5 className="text-xl font-display leading-tight text-primary-strong sm:text-[1.35rem]">
-            {advisor.name}
-          </h5>
-          <a
-            className="type-body-compact mt-3 inline-flex items-center gap-2 text-muted transition-colors hover:text-primary-strong"
-            href={advisor.phoneHref}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <MessageCircle className="h-4 w-4 text-primary" />
-            <span>{advisor.phoneLabel}</span>
-          </a>
-        </div>
-      </div>
+      ) : null}
 
       <form
         className="mt-6 space-y-4"
@@ -86,12 +111,19 @@ export function PublicInquirySidebar({
           setSubmitState("submitting");
           setFeedbackMessage(null);
 
+          const attribution = getClientInquiryAttribution();
           const payload: PublicInquiryPayload = {
             kind,
+            intent: "general",
             name: formData.fullName,
             email: formData.email,
             phone: formData.phone,
             message: formData.message,
+            source: attribution.source ?? "public_web",
+            medium: attribution.medium,
+            campaign: attribution.campaign,
+            referrer: attribution.referrer,
+            landingPage: attribution.landingPage,
             propertyId: kind === "property" ? entityId : undefined,
             projectId: kind === "project" ? entityId : undefined,
             relatedTitle,
@@ -114,7 +146,7 @@ export function PublicInquirySidebar({
             if (!response.ok) {
               setSubmitState("error");
               setFeedbackMessage(
-                body?.message ?? "No se pudo enviar la consulta en este momento.",
+                locale !== "es" ? t("inquiry.error") : body?.message ?? t("inquiry.error"),
               );
               return;
             }
@@ -122,14 +154,12 @@ export function PublicInquirySidebar({
             resetForm();
             setSubmitState("success");
             setFeedbackMessage(
-              body?.message ?? "Consulta enviada correctamente.",
+              locale !== "es" ? t("inquiry.success") : body?.message ?? t("inquiry.success"),
             );
           } catch (error) {
             console.error("Error submitting public inquiry", error);
             setSubmitState("error");
-            setFeedbackMessage(
-              "No se pudo enviar la consulta en este momento.",
-            );
+            setFeedbackMessage(t("inquiry.error"));
           }
         }}
       >
@@ -138,7 +168,7 @@ export function PublicInquirySidebar({
             className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="fullName"
           >
-            Nombre completo
+            {t("inquiry.fullName")}
           </label>
           <input
             className="input-base w-full"
@@ -148,7 +178,7 @@ export function PublicInquirySidebar({
             onChange={(event) =>
               setFormData((current) => ({ ...current, fullName: event.target.value }))
             }
-            placeholder="Tu nombre y apellido"
+            placeholder={t("inquiry.fullNamePlaceholder")}
             type="text"
             value={formData.fullName}
           />
@@ -159,7 +189,7 @@ export function PublicInquirySidebar({
             className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="phone"
           >
-            Telefono
+            {t("inquiry.phone")}
           </label>
           <input
             className="input-base w-full"
@@ -168,7 +198,7 @@ export function PublicInquirySidebar({
             onChange={(event) =>
               setFormData((current) => ({ ...current, phone: event.target.value }))
             }
-            placeholder="Tu telefono o WhatsApp"
+            placeholder={t("inquiry.phonePlaceholder")}
             type="tel"
             value={formData.phone}
           />
@@ -200,7 +230,7 @@ export function PublicInquirySidebar({
             className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"
             htmlFor="message"
           >
-            Mensaje
+            {t("inquiry.message")}
           </label>
           <textarea
             className="input-base min-h-40 w-full"
@@ -220,7 +250,7 @@ export function PublicInquirySidebar({
           type="submit"
         >
           <Phone className="h-4 w-4" />
-          {submitState === "submitting" ? "Enviando..." : "Enviar mensaje"}
+          {submitState === "submitting" ? t("inquiry.submitting") : t("inquiry.submit")}
         </button>
 
         {feedbackMessage ? (

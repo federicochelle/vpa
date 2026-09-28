@@ -1,4 +1,12 @@
 export type InquiryKind = "property" | "project" | "project_unit" | "general";
+export type InquiryIntent =
+  | "general"
+  | "advisory"
+  | "contact"
+  | "sell"
+  | "valuation"
+  | "investment"
+  | "professional_report";
 export type InquiryStatus = "new" | "contacted" | "closed";
 export type InquiryMeetingStatus = "scheduled" | "cancelled";
 
@@ -16,6 +24,12 @@ export interface Inquiry {
   email: string;
   phone: string | null;
   message: string;
+  intent: InquiryIntent | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  referrer: string | null;
+  landingPage: string | null;
   googleEventId: string | null;
   meetUrl: string | null;
   meetingStart: string | null;
@@ -32,12 +46,18 @@ export interface Inquiry {
 
 export interface PublicInquiryPayload {
   kind: "property" | "project" | "general";
+  intent?: InquiryIntent | null;
   name: string;
   email: string;
   phone?: string;
   message: string;
+  source?: string | null;
+  medium?: string | null;
+  campaign?: string | null;
+  referrer?: string | null;
+  landingPage?: string | null;
   propertyId?: string;
   projectId?: string;
-  relatedTitle: string;
+  relatedTitle?: string | null;
   originPath: string;
 }

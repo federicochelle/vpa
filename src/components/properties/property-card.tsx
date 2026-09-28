@@ -1,5 +1,12 @@
 import Image from "next/image";
 import { Bath, BedDouble, CarFront, MapPin, Ruler } from "lucide-react";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import {
+  formatPublicPropertyMoney,
+  getOperationBadgeLabel,
+} from "@/i18n/public/formatters";
+import { getLocalizedPropertyTitle } from "@/i18n/public/content";
+import { getPublicMessage } from "@/i18n/public/messages";
 import type { Property } from "@/types/property";
 
 interface PropertyCardProps {
@@ -8,33 +15,29 @@ interface PropertyCardProps {
   variant?: "default" | "compact";
 }
 
-function PropertyOperationBadge({ operationType }: { operationType: Property["operationType"] }) {
+function PropertyOperationBadge({
+  label,
+}: {
+  label: string;
+}) {
   return (
     <span className="absolute right-3 top-3 z-10 bg-primary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-      {operationType === "rent" ? "ALQUILER" : "VENTA"}
+      {label}
     </span>
   );
 }
 
-function formatPropertyPrice(price: number | null, currency: string | null) {
-  if (!price || !currency) {
-    return "Precio pendiente";
-  }
-
-  return new Intl.NumberFormat("es-UY", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
-export function PropertyCard({
+export async function PropertyCard({
   property,
   className = "",
   variant = "default",
 }: PropertyCardProps) {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
   const hasGarage = typeof property.garages === "number" && property.garages > 0;
   const isCompact = variant === "compact";
+  const price = formatPublicPropertyMoney(property.price, property.currency, locale);
+  const title = getLocalizedPropertyTitle(property, locale);
 
   return (
     <article
@@ -43,7 +46,7 @@ export function PropertyCard({
       } ${className}`.trim()}
     >
       <div className={`relative ${isCompact ? "md:w-60 md:flex-none" : ""}`}>
-        <PropertyOperationBadge operationType={property.operationType} />
+        <PropertyOperationBadge label={getOperationBadgeLabel(property.operationType, locale)} />
         <div
           className={`relative overflow-hidden bg-surface-muted ${
             isCompact ? "aspect-[4/3] md:h-full md:min-h-36 md:aspect-auto" : "aspect-[4/3]"
@@ -51,7 +54,7 @@ export function PropertyCard({
         >
           {property.image ? (
             <Image
-              alt={property.title}
+              alt={title}
               className="object-cover object-center"
               fill
               sizes={
@@ -78,7 +81,7 @@ export function PropertyCard({
               : "h-[4.5rem] text-xl [-webkit-line-clamp:3]"
           }`}
         >
-          {property.title}
+          {title}
         </h3>
         <div
           className={`type-body-compact grid gap-3 text-muted ${
@@ -113,10 +116,10 @@ export function PropertyCard({
         >
           <div className="type-body-compact flex min-w-0 items-center gap-2 text-muted">
             <MapPin className="h-4 w-4 flex-none text-primary" />
-            <span className="truncate">{property.neighborhood ?? "Ubicación pendiente"}</span>
+            <span className="truncate">{property.neighborhood ?? t("property.pendingLocation")}</span>
           </div>
           <p className="shrink-0 text-right text-lg font-semibold text-primary-strong">
-            {formatPropertyPrice(property.price, property.currency)}
+            {price ?? t("property.pendingPrice")}
           </p>
         </div>
       </div>

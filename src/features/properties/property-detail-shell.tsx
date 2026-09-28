@@ -6,8 +6,23 @@ import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-side
 import { PublicLocationMap } from "@/components/maps/public-location-map";
 import { ProjectCard } from "@/components/projects/project-card";
 import { FeatureChipList } from "@/components/ui/feature-chip-list";
-import { getPublishedProjectById } from "@/features/projects/projects.data";
+import {
+  getPublishedProjectById,
+  resolveProjectAdvisorForEntity,
+} from "@/features/projects/projects.data";
 import { listPublishedPropertyImages } from "@/features/properties/property-images.data";
+import {
+  getLocalizedPropertyDescription,
+  getLocalizedPropertyTitle,
+} from "@/i18n/public/content";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import {
+  getDispositionLabel,
+  getKitchenTypeLabel,
+  getOperationBadgeLabel,
+  getOrientationLabel,
+} from "@/i18n/public/formatters";
+import { getPublicMessage } from "@/i18n/public/messages";
 import { parseVideoUrl } from "@/lib/youtube";
 import type { Property } from "@/types/property";
 import Link from "next/link";
@@ -108,98 +123,34 @@ function FloorIcon({ className }: { className?: string }) {
   );
 }
 
-function getKitchenLabel(value: Property["kitchenType"]) {
-  if (value === "integrated") {
-    return "Integrada";
-  }
-
-  if (value === "independent") {
-    return "Independiente";
-  }
-
-  return null;
-}
-
-function getDispositionLabel(value: Property["disposition"]) {
-  if (value === "front") {
-    return "Frente";
-  }
-
-  if (value === "back") {
-    return "Contrafrente";
-  }
-
-  if (value === "lateral") {
-    return "Lateral";
-  }
-
-  if (value === "interior") {
-    return "Interior";
-  }
-
-  return null;
-}
-
-function getOrientationLabel(value: Property["orientation"]) {
-  if (value === "north") {
-    return "Norte";
-  }
-
-  if (value === "south") {
-    return "Sur";
-  }
-
-  if (value === "east") {
-    return "Este";
-  }
-
-  if (value === "west") {
-    return "Oeste";
-  }
-
-  if (value === "northeast") {
-    return "Noreste";
-  }
-
-  if (value === "northwest") {
-    return "Noroeste";
-  }
-
-  if (value === "southeast") {
-    return "Sureste";
-  }
-
-  if (value === "southwest") {
-    return "Suroeste";
-  }
-
-  return null;
-}
-
 export async function PropertyDetailShell({ property }: PropertyDetailShellProps) {
-  const [imagesResult, associatedProject] = await Promise.all([
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+  const [imagesResult, associatedProject, advisor] = await Promise.all([
     listPublishedPropertyImages(property.id),
     property.projectId ? getPublishedProjectById(property.projectId) : Promise.resolve(null),
+    resolveProjectAdvisorForEntity(property),
   ]);
   const images = imagesResult.ok ? imagesResult.data : [];
   const features = (property.features ?? []).filter(
     (feature) => feature.name.trim().length > 0,
   );
   const parsedVideo = property.videoUrl ? parseVideoUrl(property.videoUrl) : null;
+  const title = getLocalizedPropertyTitle(property, locale);
   const videoEmbedUrl = parsedVideo
     ? parsedVideo.provider === "youtube"
       ? `${parsedVideo.embedUrl}?controls=0&modestbranding=1&rel=0&playsinline=1`
       : parsedVideo.embedUrl
     : null;
   const mobileSectionClassName = "-mx-4 min-w-0 sm:mx-0";
-  const description = property.description?.trim() || null;
+  const description = getLocalizedPropertyDescription(property, locale)?.trim() || null;
   const facts: PropertyFact[] = [];
 
   if (property.bedrooms != null) {
     facts.push({
       icon: BedDouble,
       key: "bedrooms",
-      label: "Dormitorios",
+      label: t("property.bedrooms"),
       value: String(property.bedrooms),
     });
   }
@@ -208,7 +159,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: Bath,
       key: "bathrooms",
-      label: "Baños",
+      label: t("property.bathrooms"),
       value: String(property.bathrooms),
     });
   }
@@ -217,7 +168,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: CarFront,
       key: "garages",
-      label: "Garajes",
+      label: t("property.garages"),
       value: String(property.garages),
     });
   }
@@ -226,19 +177,25 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: Ruler,
       key: "totalArea",
-      label: "Área total",
+      label: t("property.totalArea"),
       value: `${property.totalArea} m2`,
     });
   }
-  const kitchenLabel = getKitchenLabel(property.kitchenType);
-  const dispositionLabel = getDispositionLabel(property.disposition);
-  const orientationLabel = getOrientationLabel(property.orientation);
+  const kitchenLabel = property.kitchenType
+    ? getKitchenTypeLabel(property.kitchenType, locale)
+    : null;
+  const dispositionLabel = property.disposition
+    ? getDispositionLabel(property.disposition, locale)
+    : null;
+  const orientationLabel = property.orientation
+    ? getOrientationLabel(property.orientation, locale)
+    : null;
 
   if (kitchenLabel) {
     facts.push({
       icon: KitchenIcon,
       key: "kitchenType",
-      label: "Cocina",
+      label: t("property.kitchen"),
       value: kitchenLabel,
     });
   }
@@ -247,8 +204,8 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: BalconyIcon,
       key: "hasBalcony",
-      label: "Balcón",
-      value: "Sí",
+      label: t("property.balcony"),
+      value: t("common.yes"),
     });
   }
 
@@ -256,8 +213,8 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: TerraceIcon,
       key: "hasTerrace",
-      label: "Terraza",
-      value: "Sí",
+      label: t("property.terrace"),
+      value: t("common.yes"),
     });
   }
 
@@ -265,7 +222,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: DispositionIcon,
       key: "disposition",
-      label: "Disposición",
+      label: t("property.disposition"),
       value: dispositionLabel,
     });
   }
@@ -274,7 +231,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: OrientationIcon,
       key: "orientation",
-      label: "Orientación",
+      label: t("property.orientation"),
       value: orientationLabel,
     });
   }
@@ -283,7 +240,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
     facts.push({
       icon: FloorIcon,
       key: "floor",
-      label: "Piso",
+      label: t("property.floor"),
       value: property.floor.trim(),
     });
   }
@@ -295,16 +252,16 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           {images.length > 0 ? (
             <div className={mobileSectionClassName}>
               <PublicImageGallery
+                badgeLabel={getOperationBadgeLabel(property.operationType, locale)}
                 emptyLabel=""
                 images={images}
-                operationType={property.operationType}
               />
             </div>
           ) : null}
           {parsedVideo ? (
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Video</h2>
+                <h2 className="text-xl font-display text-primary-strong">{t("common.video")}</h2>
                 <div
                   className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
@@ -317,7 +274,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                       className="h-full w-full max-w-full border-0"
                       referrerPolicy="strict-origin-when-cross-origin"
                       src={videoEmbedUrl ?? undefined}
-                      title={`${parsedVideo.title} de ${property.title}`}
+                      title={`${parsedVideo.title}: ${title}`}
                     />
                   </div>
                 </div>
@@ -327,7 +284,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           {facts.length > 0 ? (
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
+                <h2 className="text-xl font-display text-primary-strong">{t("common.mainInformation")}</h2>
                 <div className="mt-8 grid w-full max-w-full min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
                   {facts.map((fact) => {
                     const Icon = fact.icon;
@@ -358,7 +315,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
                 {description ? (
                   <>
-                    <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
+                    <h2 className="text-xl font-display text-primary-strong">{t("common.description")}</h2>
                     <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
                       {description}
                     </p>
@@ -366,8 +323,8 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                 ) : null}
                 {features.length > 0 ? (
                   <div className={description ? "mt-8 space-y-4" : "space-y-4"}>
-                    <h2 className="text-xl font-display text-primary-strong">Amenities</h2>
-                    <FeatureChipList features={features} />
+                    <h2 className="text-xl font-display text-primary-strong">{t("common.amenities")}</h2>
+                    <FeatureChipList features={features} locale={locale} />
                   </div>
                 ) : null}
               </div>
@@ -375,12 +332,12 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           ) : null}
           <div className={mobileSectionClassName}>
             <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-              <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
+              <h2 className="text-xl font-display text-primary-strong">{t("common.location")}</h2>
               <PublicLocationMap
-                fallbackLabel="No se pudo mostrar el mapa."
+                fallbackLabel={t("common.mapFallback")}
                 latitude={property.latitude}
                 longitude={property.longitude}
-                title={`Mapa de ubicación de ${property.title}`}
+                title={`${t("common.location")}: ${title}`}
               />
             </div>
           </div>
@@ -388,7 +345,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
                 <h2 className="text-xl font-display text-primary-strong">
-                  Proyecto asociado
+                  {t("property.associatedProject")}
                 </h2>
                 <div className="mt-6 max-w-2xl">
                   <Link href={`/inversion/${associatedProject.slug}`}>
@@ -401,15 +358,16 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
         </div>
         <aside className={`${mobileSectionClassName} lg:sticky lg:top-24 lg:self-start`}>
           <PublicInquirySidebar
+            advisor={advisor}
             entityId={property.id}
-            initialMessage={`Hola, estoy interesado/a en ${property.title}. Quisiera recibir más información.`}
+            initialMessage={t("inquiry.propertyInitialMessage").replace("{title}", title)}
             kind="property"
             originPath={
               property.operationType === "rent"
                 ? `/alquileres/${property.slug}`
                 : `/comprar/${property.slug}`
             }
-            relatedTitle={property.title}
+            relatedTitle={title}
           />
         </aside>
       </section>

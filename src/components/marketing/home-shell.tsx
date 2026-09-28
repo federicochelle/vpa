@@ -1,8 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  BadgeDollarSign,
+  ChartNoAxesCombined,
+  CircleCheck,
+  CreditCard,
+  Filter,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { HomeCarousel } from "@/components/marketing/home-carousel";
 import { HomeHeroCarousel } from "@/components/marketing/home-hero-carousel";
 import { listHomeHeroSlides } from "@/features/home-hero/home-hero.data";
+import { AdvisoryContactCtaSection } from "@/components/marketing/home/advisory-contact-cta-section";
+import { DecisionMethodSection } from "@/components/marketing/home/decision-method-section";
 import { SearchSection } from "@/components/marketing/home/search-section";
 import { PropertyCard } from "@/components/properties/property-card";
 import { ProjectCard } from "@/components/projects/project-card";
@@ -18,6 +30,21 @@ import proyectoHeroImage from "../../../proyecto.jpg";
 import virginiaImage from "../../../virginia.jpeg";
 import { getPublicMessage } from "@/i18n/public/messages";
 import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPropertyTypeLabel } from "@/i18n/public/formatters";
+import type { PublicLocale } from "@/i18n/public/config";
+
+const investmentProcessSteps: Array<{
+  labelKey: Parameters<typeof getPublicMessage>[1];
+  Icon: LucideIcon;
+}> = [
+  { labelKey: "home.investmentStepGoal", Icon: Target },
+  { labelKey: "home.investmentStepBudget", Icon: BadgeDollarSign },
+  { labelKey: "home.investmentStepSelection", Icon: Filter },
+  { labelKey: "home.investmentStepMarketValue", Icon: ChartNoAxesCombined },
+  { labelKey: "home.investmentStepProfitability", Icon: TrendingUp },
+  { labelKey: "home.investmentStepFinancing", Icon: CreditCard },
+  { labelKey: "home.investmentStepDecision", Icon: CircleCheck },
+];
 
 function EmptyCarouselCard({ message }: { message: string }) {
   return (
@@ -74,6 +101,7 @@ function buildNeighborhoodOptions(
 }
 
 function buildPropertyTypeOptions(
+  locale: PublicLocale,
   ...propertyGroups: Array<
     Array<{
       propertyType: string;
@@ -107,7 +135,7 @@ function buildPropertyTypeOptions(
     }
 
     optionsMap.set(option.value, {
-      label: option.label,
+      label: getPropertyTypeLabel(option.value, locale),
       operations: [item.operation],
       value: option.value,
     });
@@ -123,7 +151,7 @@ export async function HomeShell() {
   const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
   const [heroSlidesFromCms, rentProperties, saleProperties, investmentProjects, recentNews] =
     await Promise.all([
-      listHomeHeroSlides(),
+      listHomeHeroSlides(locale),
       listPublishedPropertiesByOperation("rent"),
       listPublishedPropertiesByOperation("sale"),
       listPublishedProjects(),
@@ -133,9 +161,9 @@ export async function HomeShell() {
     heroSlidesFromCms.length > 0
       ? heroSlidesFromCms
       : [
-          { src: proyectoHeroImage, alt: "Proyecto destacado" },
-          { src: propiedadHeroImage, alt: "Propiedad destacada" },
-          { src: proyectoHeroImage, alt: "Proyecto destacado" },
+          { src: proyectoHeroImage, alt: t("home.featuredProject") },
+          { src: propiedadHeroImage, alt: t("home.featuredProperty") },
+          { src: proyectoHeroImage, alt: t("home.featuredProject") },
         ];
   const locationOptions = buildNeighborhoodOptions(
     rentProperties.map((property) => ({
@@ -152,6 +180,7 @@ export async function HomeShell() {
     })),
   );
   const searchPropertyTypeOptions = buildPropertyTypeOptions(
+    locale,
     rentProperties.map((property) => ({
       operation: "rent" as const,
       propertyType: property.propertyType,
@@ -170,6 +199,8 @@ export async function HomeShell() {
         locationOptions={locationOptions}
         propertyTypeOptions={searchPropertyTypeOptions}
       />
+
+      <DecisionMethodSection />
 
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
@@ -221,7 +252,7 @@ export async function HomeShell() {
               </div>
             </>
           ) : (
-            <EmptyCarouselCard message="Todavía no hay alquileres publicados." />
+            <EmptyCarouselCard message={t("home.emptyRentals")} />
           )}
         </div>
       </section>
@@ -276,12 +307,56 @@ export async function HomeShell() {
               </div>
             </>
           ) : (
-            <EmptyCarouselCard message="Todavía no hay propiedades en venta publicadas." />
+            <EmptyCarouselCard message={t("home.emptySales")} />
           )}
         </div>
       </section>
 
-      <section className="bg-background py-16 sm:py-20">
+      <section className="bg-background pt-16 pb-8 sm:pt-20 sm:pb-10">
+        <div className="shell">
+          <div className="space-y-10 pb-12 sm:space-y-12 sm:pb-14">
+            <div className="mx-auto max-w-4xl space-y-5 text-center">
+              <h3 className="section-title home-section-title text-foreground">
+                {t("home.investmentProcessTitle")}
+              </h3>
+              <p className="type-body mx-auto max-w-2xl text-muted">
+                {t("home.investmentProcessDescription")}
+              </p>
+            </div>
+
+            <ol className="relative grid gap-7 lg:grid-cols-7 lg:gap-0">
+              <span
+                aria-hidden="true"
+                className="absolute bottom-3 left-[1.05rem] top-3 w-px bg-primary/24 lg:bottom-auto lg:left-0 lg:right-0 lg:top-[2.15rem] lg:h-px lg:w-auto"
+              />
+              {investmentProcessSteps.map(({ labelKey, Icon }, index) => (
+                <li
+                  key={labelKey}
+                  className="relative grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 lg:block lg:pr-5"
+                >
+                  <div className="relative z-10 flex flex-col items-center">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/35 bg-background font-display text-[0.7rem] leading-none text-primary shadow-[0_0_0_8px_var(--background)]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <div className="flex min-w-0 flex-col items-center pt-5 text-center lg:pt-6">
+                    <Icon
+                      aria-hidden="true"
+                      className="mb-3 h-9 w-9 text-primary"
+                      strokeWidth={1.65}
+                    />
+                    <span className="block break-words font-display text-[0.8rem] leading-snug text-foreground lg:text-[0.72rem] xl:text-[0.78rem]">
+                      {t(labelKey)}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <SectionHeading title={t("home.investments")} titleClassName="home-section-title" />
@@ -327,18 +402,18 @@ export async function HomeShell() {
               </div>
             </>
           ) : (
-            <EmptyCarouselCard message="Todavía no hay proyectos de inversión publicados." />
+            <EmptyCarouselCard message={t("home.emptyInvestments")} />
           )}
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-background py-16 sm:py-20">
         <div className="shell w-full max-w-full min-w-0">
           <div className="grid w-full max-w-full min-w-0 items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
             <div className="relative w-full max-w-full min-w-0 min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
               <Image
                 src={virginiaImage}
-                alt="Asesoramiento inmobiliario"
+                alt={t("advisory.heroAlt")}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 55vw, 100vw"
@@ -347,46 +422,44 @@ export async function HomeShell() {
 
             <div className="w-full max-w-full min-w-0 space-y-6 text-center sm:text-left">
               <div className="space-y-3">
-                <h2 className="section-title home-section-title w-full max-w-full min-w-0">
-                  Acompañamiento cercano para cada decisión
+                <h2 className="max-w-[18ch] font-display text-[clamp(1.35rem,5vw,1.75rem)] leading-tight text-foreground sm:text-[1.9rem]">
+                  {t("home.strategyTitle")}
                 </h2>
               </div>
 
               <div className="section-copy w-full max-w-full min-w-0 space-y-5">
                 <p>
-                  En Virginia Pintos entendemos que cada búsqueda tiene un ritmo,
-                  una historia y una necesidad distinta. Por eso trabajamos con
-                  una mirada personalizada, ayudándote a ordenar opciones,
-                  evaluar oportunidades y avanzar con información clara en cada paso.
+                  {t("home.strategyParagraphOne")}
+                </p>
+                <p className="font-semibold text-foreground">
+                  {t("home.strategyParagraphTwo")}
                 </p>
                 <p>
-                  Ya sea para alquilar, comprar o invertir, nuestro objetivo es
-                  que tomes decisiones con tranquilidad, respaldo y una estrategia
-                  pensada para vos.
+                  {t("home.strategyParagraphThree")}
                 </p>
               </div>
 
-              <p className="font-display text-2xl text-foreground">
-                Virginia Pintos
+              <p className="font-display text-[clamp(0.95rem,3.8vw,1.15rem)] leading-tight text-primary-strong sm:text-[1.25rem]">
+                {t("home.strategyClosing")}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-background py-16 sm:py-20">
+      <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-3">
               <h2 className="section-title home-section-title w-full max-w-full min-w-0">
-                Noticias e interés
+                {t("news.title")}
               </h2>
             </div>
             <Link
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
               href="/noticias"
             >
-              Ver todas
+              {t("news.all")}
             </Link>
           </div>
 
@@ -403,7 +476,7 @@ export async function HomeShell() {
                   className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
                   href="/noticias"
                 >
-                  Ver todas
+                  {t("news.all")}
                 </Link>
               </div>
 
@@ -417,16 +490,18 @@ export async function HomeShell() {
             <div className="panel flex min-h-56 flex-col items-center justify-center gap-4 border-dashed px-6 py-10 text-center">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-primary-strong">
-                  Todavía no hay noticias publicadas
+                  {t("news.emptyTitle")}
                 </h3>
                 <p className="type-body-compact mx-auto max-w-lg text-muted">
-                  Esta sección quedará poblada automáticamente cuando se publiquen noticias desde el panel admin.
+                  {t("news.emptyDescription")}
                 </p>
               </div>
             </div>
           )}
         </div>
       </section>
+
+      <AdvisoryContactCtaSection />
     </div>
   );
 }

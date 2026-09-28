@@ -26,12 +26,14 @@ import {
   PROJECT_CONSTRUCTION_STATUS_LABELS,
   PROJECT_CONSTRUCTION_STATUS_VALUES,
   type Project,
+  type ProjectAdvisor,
   type ProjectImage,
 } from "@/types/project";
 import { parseVideoUrl } from "@/lib/youtube";
 
 interface ProjectFormProps {
   allFeatures: Feature[];
+  advisorOptions?: ProjectAdvisor[];
   selectedFeatureIds?: string[];
   project?: Project | null;
   projectImages?: ProjectImage[];
@@ -227,6 +229,7 @@ function PersistedProjectImageItem({
 
 export function ProjectForm({
   allFeatures,
+  advisorOptions = [],
   project,
   projectImages = [],
   selectedFeatureIds = [],
@@ -253,6 +256,7 @@ export function ProjectForm({
   const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
   const [coverUpdatingImageId, setCoverUpdatingImageId] = useState<string | null>(null);
   const galleryInputId = "project-gallery-input";
+  const shouldShowAdvisorSelector = Boolean(existingProjectId) && advisorOptions.length > 0;
 
   async function handleDeletePersistedImage(imageId: string) {
     if (readOnly) {
@@ -719,6 +723,26 @@ export function ProjectForm({
             </FormField>
           )}
         </div>
+        {shouldShowAdvisorSelector ? (
+          <div className="xl:col-span-3">
+            <FormField htmlFor="advisorId" label="Contacto / asesor">
+              <select
+                className="admin-input-base"
+                defaultValue={project?.advisorId ?? ""}
+                disabled={readOnly}
+                id="advisorId"
+                name="advisorId"
+              >
+                <option value="">Asesor por defecto</option>
+                {advisorOptions.map((advisor) => (
+                  <option key={advisor.id} value={advisor.id}>
+                    {advisor.isDefault ? `${advisor.name} (default)` : advisor.name}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+        ) : null}
         <div className="md:col-span-2 xl:col-span-6">
           <div className="border-t border-border" />
         </div>

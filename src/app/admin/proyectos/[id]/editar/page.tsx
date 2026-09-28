@@ -9,6 +9,7 @@ import { listAdminProjectImages } from "@/features/projects/project-images.data"
 import {
   getAdminProjectById,
   getProjectFeatureIds,
+  listActiveProjectAdvisors,
 } from "@/features/projects/projects.data";
 
 interface AdminEditProjectPageProps {
@@ -24,11 +25,18 @@ export default async function AdminEditProjectPage({
 }: AdminEditProjectPageProps) {
   const { id } = await params;
   const query = await searchParams;
-  const [result, featuresResult, selectedFeatureIds, projectImagesResult] = await Promise.all([
+  const [
+    result,
+    featuresResult,
+    selectedFeatureIds,
+    projectImagesResult,
+    advisorsResult,
+  ] = await Promise.all([
     getAdminProjectById(id),
     listAllFeatures(),
     getProjectFeatureIds(id),
     listAdminProjectImages(id),
+    listActiveProjectAdvisors(),
   ]);
 
   if (!result.ok && result.error) {
@@ -75,6 +83,7 @@ export default async function AdminEditProjectPage({
           </div>
           <div className="space-y-6 p-6 sm:p-8">
             <ProjectForm
+              advisorOptions={advisorsResult.ok ? advisorsResult.data : []}
               allFeatures={featuresResult.data}
               className="space-y-0"
               project={result.data}

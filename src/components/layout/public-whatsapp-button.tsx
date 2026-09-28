@@ -1,14 +1,19 @@
+"use client";
+
 import Link from "next/link";
+import { usePublicLocale } from "@/i18n/public/locale-provider";
 
 const INSTAGRAM_URL = "https://www.instagram.com/vpa.negocios.inmobiliarios?igsh=MXk4NzFwNWpreWEy";
 const WHATSAPP_URL = "https://wa.me/59899297235";
 
 export function PublicWhatsAppButton() {
+  const { t } = usePublicLocale();
+
   return (
     <div className="fixed bottom-6 right-0 z-50 flex flex-col items-end gap-1">
       <Link
-        aria-label="Abrir Instagram"
-        className="inline-flex h-12 w-12 items-center justify-center rounded-l-[22px] bg-[linear-gradient(180deg,#fd5949_0%,#d6249f_55%,#285aeb_100%)] text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-14 md:w-14"
+        aria-label={t("social.openInstagram")}
+        className="inline-flex h-12 w-12 items-center justify-center rounded-l-[22px] bg-primary text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-transform duration-200 hover:scale-105 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-14 md:w-14"
         href={INSTAGRAM_URL}
         rel="noreferrer"
         target="_blank"
@@ -27,8 +32,8 @@ export function PublicWhatsAppButton() {
       </Link>
 
       <Link
-        aria-label="Escribir por WhatsApp"
-        className="inline-flex h-14 w-14 items-center justify-center rounded-l-[22px] bg-[#25D366] text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-transform duration-200 hover:scale-105 hover:bg-[#1ebe5b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-18 md:w-18"
+        aria-label={t("social.openWhatsApp")}
+        className="inline-flex h-14 w-14 items-center justify-center rounded-l-[22px] bg-primary text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-transform duration-200 hover:scale-105 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-18 md:w-18"
         href={WHATSAPP_URL}
         rel="noreferrer"
         target="_blank"

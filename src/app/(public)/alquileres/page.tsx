@@ -7,6 +7,8 @@ import {
   buildRelatedPropertyResults,
   parseZoneFilter,
 } from "@/features/search/related-results";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
 import { createSeoMetadata } from "@/lib/seo";
 import type { PropertyType } from "@/types/property";
 
@@ -37,6 +39,8 @@ function isPropertyType(value: string | undefined): value is PropertyType {
 
 export default async function RentalsPage({ searchParams }: RentalsPageProps) {
   const params = await searchParams;
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
   const properties = await listPublishedPropertiesByOperation("rent");
   const selectedType = isPropertyType(params.tipo) ? params.tipo : null;
   const selectedZone = parseZoneFilter(params.zona);
@@ -51,7 +55,7 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
     <section className="bg-background py-16 sm:py-20">
       <div className="shell space-y-10">
         <SectionHeading
-          title="ALQUILERES"
+          title={t("home.rentals")}
           description=""
           titleAs="h1"
         />
@@ -67,12 +71,12 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
                 ))}
               </div>
             ) : (
-              <p className="type-body text-muted">No encontramos coincidencias exactas.</p>
+              <p className="type-body text-muted">{t("common.noExactMatches")}</p>
             )}
             {suggestedResults.length > 0 ? (
               <section className="space-y-6">
                 <h2 className="text-xl font-display text-primary-strong">
-                  También te puede interesar
+                  {t("common.youMayAlsoLike")}
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {suggestedResults.map((property) => (
@@ -86,8 +90,8 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
           </>
         ) : (
           <EmptyState
-            title="Todavía no hay alquileres publicados"
-            description="No encontramos propiedades publicadas con los filtros seleccionados."
+            title={t("property.noRentals")}
+            description={t("property.noFilteredProperties")}
           />
         )}
       </div>

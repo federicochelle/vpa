@@ -1,18 +1,23 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { getPublicMessage } from "@/i18n/public/messages";
+import { getPublicLocale } from "@/i18n/public/locale.server";
 
-export function FeaturedProjectsSection() {
+export async function FeaturedProjectsSection() {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+
   return (
     <section className="shell section-gap">
       <SectionHeading
-        eyebrow="Proyectos destacados"
-        title="Bloque editorial y comercial listo para futuros desarrollos"
-        description="Esta seccion podra reutilizar ProjectCard cuando los proyectos reales esten disponibles."
+        eyebrow={t("home.featuredProjectsEyebrow")}
+        title={t("home.featuredProjectsTitle")}
+        description={t("home.featuredProjectsDescription")}
       />
       <div className="mt-8">
         <EmptyState
-          title="Sin proyectos destacados"
-          description="La estructura existe para conectar proyectos publicados sin inventar contenido en esta etapa."
+          title={t("home.featuredProjectsEmptyTitle")}
+          description={t("home.featuredProjectsEmptyDescription")}
         />
       </div>
     </section>

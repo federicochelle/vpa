@@ -1,6 +1,8 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { listPublishedNewsPage } from "@/features/news/news.data";
 import { NewsListItem } from "@/features/news/news-list-item";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
 import { createSeoMetadata } from "@/lib/seo";
 
 export const metadata = createSeoMetadata({
@@ -32,6 +34,8 @@ function buildNewsPageHref(page: number) {
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
   const requestedPage = parsePage(params.page);
   const result = await listPublishedNewsPage({
     page: requestedPage,
@@ -44,10 +48,10 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
       <div className="shell space-y-10">
         <div className="space-y-3">
           <p className="type-body-compact font-semibold uppercase tracking-[0.28em] text-primary">
-            Noticias
+            {t("news.nav")}
           </p>
           <h1 className="font-display text-3xl text-foreground sm:text-4xl">
-            Actualidad y contenido de interés
+            {t("news.title")}
           </h1>
         </div>
 
@@ -61,7 +65,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
             {result.totalPages > 1 ? (
               <nav
-                aria-label="Paginacion de noticias"
+                aria-label={t("news.pagination")}
                 className="flex flex-wrap items-center justify-center gap-3 pt-2"
               >
                 {result.page > 1 ? (
@@ -69,11 +73,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                     className="button-secondary inline-flex min-w-24 items-center justify-center px-4 py-2"
                     href={buildNewsPageHref(result.page - 1)}
                   >
-                    Anterior
+                    {t("news.previous")}
                   </a>
                 ) : (
                   <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
-                    Anterior
+                    {t("news.previous")}
                   </span>
                 )}
 
@@ -97,11 +101,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                     className="button-secondary inline-flex min-w-24 items-center justify-center px-4 py-2"
                     href={buildNewsPageHref(result.page + 1)}
                   >
-                    Siguiente
+                    {t("news.next")}
                   </a>
                 ) : (
                   <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
-                    Siguiente
+                    {t("news.next")}
                   </span>
                 )}
               </nav>
@@ -109,8 +113,8 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           </>
         ) : (
           <EmptyState
-            title="Todavía no hay noticias publicadas"
-            description="La sección quedó lista para mostrar las novedades cuando se publiquen desde el panel admin."
+            title={t("news.emptyTitle")}
+            description={t("news.emptyDescription")}
           />
         )}
       </div>

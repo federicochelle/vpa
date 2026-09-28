@@ -1,4 +1,5 @@
 import type { Feature } from "@/types/feature";
+import type { ProjectAdvisor } from "@/types/project";
 
 export type OperationType = "sale" | "rent";
 
@@ -33,8 +34,12 @@ export interface Property {
   id: string;
   projectId?: string | null;
   project?: PropertyProjectSummary | null;
+  advisorId: string | null;
+  advisor?: ProjectAdvisor | null;
   slug: string;
   title: string;
+  titleEn: string | null;
+  titleDe: string | null;
   operationType: OperationType;
   propertyType: PropertyType;
   price: number | null;
@@ -60,6 +65,8 @@ export interface Property {
   expenses?: number | null;
   constructionYear?: number | null;
   description?: string | null;
+  descriptionEn?: string | null;
+  descriptionDe?: string | null;
   investmentOpportunity?: boolean;
   heroOrder: number | null;
   sectionOrder: number | null;

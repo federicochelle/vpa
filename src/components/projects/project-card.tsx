@@ -1,7 +1,11 @@
 import Image from "next/image";
 import { CalendarClock, MapPin, Sparkles } from "lucide-react";
 import { formatProjectDeliveryDate } from "@/features/projects/project-delivery-date";
-import { PROJECT_CONSTRUCTION_STATUS_LABELS, type Project } from "@/types/project";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getLocalizedProjectName } from "@/i18n/public/content";
+import { getConstructionStatusLabel } from "@/i18n/public/formatters";
+import { getPublicMessage } from "@/i18n/public/messages";
+import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
   project: Project;
@@ -9,16 +13,19 @@ interface ProjectCardProps {
   variant?: "default" | "compact";
 }
 
-export function ProjectCard({
+export async function ProjectCard({
   project,
   className = "",
   variant = "default",
 }: ProjectCardProps) {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+  const name = getLocalizedProjectName(project, locale);
   const isCompact = variant === "compact";
-  const deliveryDate = formatProjectDeliveryDate(project.estimatedDeliveryDate);
+  const deliveryDate = formatProjectDeliveryDate(project.estimatedDeliveryDate, locale);
   const deliveryLabel = deliveryDate ??
     (project.constructionStatus === "immediate_occupancy"
-      ? PROJECT_CONSTRUCTION_STATUS_LABELS.immediate_occupancy
+      ? getConstructionStatusLabel("immediate_occupancy", locale)
       : null);
 
   return (
@@ -36,7 +43,7 @@ export function ProjectCard({
       >
         {project.image ? (
           <Image
-            alt={project.name}
+            alt={name}
             className="object-cover object-center"
             fill
             sizes={
@@ -51,8 +58,8 @@ export function ProjectCard({
         )}
         <span className="absolute right-3 top-3 bg-primary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
           {project.constructionStatus
-            ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus]
-            : "PROYECTO"}
+            ? getConstructionStatusLabel(project.constructionStatus, locale)
+            : t("project.projectBadge")}
           </span>
       </div>
       <div
@@ -68,12 +75,12 @@ export function ProjectCard({
                 : "h-[4.5rem] text-xl [-webkit-line-clamp:3]"
             }`}
           >
-            {project.name}
+            {name}
           </h3>
           <div className="type-body-compact flex items-center gap-2 text-muted">
             <MapPin className="h-4 w-4 text-primary" />
             <span>
-              {project.neighborhood ?? "Zona pendiente"}
+              {project.neighborhood ?? t("project.pendingZone")}
             </span>
           </div>
         </div>
@@ -91,10 +98,10 @@ export function ProjectCard({
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             {project.featured
-              ? "Proyecto destacado"
+              ? t("project.featured")
               : project.isInvestmentOpportunity
-                ? "Oportunidad de inversión"
-                : "Proyecto disponible"}
+                ? t("project.investmentOpportunity")
+                : t("project.available")}
           </div>
         </div>
       </div>

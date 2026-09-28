@@ -7,7 +7,7 @@ import { updateInquiryStatusAction } from "@/features/inquiries/inquiries.action
 import { AdminInquiryMeetingPanel } from "@/features/inquiries/admin-inquiry-meeting-panel";
 import { AdminInquiryStatusForm } from "@/features/inquiries/admin-inquiry-status-form";
 import { getAdminInquiryById } from "@/features/inquiries/inquiries.data";
-import type { InquiryKind } from "@/types/inquiry";
+import type { InquiryIntent, InquiryKind } from "@/types/inquiry";
 
 interface AdminInquiryDetailPageProps {
   params: Promise<{ id: string }>;
@@ -55,6 +55,26 @@ function formatInquiryOrigin(kind: InquiryKind, originPath: string | null) {
   return "Venta";
 }
 
+function formatInquiryIntent(intent: InquiryIntent | null) {
+  switch (intent) {
+    case "valuation":
+      return "Tasación";
+    case "sell":
+      return "Venta";
+    case "investment":
+      return "Consultoría de inversión";
+    case "professional_report":
+      return "Informe profesional";
+    case "advisory":
+      return "Asesoramiento";
+    case "contact":
+      return "Contacto";
+    case "general":
+    default:
+      return null;
+  }
+}
+
 export default async function AdminInquiryDetailPage({
   params,
   searchParams,
@@ -77,6 +97,14 @@ export default async function AdminInquiryDetailPage({
 
   const inquiry = result.data;
   const propertyWasDeleted = inquiry.kind === "property" && !inquiry.propertyId;
+  const intentLabel = formatInquiryIntent(inquiry.intent);
+  const leadAttribution = [
+    { label: "Fuente", value: inquiry.source },
+    { label: "Medio", value: inquiry.medium },
+    { label: "Campaña", value: inquiry.campaign },
+    { label: "Página de entrada", value: inquiry.landingPage },
+    { label: "Referrer", value: inquiry.referrer },
+  ].filter((item) => item.value);
 
   return (
     <AdminRecordShell
@@ -105,6 +133,17 @@ export default async function AdminInquiryDetailPage({
                   {formatInquiryOrigin(inquiry.kind, inquiry.originPath)}
                 </p>
               </div>
+
+              {intentLabel ? (
+                <div className="space-y-2">
+                  <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
+                    Motivo
+                  </p>
+                  <p className="type-body-compact text-foreground">
+                    {intentLabel}
+                  </p>
+                </div>
+              ) : null}
 
               <div className="space-y-2">
                 <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
@@ -171,6 +210,23 @@ export default async function AdminInquiryDetailPage({
                 </div>
               </div>
               <AdminInquiryMeetingPanel inquiry={inquiry} />
+              {leadAttribution.length > 0 ? (
+                <section className="space-y-5 border-t border-border pt-5">
+                  <h2 className="text-2xl font-display text-primary-strong">
+                    Origen de la consulta
+                  </h2>
+                  <div className="space-y-4 type-body-compact text-foreground">
+                    {leadAttribution.map((item) => (
+                      <div className="space-y-1" key={item.label}>
+                        <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
+                          {item.label}
+                        </p>
+                        <p className="break-words">{item.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
             </div>
           </section>
         </div>

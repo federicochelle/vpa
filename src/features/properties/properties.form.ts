@@ -148,6 +148,7 @@ export function buildPropertyInput(formData: FormData): PropertyMutationInput {
   }
 
   return {
+    advisorId: toNullableUuid(formData.get("advisorId"), "asesor"),
     title,
     slug,
     projectId: toNullableUuid(formData.get("projectId"), "proyecto asociado"),

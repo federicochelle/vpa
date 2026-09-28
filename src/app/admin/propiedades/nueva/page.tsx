@@ -1,7 +1,10 @@
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { listAllFeatures } from "@/features/features/features.data";
 import { PropertyForm } from "@/features/properties/property-form";
-import { listAdminProjects } from "@/features/projects/projects.data";
+import {
+  listActiveProjectAdvisors,
+  listAdminProjects,
+} from "@/features/projects/projects.data";
 
 interface AdminNewPropertyPageProps {
   searchParams: Promise<{
@@ -13,9 +16,10 @@ export default async function AdminNewPropertyPage({
   searchParams,
 }: AdminNewPropertyPageProps) {
   const params = await searchParams;
-  const [featuresResult, projectsResult] = await Promise.all([
+  const [featuresResult, projectsResult, advisorsResult] = await Promise.all([
     listAllFeatures(),
     listAdminProjects(),
+    listActiveProjectAdvisors(),
   ]);
 
   return (
@@ -35,6 +39,7 @@ export default async function AdminNewPropertyPage({
           <div className="space-y-6 p-6 sm:p-8">
             <PropertyForm
               allFeatures={featuresResult.data}
+              advisorOptions={advisorsResult.data}
               allProjects={projectsResult.data}
               className="space-y-0"
               submitLabel="Crear propiedad"

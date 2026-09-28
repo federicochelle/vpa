@@ -11,6 +11,11 @@ import type { Property } from "@/types/property";
 import type { Feature } from "@/types/feature";
 import { mapPropertyRow } from "@/features/properties/property-mappers";
 import type { Database } from "@/lib/supabase/types";
+import {
+  buildCreatePublicContentTranslationFields,
+  buildUpdatePublicContentTranslationFields,
+} from "@/lib/translation/public-content";
+import { translatePublicContent } from "@/lib/translation/public-content.server";
 
 type PropertyInsert = Database["public"]["Tables"]["properties"]["Insert"];
 type PropertyUpdate = Database["public"]["Tables"]["properties"]["Update"];
@@ -21,7 +26,7 @@ type PropertyCoverImageRow = Pick<
 >;
 type FeatureRow = Pick<
   Database["public"]["Tables"]["features"]["Row"],
-  "id" | "name" | "slug" | "category"
+  "id" | "name" | "name_de" | "name_en" | "slug" | "category"
 >;
 
 export interface SupabaseActionError {
@@ -32,6 +37,7 @@ export interface SupabaseActionError {
 }
 
 export interface PropertyMutationInput {
+  advisorId: string | null;
   title: string;
   slug: string;
   projectId: string | null;
@@ -109,6 +115,8 @@ function mapFeatureRow(row: FeatureRow): Feature {
   return {
     id: row.id,
     name: row.name,
+    nameDe: row.name_de,
+    nameEn: row.name_en,
     slug: row.slug,
     category: row.category,
   };
@@ -138,7 +146,7 @@ async function readPropertyFeatures(
 
   const { data: featureRows, error: featuresError } = await supabase
     .from("features")
-    .select("id, name, slug, category")
+    .select("id, name, name_en, name_de, slug, category")
     .in("id", featureIds);
 
   if (featuresError) {
@@ -248,6 +256,7 @@ function toPropertyPayload(
   Database["public"]["Tables"]["properties"]["Insert"],
   | "title"
   | "slug"
+  | "advisor_id"
   | "project_id"
   | "operation_type"
   | "property_type"
@@ -281,6 +290,7 @@ function toPropertyPayload(
   return {
     title: input.title,
     slug: input.slug,
+    advisor_id: input.advisorId,
     project_id: input.projectId,
     operation_type: input.operationType,
     property_type: input.propertyType,
@@ -734,9 +744,20 @@ export async function createProperty(
     slug: uniqueSlug,
     status: "published",
   });
+  const translations = await buildCreatePublicContentTranslationFields(
+    {
+      description: payload.description,
+      title: payload.title,
+    },
+    translatePublicContent,
+    "property",
+  );
   const insertPayload: PropertyInsert = {
     title: payload.title,
+    title_en: translations.titleEn,
+    title_de: translations.titleDe,
     slug: payload.slug,
+    advisor_id: payload.advisor_id,
     project_id: payload.project_id,
     operation_type: payload.operation_type,
     property_type: payload.property_type,
@@ -756,6 +777,8 @@ export async function createProperty(
     orientation: payload.orientation,
     floor: payload.floor,
     description: payload.description,
+    description_en: translations.descriptionEn,
+    description_de: translations.descriptionDe,
     video_url: payload.video_url,
     address: payload.address,
     neighborhood: payload.neighborhood,
@@ -872,9 +895,28 @@ export async function updateProperty(
     slug: uniqueSlug,
     status: existingPropertyResult.data.status ?? "draft",
   });
+  const translations = await buildUpdatePublicContentTranslationFields({
+    context: "property",
+    next: {
+      description: payload.description,
+      title: payload.title,
+    },
+    previous: {
+      description: existingPropertyResult.data.description ?? null,
+      descriptionDe: existingPropertyResult.data.descriptionDe ?? null,
+      descriptionEn: existingPropertyResult.data.descriptionEn ?? null,
+      title: existingPropertyResult.data.title,
+      titleDe: existingPropertyResult.data.titleDe ?? null,
+      titleEn: existingPropertyResult.data.titleEn ?? null,
+    },
+    translator: translatePublicContent,
+  });
   const updatePayload: PropertyUpdate = {
     title: payload.title,
+    title_en: translations.titleEn,
+    title_de: translations.titleDe,
     slug: payload.slug,
+    advisor_id: payload.advisor_id,
     project_id: payload.project_id,
     operation_type: payload.operation_type,
     property_type: payload.property_type,
@@ -894,6 +936,8 @@ export async function updateProperty(
     orientation: payload.orientation,
     floor: payload.floor,
     description: payload.description,
+    description_en: translations.descriptionEn,
+    description_de: translations.descriptionDe,
     video_url: payload.video_url,
     address: payload.address,
     neighborhood: payload.neighborhood,

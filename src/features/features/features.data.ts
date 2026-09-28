@@ -8,6 +8,10 @@ import {
 import type { Database } from "@/lib/supabase/types";
 import type { Feature } from "@/types/feature";
 import type { ValidFeatureName } from "@/features/features/features.form";
+import {
+  buildCreatePublicContentTranslationFields,
+} from "@/lib/translation/public-content";
+import { translatePublicContent } from "@/lib/translation/public-content.server";
 
 export interface FeaturesReadResult {
   ok: boolean;
@@ -30,12 +34,14 @@ export interface FeatureWriteResult {
 function mapFeatureRow(
   row: Pick<
     Database["public"]["Tables"]["features"]["Row"],
-    "id" | "name" | "slug" | "category"
+    "id" | "name" | "name_de" | "name_en" | "slug" | "category"
   >,
 ): Feature {
   return {
     id: row.id,
     name: row.name,
+    nameDe: row.name_de,
+    nameEn: row.name_en,
     slug: row.slug,
     category: row.category,
   };
@@ -73,7 +79,7 @@ export async function listAllFeatures(): Promise<FeaturesReadResult> {
   const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase
     .from("features")
-    .select("id, name, slug, category")
+    .select("id, name, name_en, name_de, slug, category")
     .order("name", { ascending: true });
 
   if (error) {
@@ -110,14 +116,21 @@ export async function createOrGetFeature(
   }
 
   const supabase = await createSupabaseServerActionClient();
+  const translations = await buildCreatePublicContentTranslationFields(
+    { description: null, title: input.name },
+    translatePublicContent,
+    "feature",
+  );
   const { data, error } = await supabase
     .from("features")
     .insert({
       category: null,
       name: input.name,
+      name_de: translations.titleDe,
+      name_en: translations.titleEn,
       slug: input.slug,
     })
-    .select("id, name, slug, category")
+    .select("id, name, name_en, name_de, slug, category")
     .maybeSingle();
 
   if (!error && data) {
@@ -147,7 +160,7 @@ export async function createOrGetFeature(
 
   const { data: existingFeature, error: existingFeatureError } = await supabase
     .from("features")
-    .select("id, name, slug, category")
+    .select("id, name, name_en, name_de, slug, category")
     .eq("slug", input.slug)
     .maybeSingle();
 

@@ -2,12 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import type { News } from "@/types/news";
 import { formatNewsDate } from "@/features/news/news.utils";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
 
 interface NewsListItemProps {
   news: News;
 }
 
-export function NewsListItem({ news }: NewsListItemProps) {
+export async function NewsListItem({ news }: NewsListItemProps) {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+
   return (
     <Link
       className="group block overflow-hidden bg-white ring-1 ring-black/4 transition-transform duration-200 hover:-translate-y-0.5"
@@ -33,14 +38,14 @@ export function NewsListItem({ news }: NewsListItemProps) {
               {news.title}
             </h2>
             <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
-              {formatNewsDate(news.publishedAt ?? news.createdAt)}
+              {formatNewsDate(news.publishedAt ?? news.createdAt, locale) ?? t("news.pendingDate")}
             </p>
           </div>
           <p className="type-body max-w-3xl text-muted">
-            {news.excerpt ?? "Esta noticia ya está disponible para leer completa."}
+            {news.excerpt ?? t("news.defaultExcerpt")}
           </p>
           <span className="type-body-compact font-display inline-flex items-center font-semibold uppercase tracking-[0.14em] text-primary transition-colors group-hover:text-primary-strong">
-            Leer más
+            {t("news.readMore")}
           </span>
         </div>
       </article>

@@ -4,11 +4,12 @@ import { ChevronDown, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { PropertyType } from "@/types/property";
+import { usePublicLocale } from "@/i18n/public/locale-provider";
 
 const searchOperationOptions = [
-  { value: "sale", label: "Compra" },
-  { value: "rent", label: "Alquiler" },
-  { value: "investment", label: "Inversión" },
+  { value: "sale", labelKey: "search.buy" },
+  { value: "rent", labelKey: "search.rent" },
+  { value: "investment", labelKey: "search.investment" },
 ] as const;
 
 interface SearchLocationOption {
@@ -56,6 +57,7 @@ function LocationCombobox({
   onSelect: (option: SearchLocationOption | null) => void;
   onSuggestionSelect: (option: SearchLocationOption) => void;
 }) {
+  const { t } = usePublicLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -173,7 +175,7 @@ function LocationCombobox({
         type="button"
       >
         <span className={selectedOption ? "truncate text-foreground" : "truncate text-muted"}>
-          {selectedOption?.label ?? "Zona"}
+          {selectedOption?.label ?? t("search.zone")}
         </span>
         <ChevronDown
           className={`h-4 w-4 flex-none text-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -187,14 +189,14 @@ function LocationCombobox({
               ref={inputRef}
               autoComplete="off"
               className="search-field search-zone-input"
-              placeholder="Buscar zona"
+              placeholder={t("search.zonePlaceholder")}
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </div>
           <div
-            aria-label="Opciones de zona"
+            aria-label={t("search.zone")}
             className="max-h-60 overflow-y-auto"
             id={listboxId}
             role="listbox"
@@ -219,7 +221,7 @@ function LocationCombobox({
             {filteredOptions.length === 0 && suggestedOptions.length > 0 ? (
               <div className="border-t border-border px-4 py-3">
                 <p className="type-body-compact font-medium text-foreground">
-                  No encontramos esa zona. También te puede interesar:
+                  {t("search.suggestedZones")}
                 </p>
                 <div className="mt-3 space-y-2">
                   {suggestedOptions.map((option) => (
@@ -243,7 +245,7 @@ function LocationCombobox({
             ) : null}
             {filteredOptions.length === 0 && suggestedOptions.length === 0 ? (
               <div className="type-body-compact px-4 py-3 text-muted">
-                No encontramos esa zona.
+                {t("search.noZone")}
               </div>
             ) : null}
           </div>
@@ -255,6 +257,7 @@ function LocationCombobox({
 
 export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSectionProps) {
   const router = useRouter();
+  const { t } = usePublicLocale();
   const [operation, setOperation] = useState<(typeof searchOperationOptions)[number]["value"]>("sale");
   const [propertyType, setPropertyType] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption | null>(null);
@@ -316,21 +319,21 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
       : "gap-4 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto]";
 
   return (
-    <section className="relative z-20 w-full max-w-full min-w-0 -mt-24 px-4 pb-12 md:mt-0 md:shell md:-mt-20 md:px-0 md:pb-14 lg:-mt-24 lg:pb-16">
+    <section className="relative z-20 -mb-64 w-full max-w-full min-w-0 -mt-24 px-4 md:mt-0 md:shell md:-mb-16 md:-mt-20 md:px-0 lg:-mt-24">
       <div className="md:hidden">
         <div className="mx-auto w-full max-w-full min-w-0 overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">
             <form className="grid gap-4" onSubmit={handleSubmit}>
               {operation === "investment" ? null : (
                 <label className="grid gap-2 type-body-compact font-medium text-foreground">
-                  Tipo de propiedad
+                  {t("search.propertyType")}
                   <select
                     className="search-field search-select"
                     value={propertyType}
                     onChange={(event) => setPropertyType(event.target.value)}
                     name="tipo"
                   >
-                    <option value="">Todos</option>
+                    <option value="">{t("common.all")}</option>
                     {operationPropertyTypeOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -341,7 +344,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
               )}
 
               <label className="grid gap-2 type-body-compact font-medium text-foreground">
-                Operación
+                {t("search.operation")}
                 <select
                   className="search-field search-select"
                   value={operation}
@@ -352,14 +355,14 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
                 >
                   {searchOperationOptions.map((option) => (
                     <option key={option.value} value={option.value}>
-                      {option.label}
+                      {t(option.labelKey)}
                     </option>
                   ))}
                 </select>
               </label>
 
               <div className="grid gap-2 type-body-compact font-medium text-foreground">
-                <span>Zona</span>
+                <span>{t("search.zone")}</span>
                 <LocationCombobox
                   options={operationLocationOptions}
                   operation={operation}
@@ -374,7 +377,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
                 type="submit"
               >
                 <Search className="h-4 w-4" />
-                Buscar
+                {t("common.search")}
               </button>
             </form>
           </div>
@@ -389,14 +392,14 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
           >
             {operation === "investment" ? null : (
               <label className="grid gap-2 type-body-compact font-medium text-foreground">
-                Tipo de propiedad
+                {t("search.propertyType")}
                 <select
                   className="search-field search-select"
                   value={propertyType}
                   onChange={(event) => setPropertyType(event.target.value)}
                   name="tipo"
                 >
-                  <option value="">Todos</option>
+                  <option value="">{t("common.all")}</option>
                   {operationPropertyTypeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -407,7 +410,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
             )}
 
             <label className="grid gap-2 type-body-compact font-medium text-foreground">
-              Operación
+              {t("search.operation")}
               <select
                 className="search-field search-select"
                 value={operation}
@@ -418,14 +421,14 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
               >
                 {searchOperationOptions.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.labelKey)}
                   </option>
                 ))}
               </select>
             </label>
 
             <div className="grid gap-2 type-body-compact font-medium text-foreground">
-              <span>Zona</span>
+              <span>{t("search.zone")}</span>
               <LocationCombobox
                 options={operationLocationOptions}
                 operation={operation}
@@ -440,7 +443,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
               type="submit"
             >
               <Search className="h-4 w-4" />
-              Buscar
+              {t("common.search")}
             </button>
           </form>
         </div>

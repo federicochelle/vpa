@@ -8,6 +8,7 @@ export const publicNavigation = [
 export const adminNavigation = [
   { href: "/admin/propiedades", label: "Propiedades" },
   { href: "/admin/proyectos", label: "Proyectos" },
+  { href: "/admin/asesores", label: "Asesores" },
   { href: "/admin/noticias", label: "Noticias" },
   { href: "/admin/consultas", label: "Consultas" },
 ] as const;

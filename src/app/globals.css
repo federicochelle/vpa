@@ -365,6 +365,14 @@ textarea {
   animation: fade-up 0.6s ease-out both;
 }
 
+.modal-backdrop-in {
+  animation: modal-backdrop-in 0.24s ease-out both;
+}
+
+.modal-panel-in {
+  animation: modal-panel-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .hero-track {
   animation: hero-carousel 16s infinite ease-in-out;
 }
@@ -381,6 +389,28 @@ textarea {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

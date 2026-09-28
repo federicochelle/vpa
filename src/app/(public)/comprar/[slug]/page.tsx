@@ -10,6 +10,12 @@ import {
   formatPublicPropertyMoney,
 } from "@/features/properties/property-public-format";
 import {
+  getLocalizedPropertyDescription,
+  getLocalizedPropertyTitle,
+} from "@/i18n/public/content";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
+import {
   createNotFoundSeoMetadata,
   createSeoMetadata,
   resolveContentSeoImage,
@@ -29,15 +35,18 @@ export async function generateMetadata({ params }: BuyDetailPageProps) {
     return createNotFoundSeoMetadata("Propiedad no encontrada");
   }
 
+  const locale = await getPublicLocale();
+  const title = getLocalizedPropertyTitle(property, locale);
+  const description = getLocalizedPropertyDescription(property, locale);
   const imagesResult = await listPublishedPropertyImages(property.id);
   const image = resolveContentSeoImage(
     imagesResult.ok ? imagesResult.data : [],
-    property.title,
+    title,
   );
 
   return createSeoMetadata({
-    title: property.title,
-    description: property.description,
+    title,
+    description,
     path: `/comprar/${property.slug}`,
     image,
   });
@@ -51,9 +60,12 @@ export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
     notFound();
   }
 
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+  const title = getLocalizedPropertyTitle(property, locale);
   const headerLocation = buildPropertyHeaderLocation(property);
-  const price = formatPublicPropertyMoney(property.price, property.currency);
-  const expenses = formatPublicCommonExpenses(property.expenses);
+  const price = formatPublicPropertyMoney(property.price, property.currency, locale);
+  const expenses = formatPublicCommonExpenses(property.expenses, locale);
   const hasHeaderDetails = Boolean(headerLocation || price || expenses);
 
   return (
@@ -65,7 +77,7 @@ export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
               <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 flex-1 space-y-4">
                   <h1 className="detail-hero-title text-foreground">
-                    {property.title}
+                    {title}
                   </h1>
                   {hasHeaderDetails ? (
                     <div className="flex w-full min-w-0 flex-col items-start gap-3 lg:hidden">
@@ -84,7 +96,7 @@ export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
                           ) : null}
                           {expenses ? (
                             <p className="mt-1 text-sm font-medium text-muted">
-                              Gastos comunes: {expenses}
+                              {t("property.commonExpenses")}: {expenses}
                             </p>
                           ) : null}
                         </div>
@@ -108,7 +120,7 @@ export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
                           ) : null}
                           {expenses ? (
                             <p className="mt-1 text-sm font-medium text-muted">
-                              Gastos comunes: {expenses}
+                              {t("property.commonExpenses")}: {expenses}
                             </p>
                           ) : null}
                         </div>

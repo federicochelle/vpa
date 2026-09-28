@@ -8,6 +8,7 @@ import {
   siteName,
   siteUrl,
 } from "@/lib/seo";
+import { getPublicLocale } from "@/i18n/public/locale.server";
 import "./globals.css";
 
 const unbounded = Unbounded({
@@ -63,11 +64,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getPublicLocale();
+
   return (
-    <html lang="es" className={`${unbounded.variable} h-full antialiased`}>
+    <html lang={locale} className={`${unbounded.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

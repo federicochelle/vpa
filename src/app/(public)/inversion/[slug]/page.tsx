@@ -10,7 +10,12 @@ import {
   createSeoMetadata,
   resolveContentSeoImage,
 } from "@/lib/seo";
-import { PROJECT_CONSTRUCTION_STATUS_LABELS } from "@/types/project";
+import {
+  getLocalizedProjectDescription,
+  getLocalizedProjectName,
+} from "@/i18n/public/content";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getConstructionStatusLabel } from "@/i18n/public/formatters";
 
 interface InvestmentDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -26,15 +31,18 @@ export async function generateMetadata({ params }: InvestmentDetailPageProps) {
     return createNotFoundSeoMetadata("Proyecto no encontrado");
   }
 
+  const locale = await getPublicLocale();
+  const name = getLocalizedProjectName(project, locale);
+  const description = getLocalizedProjectDescription(project, locale);
   const imagesResult = await listPublishedProjectImages(project.id);
   const image = resolveContentSeoImage(
     imagesResult.ok ? imagesResult.data : [],
-    project.name,
+    name,
   );
 
   return createSeoMetadata({
-    title: project.name,
-    description: project.description,
+    title: name,
+    description,
     path: `/inversion/${project.slug}`,
     image,
   });
@@ -50,10 +58,12 @@ export default async function InvestmentDetailPage({
     notFound();
   }
 
+  const locale = await getPublicLocale();
+  const name = getLocalizedProjectName(project, locale);
   const headerLocation = normalizeLocationPart(project.neighborhood);
 
   const status = project.constructionStatus
-    ? PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus]
+    ? getConstructionStatusLabel(project.constructionStatus, locale)
     : null;
   const hasHeaderDetails = Boolean(headerLocation || status);
 
@@ -65,7 +75,7 @@ export default async function InvestmentDetailPage({
             <div className="flex flex-col gap-6 brand-panel-header px-6 py-6 sm:px-8 lg:flex-row lg:items-start lg:justify-between lg:px-12">
               <div className="min-w-0 space-y-4">
                 <h1 className="detail-hero-title text-foreground">
-                  {project.name}
+                  {name}
                 </h1>
                 {hasHeaderDetails ? (
                   <div className="flex items-start justify-between gap-4 lg:hidden">

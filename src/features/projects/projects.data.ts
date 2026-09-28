@@ -4,11 +4,25 @@ import {
   createSupabaseServerActionClient,
   createSupabaseServerComponentClient,
 } from "@/lib/supabase/server";
+import {
+  canDeactivateProjectAdvisor,
+  mapProjectAdvisorRow,
+} from "@/features/projects/project-advisors";
+import {
+  buildProjectAdvisorInsertPayload,
+  buildProjectAdvisorUpdatePayload,
+} from "@/features/projects/project-advisor-mutation-payloads";
 import { getHomeHeroOrderMap } from "@/features/home-hero/home-hero.data";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type { Database } from "@/lib/supabase/types";
 import { mapProjectRow } from "@/features/projects/project-mappers";
-import type { ConstructionStatus, Project } from "@/types/project";
+import { buildProjectUpdatePayload } from "@/features/projects/project-mutation-payloads";
+import {
+  buildCreatePublicContentTranslationFields,
+  buildUpdatePublicContentTranslationFields,
+} from "@/lib/translation/public-content";
+import { translatePublicContent } from "@/lib/translation/public-content.server";
+import type { ConstructionStatus, Project, ProjectAdvisor } from "@/types/project";
 
 type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
 type ProjectUpdate = Database["public"]["Tables"]["projects"]["Update"];
@@ -26,6 +40,7 @@ export interface SupabaseActionError {
 }
 
 export interface ProjectMutationInput {
+  advisorId: string | null;
   name: string;
   slug: string;
   description: string | null;
@@ -44,6 +59,16 @@ export interface ProjectMutationInput {
   isInvestmentOpportunity: boolean;
 }
 
+export interface ProjectAdvisorMutationInput {
+  name: string;
+  phone: string;
+  whatsapp: string;
+  email: string | null;
+  photoUrl: string | null;
+  active: boolean;
+  isDefault: boolean;
+}
+
 interface ProjectsReadResult {
   ok: boolean;
   data: Project[];
@@ -59,6 +84,24 @@ interface ProjectReadResult {
 interface ProjectWriteResult {
   ok: boolean;
   data: Project | null;
+  error: SupabaseActionError | null;
+}
+
+interface ProjectAdvisorsReadResult {
+  ok: boolean;
+  data: ProjectAdvisor[];
+  error: SupabaseActionError | null;
+}
+
+interface ProjectAdvisorReadResult {
+  ok: boolean;
+  data: ProjectAdvisor | null;
+  error: SupabaseActionError | null;
+}
+
+interface ProjectAdvisorWriteResult {
+  ok: boolean;
+  data: ProjectAdvisor | null;
   error: SupabaseActionError | null;
 }
 
@@ -137,6 +180,189 @@ async function attachProjectCoverImages(
   };
 }
 
+async function getProjectAdvisorById(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerComponentClient>>,
+  advisorId: string | null,
+) {
+  if (!advisorId) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .select("*")
+    .eq("id", advisorId)
+    .eq("active", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching project advisor", formatError(error));
+    return null;
+  }
+
+  return data ? mapProjectAdvisorRow(data) : null;
+}
+
+async function getDefaultProjectAdvisor(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerComponentClient>>,
+) {
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .select("*")
+    .eq("active", true)
+    .eq("is_default", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching default project advisor", formatError(error));
+    return null;
+  }
+
+  return data ? mapProjectAdvisorRow(data) : null;
+}
+
+export async function resolveProjectAdvisorForEntity(
+  entity: { advisor?: ProjectAdvisor | null; advisorId: string | null },
+): Promise<ProjectAdvisor | null> {
+  if (!hasSupabaseEnv()) {
+    return entity.advisor?.active ? entity.advisor : null;
+  }
+
+  if (entity.advisor?.active) {
+    return entity.advisor;
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const assignedAdvisor = await getProjectAdvisorById(supabase, entity.advisorId);
+
+  if (assignedAdvisor) {
+    return assignedAdvisor;
+  }
+
+  return getDefaultProjectAdvisor(supabase);
+}
+
+export async function resolveProjectAdvisorForProject(
+  project: Pick<Project, "advisor" | "advisorId">,
+): Promise<ProjectAdvisor | null> {
+  return resolveProjectAdvisorForEntity(project);
+}
+
+export async function listActiveProjectAdvisors(): Promise<ProjectAdvisorsReadResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: [],
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .select("*")
+    .eq("active", true)
+    .order("is_default", { ascending: false })
+    .order("name", { ascending: true });
+
+  if (error) {
+    return {
+      ok: false,
+      data: [],
+      error: formatError(error),
+    };
+  }
+
+  return {
+    ok: true,
+    data: data.map(mapProjectAdvisorRow),
+    error: null,
+  };
+}
+
+export async function listAdminProjectAdvisors(): Promise<ProjectAdvisorsReadResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: [],
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .select("*")
+    .order("is_default", { ascending: false })
+    .order("active", { ascending: false })
+    .order("name", { ascending: true });
+
+  if (error) {
+    return {
+      ok: false,
+      data: [],
+      error: formatError(error),
+    };
+  }
+
+  return {
+    ok: true,
+    data: data.map(mapProjectAdvisorRow),
+    error: null,
+  };
+}
+
+export async function getAdminProjectAdvisorById(
+  id: string,
+): Promise<ProjectAdvisorReadResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerComponentClient();
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    return {
+      ok: false,
+      data: null,
+      error: formatError(error),
+    };
+  }
+
+  return {
+    ok: true,
+    data: data ? mapProjectAdvisorRow(data) : null,
+    error: null,
+  };
+}
+
 async function readPublishedProjects(options?: {
   investmentOnly?: boolean;
 }): Promise<ProjectsReadResult> {
@@ -177,7 +403,7 @@ async function readPublishedProjects(options?: {
     };
   }
 
-  return attachProjectCoverImages(supabase, data.map(mapProjectRow));
+  return attachProjectCoverImages(supabase, data.map((project) => mapProjectRow(project)));
 }
 
 export async function listPublishedProjects(options?: {
@@ -236,7 +462,9 @@ export async function getPublishedProjectBySlug(
     return null;
   }
 
-  return data ? mapProjectRow(data) : null;
+  const advisor = await getProjectAdvisorById(supabase, data?.advisor_id ?? null);
+
+  return data ? mapProjectRow(data, advisor) : null;
 }
 
 export async function getPublishedProjectById(id: string): Promise<Project | null> {
@@ -375,9 +603,11 @@ export async function getAdminProjectById(id: string): Promise<ProjectReadResult
     };
   }
 
+  const advisor = await getProjectAdvisorById(supabase, data?.advisor_id ?? null);
+
   return {
     ok: true,
-    data: data ? mapProjectRow(data) : null,
+    data: data ? mapProjectRow(data, advisor) : null,
     error: null,
   };
 }
@@ -394,7 +624,12 @@ export async function getProjectFeatureIds(projectId: string): Promise<string[]>
     .eq("project_id", projectId);
 
   if (error) {
-    console.error("Error fetching project features", formatError(error));
+    console.error("Error fetching project features", {
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      message: error.message,
+    });
     return [];
   }
 
@@ -432,6 +667,276 @@ async function syncProjectFeatures(projectId: string, featureIds: string[]) {
   }
 }
 
+async function setProjectAdvisorDefault(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>,
+  advisorId: string,
+) {
+  const { error: clearError } = await supabase
+    .from("project_advisors")
+    .update({ is_default: false })
+    .neq("id", advisorId);
+
+  if (clearError) {
+    throw clearError;
+  }
+
+  const { error: setError } = await supabase
+    .from("project_advisors")
+    .update({ active: true, is_default: true })
+    .eq("id", advisorId);
+
+  if (setError) {
+    throw setError;
+  }
+}
+
+export async function createProjectAdvisor(
+  input: ProjectAdvisorMutationInput,
+): Promise<ProjectAdvisorWriteResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  if (input.isDefault && !input.active) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "El asesor por defecto debe estar activo.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerActionClient();
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .insert(buildProjectAdvisorInsertPayload(input))
+    .select("*")
+    .maybeSingle();
+
+  if (error || !data) {
+    return {
+      ok: false,
+      data: null,
+      error: error
+        ? formatError(error)
+        : {
+            code: null,
+            details: null,
+            hint: null,
+            message: "No se pudo crear el asesor.",
+          },
+    };
+  }
+
+  if (input.isDefault) {
+    try {
+      await setProjectAdvisorDefault(supabase, data.id);
+    } catch (defaultError) {
+      return {
+        ok: false,
+        data: null,
+        error: formatError(defaultError as SupabaseActionError),
+      };
+    }
+  }
+
+  const result = await getAdminProjectAdvisorById(data.id);
+
+  return {
+    ok: result.ok,
+    data: result.data,
+    error: result.error,
+  };
+}
+
+export async function updateProjectAdvisor(
+  id: string,
+  input: ProjectAdvisorMutationInput,
+): Promise<ProjectAdvisorWriteResult> {
+  if (!hasSupabaseEnv()) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message:
+          "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+      },
+    };
+  }
+
+  const existingResult = await getAdminProjectAdvisorById(id);
+
+  if (!existingResult.ok) {
+    return {
+      ok: false,
+      data: null,
+      error: existingResult.error,
+    };
+  }
+
+  if (!existingResult.data) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "No se encontró el asesor.",
+      },
+    };
+  }
+
+  if (input.isDefault && !input.active) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "El asesor por defecto debe estar activo.",
+      },
+    };
+  }
+
+  if (existingResult.data.isDefault && !input.isDefault) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "Elegí otro asesor por defecto antes de quitar este.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerActionClient();
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .update(buildProjectAdvisorUpdatePayload(input, { isDefault: existingResult.data.isDefault }))
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+
+  if (error || !data) {
+    return {
+      ok: false,
+      data: null,
+      error: error
+        ? formatError(error)
+        : {
+            code: null,
+            details: null,
+            hint: null,
+            message: "No se pudo actualizar el asesor.",
+          },
+    };
+  }
+
+  if (input.isDefault && !existingResult.data.isDefault) {
+    try {
+      await setProjectAdvisorDefault(supabase, id);
+    } catch (defaultError) {
+      return {
+        ok: false,
+        data: null,
+        error: formatError(defaultError as SupabaseActionError),
+      };
+    }
+  }
+
+  const result = await getAdminProjectAdvisorById(id);
+
+  return {
+    ok: result.ok,
+    data: result.data,
+    error: result.error,
+  };
+}
+
+export async function setProjectAdvisorActive(
+  id: string,
+  active: boolean,
+): Promise<ProjectAdvisorWriteResult> {
+  const existingResult = await getAdminProjectAdvisorById(id);
+
+  if (!existingResult.ok || !existingResult.data) {
+    return {
+      ok: false,
+      data: null,
+      error:
+        existingResult.error ?? {
+          code: null,
+          details: null,
+          hint: null,
+          message: "No se encontró el asesor.",
+        },
+    };
+  }
+
+  if (!active && !canDeactivateProjectAdvisor(existingResult.data)) {
+    return {
+      ok: false,
+      data: null,
+      error: {
+        code: null,
+        details: null,
+        hint: null,
+        message: "No se puede desactivar el asesor por defecto.",
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerActionClient();
+  const { data, error } = await supabase
+    .from("project_advisors")
+    .update({ active })
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+
+  if (error || !data) {
+    return {
+      ok: false,
+      data: null,
+      error: error
+        ? formatError(error)
+        : {
+            code: null,
+            details: null,
+            hint: null,
+            message: "No se pudo cambiar el estado del asesor.",
+          },
+    };
+  }
+
+  return {
+    ok: true,
+    data: mapProjectAdvisorRow(data),
+    error: null,
+  };
+}
+
 export async function createProject(
   input: ProjectMutationInput,
   featureIds: string[] = [],
@@ -463,10 +968,22 @@ export async function createProject(
     };
   }
 
+  const translations = await buildCreatePublicContentTranslationFields(
+    {
+      description: input.description,
+      title: input.name,
+    },
+    translatePublicContent,
+    "project",
+  );
   const insertPayload: ProjectInsert = {
     name: input.name,
+    name_en: translations.titleEn,
+    name_de: translations.titleDe,
     slug: uniqueSlug,
     description: input.description,
+    description_en: translations.descriptionEn,
+    description_de: translations.descriptionDe,
     video_url: input.videoUrl,
     developer_name: input.developerName,
     construction_status: input.constructionStatus,
@@ -570,24 +1087,31 @@ export async function updateProject(
     };
   }
 
-  const updatePayload: ProjectUpdate = {
-    name: input.name,
-    slug: uniqueSlug,
-    description: input.description,
-    video_url: input.videoUrl,
-    developer_name: input.developerName,
-    construction_status: input.constructionStatus,
-    estimated_delivery_date: input.estimatedDeliveryDate,
-    address: input.address,
-    neighborhood: input.neighborhood,
-    city: input.city,
-    department: input.department,
-    latitude: input.latitude,
-    longitude: input.longitude,
+  const updatePayload: ProjectUpdate = buildProjectUpdatePayload(input, {
     published: existingProjectResult.data.published ?? false,
-    featured: input.featured,
-    is_investment_opportunity: input.isInvestmentOpportunity,
-  };
+    slug: uniqueSlug,
+  });
+  const translations = await buildUpdatePublicContentTranslationFields({
+    context: "project",
+    next: {
+      description: input.description,
+      title: input.name,
+    },
+    previous: {
+      description: existingProjectResult.data.description,
+      descriptionDe: existingProjectResult.data.descriptionDe,
+      descriptionEn: existingProjectResult.data.descriptionEn,
+      title: existingProjectResult.data.name,
+      titleDe: existingProjectResult.data.nameDe,
+      titleEn: existingProjectResult.data.nameEn,
+    },
+    translator: translatePublicContent,
+  });
+
+  updatePayload.name_en = translations.titleEn;
+  updatePayload.name_de = translations.titleDe;
+  updatePayload.description_en = translations.descriptionEn;
+  updatePayload.description_de = translations.descriptionDe;
 
   const { data, error } = await supabase
     .from("projects")

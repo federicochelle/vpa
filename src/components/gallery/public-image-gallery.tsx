@@ -4,6 +4,8 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
+import { usePublicLocale } from "@/i18n/public/locale-provider";
+import { getOperationBadgeLabel } from "@/i18n/public/formatters";
 
 export interface PublicGalleryImage {
   id: string;
@@ -34,6 +36,7 @@ export function PublicImageGallery({
   images,
   operationType,
 }: PublicImageGalleryProps) {
+  const { locale, t } = usePublicLocale();
   const orderedImages = useMemo(() => images, [images]);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -172,7 +175,7 @@ export function PublicImageGallery({
         >
           {badgeLabel || operationType ? (
             <span className="absolute right-3 top-3 z-10 bg-primary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-              {badgeLabel ?? (operationType === "rent" ? "ALQUILER" : "VENTA")}
+              {badgeLabel ?? (operationType ? getOperationBadgeLabel(operationType, locale) : null)}
             </span>
           ) : null}
           <Image
@@ -260,15 +263,17 @@ export function PublicImageGallery({
 
               {orderedImages.length > 1 ? (
                 <>
-                  <button
-                    className="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
+              <button
+                aria-label={t("common.previousSlide")}
+                className="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
                     onClick={showPreviousImage}
                     type="button"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  <button
-                    className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
+              <button
+                aria-label={t("common.nextSlide")}
+                className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
                     onClick={showNextImage}
                     type="button"
                   >

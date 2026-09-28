@@ -1,11 +1,10 @@
-export function formatNewsDate(value: string | null) {
+import { formatPublicDate } from "@/i18n/public/formatters";
+import type { PublicLocale } from "@/i18n/public/config";
+
+export function formatNewsDate(value: string | null, locale: PublicLocale = "es") {
   if (!value) {
-    return "Fecha pendiente";
+    return null;
   }
 
-  return new Intl.DateTimeFormat("es-UY", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(value));
+  return formatPublicDate(value, locale);
 }

@@ -77,6 +77,7 @@ export function buildProjectInput(formData: FormData): ProjectMutationInput {
   }
 
   return {
+    advisorId: toNullableString(formData.get("advisorId")),
     name,
     slug,
     description: toNullableString(formData.get("description")),

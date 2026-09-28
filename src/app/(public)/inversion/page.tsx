@@ -7,6 +7,8 @@ import {
   buildRelatedProjectResults,
   parseZoneFilter,
 } from "@/features/search/related-results";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
 import { createSeoMetadata } from "@/lib/seo";
 
 export const metadata = createSeoMetadata({
@@ -24,6 +26,8 @@ interface InvestmentPageProps {
 
 export default async function InvestmentPage({ searchParams }: InvestmentPageProps) {
   const params = await searchParams;
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
   const projects = await listPublishedProjects();
   const selectedZone = parseZoneFilter(params.zona);
   const { exactResults, suggestedResults } = buildRelatedProjectResults({
@@ -36,7 +40,7 @@ export default async function InvestmentPage({ searchParams }: InvestmentPagePro
     <section className="bg-background py-16 sm:py-20">
       <div className="shell space-y-10">
         <SectionHeading
-          title="INVERSIONES"
+          title={t("home.investments")}
           description=""
           titleAs="h1"
         />
@@ -52,12 +56,12 @@ export default async function InvestmentPage({ searchParams }: InvestmentPagePro
                 ))}
               </div>
             ) : (
-              <p className="type-body text-muted">No encontramos coincidencias exactas.</p>
+              <p className="type-body text-muted">{t("common.noExactMatches")}</p>
             )}
             {suggestedResults.length > 0 ? (
               <section className="space-y-6">
                 <h2 className="text-xl font-display text-primary-strong">
-                  También te puede interesar
+                  {t("common.youMayAlsoLike")}
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {suggestedResults.map((project) => (
@@ -71,8 +75,8 @@ export default async function InvestmentPage({ searchParams }: InvestmentPagePro
           </>
         ) : (
           <EmptyState
-            title="Todavía no hay proyectos publicados"
-            description="No encontramos proyectos publicados con los filtros seleccionados."
+            title={t("project.noProjects")}
+            description={t("project.noFilteredProjects")}
           />
         )}
       </div>

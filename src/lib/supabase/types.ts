@@ -15,6 +15,8 @@ export type Database = {
           created_at: string;
           id: string;
           name: string;
+          name_de: string | null;
+          name_en: string | null;
           slug: string;
         };
         Insert: {
@@ -22,6 +24,8 @@ export type Database = {
           created_at?: string;
           id?: string;
           name: string;
+          name_de?: string | null;
+          name_en?: string | null;
           slug: string;
         };
         Update: {
@@ -29,6 +33,8 @@ export type Database = {
           created_at?: string;
           id?: string;
           name?: string;
+          name_de?: string | null;
+          name_en?: string | null;
           slug?: string;
         };
         Relationships: [];
@@ -36,12 +42,16 @@ export type Database = {
       inquiries: {
         Row: {
           created_at: string;
+          campaign: string | null;
           email: string;
           google_event_id: string | null;
           id: string;
+          intent: "general" | "advisory" | "contact" | "sell" | "valuation" | "investment" | "professional_report" | null;
           kind: "property" | "project" | "project_unit" | "general";
+          landing_page: string | null;
           message: string;
           meet_url: string | null;
+          medium: string | null;
           meeting_end: string | null;
           meeting_start: string | null;
           meeting_status: "scheduled" | "cancelled" | null;
@@ -51,18 +61,23 @@ export type Database = {
           project_unit_id: string | null;
           property_id: string | null;
           origin_path: string | null;
+          referrer: string | null;
           related_title: string | null;
           source: string | null;
           status: "new" | "contacted" | "closed";
         };
         Insert: {
           created_at?: string;
+          campaign?: string | null;
           email: string;
           google_event_id?: string | null;
           id?: string;
+          intent?: "general" | "advisory" | "contact" | "sell" | "valuation" | "investment" | "professional_report" | null;
           kind: "property" | "project" | "project_unit" | "general";
+          landing_page?: string | null;
           message: string;
           meet_url?: string | null;
+          medium?: string | null;
           meeting_end?: string | null;
           meeting_start?: string | null;
           meeting_status?: "scheduled" | "cancelled" | null;
@@ -72,18 +87,23 @@ export type Database = {
           project_unit_id?: string | null;
           property_id?: string | null;
           origin_path?: string | null;
+          referrer?: string | null;
           related_title?: string | null;
           source?: string | null;
           status?: "new" | "contacted" | "closed";
         };
         Update: {
           created_at?: string;
+          campaign?: string | null;
           email?: string;
           google_event_id?: string | null;
           id?: string;
+          intent?: "general" | "advisory" | "contact" | "sell" | "valuation" | "investment" | "professional_report" | null;
           kind?: "property" | "project" | "project_unit" | "general";
+          landing_page?: string | null;
           message?: string;
           meet_url?: string | null;
+          medium?: string | null;
           meeting_end?: string | null;
           meeting_start?: string | null;
           meeting_status?: "scheduled" | "cancelled" | null;
@@ -93,6 +113,7 @@ export type Database = {
           project_unit_id?: string | null;
           property_id?: string | null;
           origin_path?: string | null;
+          referrer?: string | null;
           related_title?: string | null;
           source?: string | null;
           status?: "new" | "contacted" | "closed";
@@ -165,6 +186,42 @@ export type Database = {
           id?: string;
           role?: "admin" | "editor";
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      project_advisors: {
+        Row: {
+          active: boolean;
+          created_at: string;
+          email: string | null;
+          id: string;
+          is_default: boolean;
+          name: string;
+          phone: string;
+          photo_url: string | null;
+          whatsapp: string;
+        };
+        Insert: {
+          active?: boolean;
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          is_default?: boolean;
+          name: string;
+          phone?: string;
+          photo_url?: string | null;
+          whatsapp?: string;
+        };
+        Update: {
+          active?: boolean;
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          is_default?: boolean;
+          name?: string;
+          phone?: string;
+          photo_url?: string | null;
+          whatsapp?: string;
         };
         Relationships: [];
       };
@@ -300,10 +357,13 @@ export type Database = {
       projects: {
         Row: {
           address: string | null;
+          advisor_id: string | null;
           construction_status: "presale" | "construction" | "immediate_occupancy";
           created_at: string;
           department: string | null;
           description: string | null;
+          description_de: string | null;
+          description_en: string | null;
           developer_name: string | null;
           estimated_delivery_date: string | null;
           featured: boolean;
@@ -312,6 +372,8 @@ export type Database = {
           latitude: number | null;
           longitude: number | null;
           name: string;
+          name_de: string | null;
+          name_en: string | null;
           neighborhood: string | null;
           published: boolean;
           section_order: number | null;
@@ -322,10 +384,13 @@ export type Database = {
         };
         Insert: {
           address?: string | null;
+          advisor_id?: string | null;
           construction_status?: "presale" | "construction" | "immediate_occupancy";
           created_at?: string;
           department?: string | null;
           description?: string | null;
+          description_de?: string | null;
+          description_en?: string | null;
           developer_name?: string | null;
           estimated_delivery_date?: string | null;
           featured?: boolean;
@@ -334,6 +399,8 @@ export type Database = {
           latitude?: number | null;
           longitude?: number | null;
           name: string;
+          name_de?: string | null;
+          name_en?: string | null;
           neighborhood?: string | null;
           published?: boolean;
           section_order?: number | null;
@@ -344,10 +411,13 @@ export type Database = {
         };
         Update: {
           address?: string | null;
+          advisor_id?: string | null;
           construction_status?: "presale" | "construction" | "immediate_occupancy";
           created_at?: string;
           department?: string | null;
           description?: string | null;
+          description_de?: string | null;
+          description_en?: string | null;
           developer_name?: string | null;
           estimated_delivery_date?: string | null;
           featured?: boolean;
@@ -356,6 +426,8 @@ export type Database = {
           latitude?: number | null;
           longitude?: number | null;
           name?: string;
+          name_de?: string | null;
+          name_en?: string | null;
           neighborhood?: string | null;
           published?: boolean;
           section_order?: number | null;
@@ -369,6 +441,7 @@ export type Database = {
       properties: {
         Row: {
           address: string | null;
+          advisor_id: string | null;
           bathrooms: number | null;
           bedrooms: number | null;
           built_area: number | null;
@@ -378,6 +451,8 @@ export type Database = {
           currency: "USD" | "UYU" | "EUR" | null;
           department: string | null;
           description: string | null;
+          description_de: string | null;
+          description_en: string | null;
           disposition: string | null;
           expenses: number | null;
           featured: boolean;
@@ -403,12 +478,15 @@ export type Database = {
           slug: string;
           status: "draft" | "published" | "archived";
           title: string;
+          title_de: string | null;
+          title_en: string | null;
           total_area: number | null;
           updated_at: string;
           video_url: string | null;
         };
         Insert: {
           address?: string | null;
+          advisor_id?: string | null;
           bathrooms?: number | null;
           bedrooms?: number | null;
           built_area?: number | null;
@@ -418,6 +496,8 @@ export type Database = {
           currency?: "USD" | "UYU" | "EUR" | null;
           department?: string | null;
           description?: string | null;
+          description_de?: string | null;
+          description_en?: string | null;
           disposition?: string | null;
           expenses?: number | null;
           featured?: boolean;
@@ -443,12 +523,15 @@ export type Database = {
           slug: string;
           status?: "draft" | "published" | "archived";
           title: string;
+          title_de?: string | null;
+          title_en?: string | null;
           total_area?: number | null;
           updated_at?: string;
           video_url?: string | null;
         };
         Update: {
           address?: string | null;
+          advisor_id?: string | null;
           bathrooms?: number | null;
           bedrooms?: number | null;
           built_area?: number | null;
@@ -458,6 +541,8 @@ export type Database = {
           currency?: "USD" | "UYU" | "EUR" | null;
           department?: string | null;
           description?: string | null;
+          description_de?: string | null;
+          description_en?: string | null;
           disposition?: string | null;
           expenses?: number | null;
           featured?: boolean;
@@ -483,6 +568,8 @@ export type Database = {
           slug?: string;
           status?: "draft" | "published" | "archived";
           title?: string;
+          title_de?: string | null;
+          title_en?: string | null;
           total_area?: number | null;
           updated_at?: string;
           video_url?: string | null;

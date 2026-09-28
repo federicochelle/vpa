@@ -10,7 +10,10 @@ import {
   getPropertyFeatureIds,
 } from "@/features/properties/properties.data";
 import { PropertyForm } from "@/features/properties/property-form";
-import { listAdminProjects } from "@/features/projects/projects.data";
+import {
+  listActiveProjectAdvisors,
+  listAdminProjects,
+} from "@/features/projects/projects.data";
 
 interface AdminEditPropertyPageProps {
   params: Promise<{ id: string }>;
@@ -32,12 +35,14 @@ export default async function AdminEditPropertyPage({
     selectedFeatureIds,
     propertyImagesResult,
     projectsResult,
+    advisorsResult,
   ] = await Promise.all([
     getAdminPropertyById(id),
     listAllFeatures(),
     getPropertyFeatureIds(id),
     listAdminPropertyImages(id),
     listAdminProjects(),
+    listActiveProjectAdvisors(),
   ]);
 
   if (!result.ok && result.error) {
@@ -88,6 +93,7 @@ export default async function AdminEditPropertyPage({
           <div className="space-y-6 p-6 sm:p-8">
             <PropertyForm
               allFeatures={featuresResult.data}
+              advisorOptions={advisorsResult.data}
               allProjects={projectsResult.data}
               className="space-y-0"
               property={result.data}

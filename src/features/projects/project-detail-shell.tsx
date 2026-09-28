@@ -14,11 +14,21 @@ import { FeatureChipList } from "@/components/ui/feature-chip-list";
 import { formatProjectDeliveryDate } from "@/features/projects/project-delivery-date";
 import { listAllFeatures } from "@/features/features/features.data";
 import { listPublishedProjectImages } from "@/features/projects/project-images.data";
-import { getProjectFeatureIds } from "@/features/projects/projects.data";
+import {
+  getProjectFeatureIds,
+  resolveProjectAdvisorForProject,
+} from "@/features/projects/projects.data";
 import { normalizeLocationPart } from "@/features/properties/property-location";
 import { listPublishedPropertiesByProject } from "@/features/properties/properties.data";
 import { parseVideoUrl } from "@/lib/youtube";
-import { PROJECT_CONSTRUCTION_STATUS_LABELS, type Project } from "@/types/project";
+import {
+  getLocalizedProjectDescription,
+  getLocalizedProjectName,
+} from "@/i18n/public/content";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getConstructionStatusLabel } from "@/i18n/public/formatters";
+import { getPublicMessage } from "@/i18n/public/messages";
+import type { Project } from "@/types/project";
 
 interface ProjectDetailShellProps {
   project: Project;
@@ -31,16 +41,20 @@ interface ProjectFact {
 }
 
 export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
   const [
     imagesResult,
     featuresResult,
     selectedFeatureIds,
     projectProperties,
+    advisor,
   ] = await Promise.all([
     listPublishedProjectImages(project.id),
     listAllFeatures(),
     getProjectFeatureIds(project.id),
     listPublishedPropertiesByProject(project.id),
+    resolveProjectAdvisorForProject(project),
   ]);
   const images = imagesResult.ok ? imagesResult.data : [];
   const selectedFeatureIdSet = new Set(selectedFeatureIds);
@@ -57,14 +71,15 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
     : null;
   const mobileFullBleedClassName = "-mx-4 min-w-0 sm:mx-0";
   const developerName = normalizeLocationPart(project.developerName);
-  const deliveryDate = formatProjectDeliveryDate(project.estimatedDeliveryDate);
+  const name = getLocalizedProjectName(project, locale);
+  const deliveryDate = formatProjectDeliveryDate(project.estimatedDeliveryDate, locale);
   const projectLocation = [
     normalizeLocationPart(project.neighborhood),
     normalizeLocationPart(project.city),
   ]
     .filter((part): part is string => Boolean(part))
     .join(", ") || null;
-  const description = project.description?.trim() || null;
+  const description = getLocalizedProjectDescription(project, locale)?.trim() || null;
   const facts: ProjectFact[] = [];
 
   if (developerName) {
@@ -75,7 +90,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
     facts.push({
       icon: Hammer,
       key: "constructionStatus",
-      value: PROJECT_CONSTRUCTION_STATUS_LABELS[project.constructionStatus],
+      value: getConstructionStatusLabel(project.constructionStatus, locale),
     });
   }
 
@@ -94,7 +109,11 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {images.length > 0 ? (
             <div className={mobileFullBleedClassName}>
               <PublicImageGallery
-                badgeLabel={project.isInvestmentOpportunity ? "INVERSION" : "PROYECTO"}
+                badgeLabel={
+                  project.isInvestmentOpportunity
+                    ? t("project.investmentBadge")
+                    : t("project.projectBadge")
+                }
                 emptyLabel=""
                 images={images}
               />
@@ -103,7 +122,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {parsedVideo ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Video</h2>
+                <h2 className="text-xl font-display text-primary-strong">{t("common.video")}</h2>
                 <div
                   className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
@@ -116,7 +135,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
                       className="h-full w-full max-w-full border-0"
                       referrerPolicy="strict-origin-when-cross-origin"
                       src={videoEmbedUrl ?? undefined}
-                      title={`${parsedVideo.title} de ${project.name}`}
+                      title={`${parsedVideo.title}: ${name}`}
                     />
                   </div>
                 </div>
@@ -126,7 +145,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {facts.length > 0 ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Información principal</h2>
+                <h2 className="text-xl font-display text-primary-strong">{t("common.mainInformation")}</h2>
                 <div className="mt-8 grid w-full max-w-full min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
                   {facts.map((fact) => {
                     const Icon = fact.icon;
@@ -148,7 +167,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {description ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Descripción</h2>
+                <h2 className="text-xl font-display text-primary-strong">{t("common.description")}</h2>
                 <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
                   {description}
                 </p>
@@ -158,21 +177,21 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {features.length > 0 ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">Amenities</h2>
+                <h2 className="text-xl font-display text-primary-strong">{t("common.amenities")}</h2>
                 <div className="mt-4">
-                  <FeatureChipList features={features} />
+                  <FeatureChipList features={features} locale={locale} />
                 </div>
               </div>
             </div>
           ) : null}
           <div className={mobileFullBleedClassName}>
             <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-              <h2 className="text-xl font-display text-primary-strong">Ubicación</h2>
+              <h2 className="text-xl font-display text-primary-strong">{t("common.location")}</h2>
               <PublicLocationMap
-                fallbackLabel="No se pudo mostrar el mapa."
+                fallbackLabel={t("common.mapFallback")}
                 latitude={project.latitude}
                 longitude={project.longitude}
-                title={`Mapa de ubicación de ${project.name}`}
+                title={`${t("common.location")}: ${name}`}
               />
             </div>
           </div>
@@ -180,7 +199,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
                 <h2 className="text-xl font-display text-primary-strong">
-                  Propiedades disponibles
+                  {t("property.availableProperties")}
                 </h2>
                 <div className="mt-6 grid gap-4">
                   {projectProperties.map((property) => (
@@ -198,11 +217,12 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
         </div>
         <aside className={`${mobileFullBleedClassName} lg:sticky lg:top-24 lg:self-start`}>
           <PublicInquirySidebar
+            advisor={advisor}
             entityId={project.id}
-            initialMessage={`Hola, estoy interesado/a en el proyecto ${project.name}. Quisiera recibir más información.`}
+            initialMessage={t("inquiry.projectInitialMessage").replace("{title}", name)}
             kind="project"
             originPath={`/inversion/${project.slug}`}
-            relatedTitle={project.name}
+            relatedTitle={name}
           />
         </aside>
       </section>

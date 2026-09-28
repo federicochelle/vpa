@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { PublicScrollToTop } from "@/components/layout/public-scroll-to-top";
 import { PublicWhatsAppButton } from "@/components/layout/public-whatsapp-button";
+import { PublicInquiryAttributionCapture } from "@/features/inquiries/public-inquiry-attribution-capture";
 import { PublicLocaleProvider } from "@/i18n/public/locale-provider";
 import { getPublicLocale } from "@/i18n/public/locale.server";
 
@@ -16,6 +17,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         <Suspense fallback={null}>
           <PublicScrollToTop />
         </Suspense>
+        <PublicInquiryAttributionCapture />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

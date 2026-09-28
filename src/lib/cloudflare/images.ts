@@ -106,6 +106,25 @@ export function buildCloudflareImageUrl(
   return `https://imagedelivery.net/${accountHash}/${imageId}/${variant}`;
 }
 
+export function getCloudflareImageIdFromUrl(url: string | null | undefined) {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+
+    if (parsedUrl.hostname !== "imagedelivery.net") {
+      return null;
+    }
+
+    const [, imageId] = parsedUrl.pathname.split("/").filter(Boolean);
+    return imageId || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function createCloudflareDirectUploadUrl(
   metadata?: Record<string, unknown>,
 ): Promise<CloudflareDirectUploadUrlResult> {

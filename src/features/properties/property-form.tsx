@@ -33,10 +33,11 @@ import {
   propertyTypeOptions,
 } from "@/features/properties/property-options";
 import { PriceInput } from "@/features/properties/price-input";
-import type { Project } from "@/types/project";
+import type { Project, ProjectAdvisor } from "@/types/project";
 
 interface PropertyFormProps {
   allFeatures: Feature[];
+  advisorOptions?: ProjectAdvisor[];
   allProjects?: Project[];
   selectedFeatureIds?: string[];
   property?: Property | null;
@@ -250,6 +251,7 @@ function PersistedPropertyImageItem({
 
 export function PropertyForm({
   allFeatures,
+  advisorOptions = [],
   allProjects = [],
   property,
   propertyImages = [],
@@ -278,6 +280,8 @@ export function PropertyForm({
   const [coverUpdatingImageId, setCoverUpdatingImageId] = useState<string | null>(null);
   const galleryInputId = "property-gallery-input";
   const showFloorField = propertyType === "apartment";
+  const defaultAdvisorId = advisorOptions.find((advisor) => advisor.isDefault)?.id ?? "";
+  const selectedAdvisorId = property?.advisorId ?? defaultAdvisorId;
 
   async function handleDeletePersistedImage(imageId: string) {
     if (readOnly) {
@@ -941,6 +945,24 @@ export function PropertyForm({
               {allProjects.map((projectOption) => (
                 <option key={projectOption.id} value={projectOption.id}>
                   {projectOption.name}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        </div>
+        <div className="min-w-0 xl:col-span-3">
+          <FormField htmlFor="advisorId" label="Contacto / asesor">
+            <select
+              className="admin-input-base"
+              defaultValue={selectedAdvisorId}
+              disabled={readOnly}
+              id="advisorId"
+              name="advisorId"
+            >
+              <option value="">Asesor por defecto</option>
+              {advisorOptions.map((advisor) => (
+                <option key={advisor.id} value={advisor.id}>
+                  {advisor.isDefault ? `${advisor.name} (default)` : advisor.name}
                 </option>
               ))}
             </select>

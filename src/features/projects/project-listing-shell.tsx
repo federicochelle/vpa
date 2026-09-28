@@ -1,6 +1,8 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProjectCard } from "@/components/projects/project-card";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { getPublicLocale } from "@/i18n/public/locale.server";
+import { getPublicMessage } from "@/i18n/public/messages";
 import type { Project } from "@/types/project";
 import Link from "next/link";
 
@@ -13,7 +15,7 @@ interface ProjectListingShellProps {
   description?: string;
 }
 
-export function ProjectListingShell({
+export async function ProjectListingShell({
   investmentOnly = false,
   projects,
   detailBasePath = "/inversion",
@@ -21,22 +23,25 @@ export function ProjectListingShell({
   title,
   description,
 }: ProjectListingShellProps) {
+  const locale = await getPublicLocale();
+  const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+
   return (
     <div className="shell section-gap pt-0">
       <div className="panel p-6 sm:p-8">
         <SectionHeading
-          eyebrow={eyebrow ?? (investmentOnly ? "Inversion" : "Proyectos")}
+          eyebrow={eyebrow ?? (investmentOnly ? t("home.investments") : t("project.projectBadge"))}
           title={
             title ??
             (investmentOnly
-              ? "Vista preparada para mostrar oportunidades de inversion"
-              : "Listado preparado para todos los proyectos")
+              ? t("project.investmentPreparedTitle")
+              : t("project.allPreparedTitle"))
           }
           description={
             description ??
             (investmentOnly
-              ? "Este espacio filtra proyectos publicados marcados como oportunidad de inversion."
-              : "La pagina renderiza proyectos publicados reutilizando ProjectCard.")
+              ? t("project.investmentPreparedDescription")
+              : t("project.allPreparedDescription"))
           }
         />
         <div className="mt-8">
@@ -50,8 +55,12 @@ export function ProjectListingShell({
             </div>
           ) : (
             <EmptyState
-              title={investmentOnly ? "Sin oportunidades cargadas" : "Sin proyectos cargados"}
-              description="La grilla queda lista para reutilizar componentes y conectarse a una fuente de datos real."
+              title={
+                investmentOnly
+                  ? t("project.noOpportunitiesLoaded")
+                  : t("project.noProjectsLoaded")
+              }
+              description={t("project.gridReady")}
             />
           )}
         </div>

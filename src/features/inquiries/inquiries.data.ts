@@ -43,6 +43,12 @@ function mapInquiryRow(row: InquiryRow): Inquiry {
     email: row.email,
     phone: row.phone,
     message: row.message,
+    intent: row.intent,
+    source: row.source,
+    medium: row.medium,
+    campaign: row.campaign,
+    referrer: row.referrer,
+    landingPage: row.landing_page,
     googleEventId: row.google_event_id,
     meetUrl: row.meet_url,
     meetingStart: row.meeting_start,
@@ -56,6 +62,50 @@ function mapInquiryRow(row: InquiryRow): Inquiry {
     status: row.status,
     createdAt: row.created_at,
   };
+}
+
+function toLeadAttributionPayload(input: ParsedPublicInquiryInput) {
+  return {
+    intent: input.intent ?? "general",
+    source: input.source ?? "public_web",
+    medium: input.medium,
+    campaign: input.campaign,
+    referrer: input.referrer,
+    landing_page: input.landingPage,
+  };
+}
+
+function isDirectGeneralInquiryIntent(input: ParsedPublicInquiryInput) {
+  return (
+    input.intent === "advisory" ||
+    input.intent === "contact" ||
+    input.intent === "sell" ||
+    input.intent === "valuation" ||
+    input.intent === "investment" ||
+    input.intent === "professional_report"
+  );
+}
+
+function getDirectGeneralInquiryRelatedTitle(input: ParsedPublicInquiryInput) {
+  if (input.relatedTitle) {
+    return input.relatedTitle;
+  }
+
+  switch (input.intent) {
+    case "contact":
+      return "Contacto";
+    case "sell":
+      return "Venta";
+    case "valuation":
+      return "Tasación";
+    case "investment":
+      return "Consultoría de inversión";
+    case "professional_report":
+      return "Informe profesional";
+    case "advisory":
+    default:
+      return "Asesoramiento";
+  }
 }
 
 function getExpectedOriginPath(input: {
@@ -94,6 +144,44 @@ export async function createPublicInquiry(
   console.info("[inquiries][create] service_role_client_created");
 
   if (input.kind === "general") {
+    if (isDirectGeneralInquiryIntent(input)) {
+      const payload: InquiryInsert = {
+        kind: "general",
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        message: input.message,
+        property_id: null,
+        project_id: null,
+        project_unit_id: null,
+        related_title: getDirectGeneralInquiryRelatedTitle(input),
+        origin_path: input.originPath,
+        ...toLeadAttributionPayload(input),
+      };
+
+      const { error: insertError } = await supabase.from("inquiries").insert(payload);
+
+      if (insertError) {
+        console.error("[inquiries][create] inquiry_insert_error", {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+        });
+        return {
+          ok: false,
+          error: "unexpected",
+          message: "No se pudo procesar la consulta en este momento.",
+        };
+      }
+
+      return {
+        ok: true,
+        error: null,
+        message: "Consulta creada correctamente.",
+      };
+    }
+
     const slug = input.originPath.replace(/^\/noticias\//, "").trim();
 
     if (!slug) {
@@ -164,7 +252,7 @@ export async function createPublicInquiry(
       project_unit_id: null,
       related_title: news.title,
       origin_path: expectedOriginPath,
-      source: "public_web",
+      ...toLeadAttributionPayload(input),
     };
 
     const { error: insertError } = await supabase.from("inquiries").insert(payload);
@@ -264,7 +352,7 @@ export async function createPublicInquiry(
       project_unit_id: null,
       related_title: property.title,
       origin_path: expectedOriginPath,
-      source: "public_web",
+      ...toLeadAttributionPayload(input),
     };
 
     console.info("[inquiries][create] inquiry_insert_start", {
@@ -372,7 +460,7 @@ export async function createPublicInquiry(
     project_unit_id: null,
     related_title: project.name,
     origin_path: expectedOriginPath,
-    source: "public_web",
+    ...toLeadAttributionPayload(input),
   };
 
   console.info("[inquiries][create] inquiry_insert_start", {

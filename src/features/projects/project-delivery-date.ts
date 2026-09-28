@@ -1,3 +1,6 @@
+import { formatPublicMonthYear } from "@/i18n/public/formatters";
+import type { PublicLocale } from "@/i18n/public/config";
+
 const DELIVERY_MONTH_PATTERN = /^(\d{4})-(\d{2})(?:-\d{2})?$/;
 
 function parseDeliveryMonth(value: string | null) {
@@ -23,18 +26,17 @@ function parseDeliveryMonth(value: string | null) {
   return { monthIndex, year };
 }
 
-export function formatProjectDeliveryDate(value: string | null) {
+export function formatProjectDeliveryDate(value: string | null, locale: PublicLocale = "es") {
   const parsed = parseDeliveryMonth(value);
 
   if (!parsed) {
     return value?.trim() || null;
   }
 
-  return new Intl.DateTimeFormat("es-UY", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(Date.UTC(parsed.year, parsed.monthIndex, 1)));
+  return formatPublicMonthYear(
+    new Date(Date.UTC(parsed.year, parsed.monthIndex, 1)),
+    locale,
+  );
 }
 
 export function toProjectDeliveryMonthInputValue(value: string | null) {

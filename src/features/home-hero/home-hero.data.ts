@@ -14,6 +14,12 @@ import type {
 } from "@/features/home-hero/home-hero.types";
 import { mapProjectRow } from "@/features/projects/project-mappers";
 import { mapPropertyRow } from "@/features/properties/property-mappers";
+import {
+  getLocalizedProjectName,
+  getLocalizedPropertyTitle,
+} from "@/i18n/public/content";
+import type { PublicLocale } from "@/i18n/public/config";
+import { getPublicMessage } from "@/i18n/public/messages";
 import type { Project } from "@/types/project";
 import type { Property } from "@/types/property";
 
@@ -54,12 +60,22 @@ function formatLocationLabel(
   return [neighborhood, city, department].filter(Boolean).join(", ") || null;
 }
 
-function formatHeroPropertyPrice(price: number | null, currency: string | null) {
+function formatHeroPropertyPrice(
+  price: number | null,
+  currency: string | null,
+  locale: PublicLocale,
+) {
   if (!price || !currency) {
-    return "Precio a consultar";
+    return getPublicMessage(locale, "home.heroPendingPrice");
   }
 
-  return new Intl.NumberFormat("es-UY", {
+  const localeCode: Record<PublicLocale, string> = {
+    de: "de-DE",
+    en: "en-US",
+    es: "es-UY",
+  };
+
+  return new Intl.NumberFormat(localeCode[locale], {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
@@ -239,12 +255,12 @@ async function listPublishedHeroProjectsByIds(projectIds: string[]) {
 
   const projects = await attachProjectCoverImages(
     supabase,
-    (data as ProjectRow[]).map(mapProjectRow),
+    (data as ProjectRow[]).map((project) => mapProjectRow(project)),
   );
   return new Map(projects.map((project) => [project.id, project]));
 }
 
-export async function listHomeHeroSlides(): Promise<HomeHeroSlide[]> {
+export async function listHomeHeroSlides(locale: PublicLocale): Promise<HomeHeroSlide[]> {
   const assignments = await listHomeHeroAssignments();
 
   if (assignments.length === 0) {
@@ -269,21 +285,22 @@ export async function listHomeHeroSlides(): Promise<HomeHeroSlide[]> {
       if (!property?.image) {
         return slides;
       }
+      const title = getLocalizedPropertyTitle(property, locale);
 
       slides.push({
         entityId: property.id,
         entityType: "property",
         heroOrder: assignment.heroOrder,
         src: property.image,
-        alt: property.title,
-        title: property.title,
+        alt: title,
+        title,
         href: getPropertyHref(property),
         locationLabel: formatLocationLabel(
           property.city ?? null,
           property.neighborhood ?? null,
           property.department ?? null,
         ),
-        price: formatHeroPropertyPrice(property.price, property.currency),
+        price: formatHeroPropertyPrice(property.price, property.currency, locale),
       });
 
       return slides;
@@ -294,14 +311,15 @@ export async function listHomeHeroSlides(): Promise<HomeHeroSlide[]> {
     if (!project?.image) {
       return slides;
     }
+    const title = getLocalizedProjectName(project, locale);
 
     slides.push({
       entityId: project.id,
       entityType: "project",
       heroOrder: assignment.heroOrder,
       src: project.image,
-      alt: project.name,
-      title: project.name,
+      alt: title,
+      title,
       href: getProjectHref(project),
       locationLabel: formatLocationLabel(
         project.city,

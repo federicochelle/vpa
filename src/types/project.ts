@@ -20,11 +20,29 @@ export const PROJECT_CONSTRUCTION_STATUS_LABELS: Record<
 
 export type ProjectUnitStatus = "available" | "reserved" | "sold";
 
+export interface ProjectAdvisor {
+  id: string;
+  name: string;
+  phone: string;
+  whatsapp: string;
+  email: string | null;
+  photoUrl: string | null;
+  active: boolean;
+  isDefault: boolean;
+  createdAt: string;
+}
+
 export interface Project {
   id: string;
+  advisorId: string | null;
+  advisor: ProjectAdvisor | null;
   slug: string;
   name: string;
+  nameEn: string | null;
+  nameDe: string | null;
   description: string | null;
+  descriptionEn: string | null;
+  descriptionDe: string | null;
   address: string | null;
   city: string | null;
   department: string | null;

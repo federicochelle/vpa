@@ -10,52 +10,53 @@ import type { ConstructionStatus, ProjectUnitStatus } from "@/types/project";
 import type { PublicLocale } from "@/i18n/public/config";
 
 const localeCode: Record<PublicLocale, string> = {
+  de: "de-DE",
   es: "es-UY",
   en: "en-US",
 };
 
 const enumLabels = {
   operation: {
-    sale: { es: "Venta", en: "Sale" },
-    rent: { es: "Alquiler", en: "Rent" },
+    sale: { de: "Kauf", es: "Venta", en: "Sale" },
+    rent: { de: "Miete", es: "Alquiler", en: "Rent" },
   },
   propertyType: {
-    apartment: { es: "Apartamento", en: "Apartment" },
-    house: { es: "Casa", en: "House" },
-    land: { es: "Terreno", en: "Land" },
-    office: { es: "Oficina", en: "Office" },
-    "commercial-space": { es: "Local comercial", en: "Commercial space" },
-    other: { es: "Otro", en: "Other" },
+    apartment: { de: "Wohnung", es: "Apartamento", en: "Apartment" },
+    house: { de: "Haus", es: "Casa", en: "House" },
+    land: { de: "Grundstück", es: "Terreno", en: "Land" },
+    office: { de: "Büro", es: "Oficina", en: "Office" },
+    "commercial-space": { de: "Gewerbefläche", es: "Local comercial", en: "Commercial space" },
+    other: { de: "Sonstige", es: "Otro", en: "Other" },
   },
   kitchen: {
-    integrated: { es: "Cocina integrada", en: "Open-plan kitchen" },
-    independent: { es: "Cocina independiente", en: "Separate kitchen" },
+    integrated: { de: "Offene Küche", es: "Cocina integrada", en: "Open-plan kitchen" },
+    independent: { de: "Separate Küche", es: "Cocina independiente", en: "Separate kitchen" },
   },
   disposition: {
-    front: { es: "Frente", en: "Front-facing" },
-    back: { es: "Contrafrente", en: "Rear-facing" },
-    lateral: { es: "Lateral", en: "Side-facing" },
-    interior: { es: "Interior", en: "Interior" },
+    front: { de: "Zur Straße", es: "Frente", en: "Front-facing" },
+    back: { de: "Rückwärtig", es: "Contrafrente", en: "Rear-facing" },
+    lateral: { de: "Seitlich", es: "Lateral", en: "Side-facing" },
+    interior: { de: "Interior", es: "Interior", en: "Interior" },
   },
   orientation: {
-    north: { es: "Norte", en: "North" },
-    south: { es: "Sur", en: "South" },
-    east: { es: "Este", en: "East" },
-    west: { es: "Oeste", en: "West" },
-    northeast: { es: "Noreste", en: "Northeast" },
-    northwest: { es: "Noroeste", en: "Northwest" },
-    southeast: { es: "Sureste", en: "Southeast" },
-    southwest: { es: "Suroeste", en: "Southwest" },
+    north: { de: "Norden", es: "Norte", en: "North" },
+    south: { de: "Süden", es: "Sur", en: "South" },
+    east: { de: "Osten", es: "Este", en: "East" },
+    west: { de: "Westen", es: "Oeste", en: "West" },
+    northeast: { de: "Nordosten", es: "Noreste", en: "Northeast" },
+    northwest: { de: "Nordwesten", es: "Noroeste", en: "Northwest" },
+    southeast: { de: "Südosten", es: "Sureste", en: "Southeast" },
+    southwest: { de: "Südwesten", es: "Suroeste", en: "Southwest" },
   },
   construction: {
-    presale: { es: "En pozo", en: "Pre-construction" },
-    construction: { es: "Construcción", en: "Under construction" },
-    immediate_occupancy: { es: "Ocupación inmediata", en: "Immediate occupancy" },
+    presale: { de: "In Planung", es: "En pozo", en: "Pre-construction" },
+    construction: { de: "Im Bau", es: "Construcción", en: "Under construction" },
+    immediate_occupancy: { de: "Sofort bezugsfertig", es: "Ocupación inmediata", en: "Immediate occupancy" },
   },
   unitStatus: {
-    available: { es: "Disponible", en: "Available" },
-    reserved: { es: "Reservada", en: "Reserved" },
-    sold: { es: "Vendida", en: "Sold" },
+    available: { de: "Verfügbar", es: "Disponible", en: "Available" },
+    reserved: { de: "Reserviert", es: "Reservada", en: "Reserved" },
+    sold: { de: "Verkauft", es: "Vendida", en: "Sold" },
   },
 } as const;
 
@@ -79,11 +80,50 @@ export function formatPublicCurrency(
   }).format(value);
 }
 
+export function formatPublicNumber(value: number, locale: PublicLocale) {
+  return new Intl.NumberFormat(localeCode[locale], {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export function formatPublicPropertyMoney(
+  value: number | null | undefined,
+  currency: Currency | string | null | undefined,
+  locale: PublicLocale,
+) {
+  const normalizedCurrency = currency?.trim();
+
+  if (value === null || value === undefined || !normalizedCurrency) {
+    return null;
+  }
+
+  return `${normalizedCurrency} ${formatPublicNumber(value, locale)}`;
+}
+
+export function formatPublicCommonExpenses(
+  value: number | null | undefined,
+  locale: PublicLocale,
+) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  return `$ ${formatPublicNumber(value, locale)}`;
+}
+
 export function formatPublicDate(value: Date | string, locale: PublicLocale) {
   return new Intl.DateTimeFormat(localeCode[locale], {
     day: "numeric",
     month: "long",
     year: "numeric",
+  }).format(new Date(value));
+}
+
+export function formatPublicMonthYear(value: Date | string, locale: PublicLocale) {
+  return new Intl.DateTimeFormat(localeCode[locale], {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
   }).format(new Date(value));
 }
 
@@ -115,3 +155,16 @@ export function getProjectUnitStatusLabel(value: ProjectUnitStatus, locale: Publ
   return getEnumLabel(enumLabels.unitStatus, value, locale);
 }
 
+export function getOperationBadgeLabel(value: OperationType, locale: PublicLocale) {
+  return value === "rent"
+    ? locale === "es"
+      ? "ALQUILER"
+      : locale === "de"
+        ? "MIETE"
+        : "RENT"
+    : locale === "es"
+      ? "VENTA"
+      : locale === "de"
+        ? "KAUF"
+        : "SALE";
+}
