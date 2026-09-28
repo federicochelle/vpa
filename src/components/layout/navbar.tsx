@@ -160,7 +160,7 @@ export function Navbar() {
           </Link>
         }
         openLabel={t("nav.openMenu")}
-        overlayClassName="fixed inset-x-0 top-[calc(5rem+2.25rem)] z-50 border-t border-white/15 bg-primary/98 backdrop-blur"
+        overlayClassName="fixed inset-x-0 top-20 z-50 border-t border-white/15 bg-primary/98 backdrop-blur"
         panel={
           <nav className="shell flex flex-col items-center py-4 text-center">
             {mobileNavigation.map((item) => {
