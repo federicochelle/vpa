@@ -20,7 +20,9 @@ export default async function AdvisoryPage() {
 
   return (
     <>
-      <section className="bg-surface-strong py-16 sm:py-20">
+      <AdvisoryServicesSection />
+
+      <section className="bg-white py-16 sm:py-20">
         <div className="shell">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
             <div className="relative min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
@@ -35,7 +37,7 @@ export default async function AdvisoryPage() {
 
             <div className="space-y-6 text-center lg:text-left">
               <div className="space-y-3">
-                <h1 className="section-title">
+                <h1 className="section-title advisory-hero-title">
                   {t("advisory.heroTitle")}
                 </h1>
               </div>
@@ -47,17 +49,19 @@ export default async function AdvisoryPage() {
                 <p>
                   {t("advisory.heroParagraphTwo")}
                 </p>
+                <p>
+                  {t("advisory.heroParagraphThree")}
+                </p>
+                <p className="font-display advisory-hero-title text-primary-strong">
+                  {t("advisory.heroParagraphFour")}
+                </p>
               </div>
-
-              <p className="font-display text-2xl text-foreground">
-                Virginia Pintos
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-white py-18 sm:py-24">
+      <section className="bg-surface-strong py-18 sm:py-24">
         <div className="shell">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.95fr)] lg:gap-14">
             <div className="space-y-6 text-center lg:text-left">
@@ -89,8 +93,6 @@ export default async function AdvisoryPage() {
           </div>
         </div>
       </section>
-
-      <AdvisoryServicesSection />
 
       <section className="bg-white py-18 sm:py-24">
         <div className="shell">

@@ -57,7 +57,13 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     activeSlide?.entityType === "property"
       ? t("home.featuredProperty")
       : t("home.featuredProject");
-  const heroMessage = t("home.heroMessage");
+  const heroMessages = [
+    [t("home.heroMessageOneLineOne"), t("home.heroMessageOneLineTwo")],
+    [t("home.heroMessageTwo")],
+    [t("home.heroMessageThree")],
+  ];
+  const activeHeroMessage = heroMessages[activeSlideIndex % heroMessages.length] ?? heroMessages[0];
+  const activeHeroMessageLabel = activeHeroMessage.join(" ");
 
   const renderSlideContent = (slide: HomeHeroCarouselSlide, index: number) => (
     <>
@@ -226,15 +232,14 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 text-center sm:px-8">
         <div className="w-full max-w-[min(88vw,820px)] pt-8 sm:pt-0">
           <h1
-            aria-label={heroMessage}
-            className="mx-auto max-w-[11ch] font-display text-[clamp(1.85rem,8vw,2.55rem)] uppercase leading-[0.98] text-white [text-shadow:0_5px_24px_rgba(0,0,0,0.44)] sm:max-w-[18ch] sm:text-[clamp(2.5rem,4.4vw,3.95rem)] sm:leading-[0.96]"
+            aria-label={activeHeroMessageLabel}
+            className="mx-auto max-w-[18ch] font-display text-[clamp(1.25rem,6vw,1.75rem)] uppercase leading-[1.08] text-white [text-shadow:0_5px_24px_rgba(0,0,0,0.44)] sm:max-w-[28ch] sm:text-[clamp(1.75rem,2.8vw,2.55rem)] sm:leading-[1.05]"
           >
-            {heroMessage.split(" ").map((word) => (
-              <span aria-hidden="true" className="block sm:hidden" key={word}>
-                {word}
+            {activeHeroMessage.map((line) => (
+              <span aria-hidden="true" className="block" key={line}>
+                {line}
               </span>
             ))}
-            <span aria-hidden="true" className="hidden sm:block">{heroMessage}</span>
           </h1>
           {activeSlide?.title ? (
             activeSlide.href ? (

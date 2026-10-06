@@ -112,8 +112,18 @@ textarea {
   @apply rounded-[24px] border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)];
 }
 
+.admin-panel .panel {
+  @apply -mx-4 w-[calc(100%+2rem)] rounded-none;
+}
+
 .admin-form-panel {
-  @apply -mx-4 !rounded-none sm:mx-0 sm:!rounded-[24px];
+  @apply !rounded-none sm:!rounded-[24px];
+}
+
+@media (min-width: 640px) {
+  .admin-panel .panel {
+    @apply mx-0 w-full rounded-[24px];
+  }
 }
 
 .type-body {
@@ -235,10 +245,19 @@ textarea {
   word-break: normal;
 }
 
+.advisory-hero-title {
+  font-size: clamp(1.05rem, 4vw, 1.35rem);
+  line-height: 1.22;
+}
+
 @media (min-width: 640px) {
   .home-section-title {
     font-size: 36px;
     line-height: 1.25;
+  }
+
+  .advisory-hero-title {
+    font-size: 21px;
   }
 }
 
@@ -246,6 +265,12 @@ textarea {
   @apply max-w-2xl text-muted;
   font-size: var(--type-body-size);
   line-height: var(--type-body-line);
+}
+
+.home-section-subtitle {
+  @apply text-foreground;
+  font-size: clamp(1.05rem, 3.8vw, 1.25rem);
+  line-height: 1.45;
 }
 
 .detail-hero-title {

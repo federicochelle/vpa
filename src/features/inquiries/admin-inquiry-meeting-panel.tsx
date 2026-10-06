@@ -127,7 +127,7 @@ export function AdminInquiryMeetingPanel({ inquiry }: AdminInquiryMeetingPanelPr
   }
 
   return (
-    <section className="space-y-5 border-t border-border pt-5">
+    <section className="space-y-5">
       <h2 className="text-2xl font-display text-primary-strong">Reunión</h2>
       {isScheduled && inquiry.meetingStart ? (
         <div className="space-y-4 type-body-compact text-foreground">

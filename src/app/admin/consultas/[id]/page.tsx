@@ -7,7 +7,11 @@ import { updateInquiryStatusAction } from "@/features/inquiries/inquiries.action
 import { AdminInquiryMeetingPanel } from "@/features/inquiries/admin-inquiry-meeting-panel";
 import { AdminInquiryStatusForm } from "@/features/inquiries/admin-inquiry-status-form";
 import { getAdminInquiryById } from "@/features/inquiries/inquiries.data";
-import type { InquiryIntent, InquiryKind } from "@/types/inquiry";
+import {
+  getRealInquiryContactEmail,
+  isOwnerLeadTechnicalEmail,
+} from "@/features/inquiries/inquiry-contact";
+import type { Inquiry, InquiryIntent, InquiryKind } from "@/types/inquiry";
 
 interface AdminInquiryDetailPageProps {
   params: Promise<{ id: string }>;
@@ -75,6 +79,113 @@ function formatInquiryIntent(intent: InquiryIntent | null) {
   }
 }
 
+function hasConcreteRelatedEntity(inquiry: {
+  kind: InquiryKind;
+  originPath: string | null;
+  projectId: string | null;
+  projectUnitId: string | null;
+  propertyId: string | null;
+  relatedTitle: string | null;
+}) {
+  if (inquiry.kind === "property") {
+    return Boolean(inquiry.propertyId) || Boolean(inquiry.relatedTitle);
+  }
+
+  if (inquiry.kind === "project") {
+    return Boolean(inquiry.projectId) || Boolean(inquiry.relatedTitle);
+  }
+
+  if (inquiry.kind === "project_unit") {
+    return Boolean(inquiry.projectUnitId) || Boolean(inquiry.relatedTitle);
+  }
+
+  return Boolean(inquiry.relatedTitle && inquiry.originPath?.startsWith("/noticias/"));
+}
+
+function parseOwnerLeadMessage(message: string) {
+  const trimmedMessage = message.trim();
+
+  if (!trimmedMessage.startsWith("Formulario propietarios")) {
+    return null;
+  }
+
+  const propertyTypeMatch = trimmedMessage.match(/Tipo de propiedad:\s*(.+?)(?=\s+Zona:|$)/);
+  const zoneMatch = trimmedMessage.match(/Zona:\s*(.+)$/);
+  const propertyType = propertyTypeMatch?.[1]?.trim() ?? "";
+  const zone = zoneMatch?.[1]?.trim() ?? "";
+
+  if (!propertyType || !zone) {
+    return null;
+  }
+
+  return {
+    propertyType,
+    zone,
+  };
+}
+
+function formatLeadSource(source: string | null) {
+  const trimmedSource = source?.trim();
+
+  if (!trimmedSource || trimmedSource.toLowerCase() === "public_web") {
+    return null;
+  }
+
+  return trimmedSource
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function getGeneralInquiryFormLabel(inquiry: Inquiry) {
+  const message = inquiry.message.trim();
+
+  if (message.startsWith("Formulario propietarios")) {
+    return "Formulario de propietarios";
+  }
+
+  if (inquiry.intent === "contact" || inquiry.originPath === "/contacto") {
+    return "Formulario de contacto";
+  }
+
+  if (
+    inquiry.intent === "advisory" ||
+    inquiry.intent === "valuation" ||
+    inquiry.intent === "sell" ||
+    inquiry.intent === "investment" ||
+    inquiry.intent === "professional_report" ||
+    inquiry.originPath === "/asesoramiento"
+  ) {
+    return "Formulario de asesoramiento";
+  }
+
+  return "Formulario web";
+}
+
+function getInquiryPageOrForm(inquiry: Inquiry) {
+  const hasRelatedEntity = hasConcreteRelatedEntity(inquiry);
+  const publicOriginPath = isOriginPathPublic(inquiry.originPath) ? inquiry.originPath : null;
+
+  if (hasRelatedEntity) {
+    if (inquiry.kind === "property" && !inquiry.propertyId) {
+      return { href: null, label: "Propiedad eliminada" };
+    }
+
+    if (inquiry.relatedTitle) {
+      return {
+        href: publicOriginPath,
+        label: inquiry.relatedTitle,
+      };
+    }
+  }
+
+  return {
+    href: null,
+    label: getGeneralInquiryFormLabel(inquiry),
+  };
+}
+
 export default async function AdminInquiryDetailPage({
   params,
   searchParams,
@@ -85,7 +196,7 @@ export default async function AdminInquiryDetailPage({
 
   if (!result.ok && result.error) {
     return (
-      <AdminRecordShell title="Detalle de consulta">
+      <AdminRecordShell title="Datos de la consulta">
         <Notice message={result.error} tone="error" />
       </AdminRecordShell>
     );
@@ -96,15 +207,14 @@ export default async function AdminInquiryDetailPage({
   }
 
   const inquiry = result.data;
-  const propertyWasDeleted = inquiry.kind === "property" && !inquiry.propertyId;
-  const intentLabel = formatInquiryIntent(inquiry.intent);
-  const leadAttribution = [
-    { label: "Fuente", value: inquiry.source },
-    { label: "Medio", value: inquiry.medium },
-    { label: "Campaña", value: inquiry.campaign },
-    { label: "Página de entrada", value: inquiry.landingPage },
-    { label: "Referrer", value: inquiry.referrer },
-  ].filter((item) => item.value);
+  const motiveLabel = formatInquiryIntent(inquiry.intent) ?? formatInquiryOrigin(inquiry.kind, inquiry.originPath);
+  const pageOrForm = getInquiryPageOrForm(inquiry);
+  const contactName = inquiry.name.trim();
+  const contactEmail = getRealInquiryContactEmail(inquiry) ?? "";
+  const contactPhone = inquiry.phone?.trim() ?? "";
+  const phoneLabel = isOwnerLeadTechnicalEmail(inquiry) ? "WhatsApp" : "Teléfono";
+  const ownerLeadMessage = parseOwnerLeadMessage(inquiry.message);
+  const leadSource = formatLeadSource(inquiry.source);
 
   return (
     <AdminRecordShell
@@ -115,72 +225,95 @@ export default async function AdminInquiryDetailPage({
           status={inquiry.status}
         />
       }
+      stackActionsOnMobile
       subtitle={<p className="type-body-compact text-muted">{formatInquiryDate(inquiry.createdAt)}</p>}
-      title={inquiry.name}
+      title="Datos de la consulta"
     >
       {query.error ? <Notice message={query.error} tone="error" /> : null}
       {query.success ? <Notice message={query.success} tone="success" /> : null}
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-8">
+          <section className="space-y-4 type-body-compact text-foreground">
+            {contactName ? (
+              <div className="space-y-1">
+                <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
+                  Nombre
+                </p>
+                <p>{contactName}</p>
+              </div>
+            ) : null}
+            {contactEmail ? (
+              <div className="space-y-1">
+                <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
+                  Email
+                </p>
+                <p>{contactEmail}</p>
+              </div>
+            ) : null}
+            {contactPhone ? (
+              <div className="space-y-1">
+                <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
+                  {phoneLabel}
+                </p>
+                <p>{contactPhone}</p>
+              </div>
+            ) : null}
+          </section>
+
           <section className="space-y-6">
             <div className="space-y-6">
               <div className="space-y-2">
                 <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
-                  Origen
+                  Motivo
                 </p>
                 <p className="type-body-compact text-foreground">
-                  {formatInquiryOrigin(inquiry.kind, inquiry.originPath)}
+                  {motiveLabel}
                 </p>
               </div>
 
-              {intentLabel ? (
-                <div className="space-y-2">
-                  <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
-                    Motivo
-                  </p>
-                  <p className="type-body-compact text-foreground">
-                    {intentLabel}
-                  </p>
-                </div>
-              ) : null}
-
               <div className="space-y-2">
                 <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
-                  Propiedad / Proyecto relacionado
+                  Página / Formulario
                 </p>
-                {propertyWasDeleted ? (
-                  <p className="type-body-compact text-muted">Propiedad eliminada</p>
-                ) : inquiry.relatedTitle ? (
-                  (() => {
-                    const publicOriginPath = isOriginPathPublic(inquiry.originPath)
-                      ? inquiry.originPath
-                      : null;
-
-                    return publicOriginPath ? (
-                      <Link
-                        className="type-body-compact inline-flex items-center gap-2 font-semibold text-primary-strong transition-colors hover:text-primary"
-                        href={publicOriginPath}
-                        target="_blank"
-                      >
-                        {inquiry.relatedTitle}
-                        <ExternalLink className="h-4 w-4" />
-                      </Link>
-                    ) : (
-                      <p className="type-body-compact text-foreground">{inquiry.relatedTitle}</p>
-                    );
-                  })()
+                {pageOrForm.href ? (
+                  <Link
+                    className="type-body-compact inline-flex items-center gap-2 font-semibold text-primary-strong transition-colors hover:text-primary"
+                    href={pageOrForm.href}
+                    target="_blank"
+                  >
+                    {pageOrForm.label}
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
                 ) : (
-                  <p className="type-body-compact text-foreground">-</p>
+                  <p className="type-body-compact text-foreground">{pageOrForm.label}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
-                  Mensaje
-                </p>
-                <p className="type-body text-foreground">{inquiry.message}</p>
-              </div>
+              {ownerLeadMessage ? (
+                <>
+                  <div className="space-y-2">
+                    <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
+                      Tipo de propiedad
+                    </p>
+                    <p className="type-body-compact text-foreground">{ownerLeadMessage.propertyType}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
+                      Zona
+                    </p>
+                    <p className="type-body-compact text-foreground">{ownerLeadMessage.zone}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-2">
+                  <p className="type-meta font-semibold uppercase tracking-[0.18em] text-muted">
+                    Mensaje / datos adicionales
+                  </p>
+                  <p className="type-body text-foreground">{inquiry.message}</p>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -188,42 +321,19 @@ export default async function AdminInquiryDetailPage({
         <div className="space-y-8 lg:border-l lg:border-border lg:pl-8">
           <section className="space-y-5">
             <div className="space-y-5">
-              <h2 className="text-2xl font-display text-primary-strong">Datos de contacto</h2>
-              <div className="space-y-4 type-body-compact text-foreground">
-                <div className="space-y-1">
-                  <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
-                    Nombre
-                  </p>
-                  <p>{inquiry.name}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
-                    Email
-                  </p>
-                  <p>{inquiry.email}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
-                    Teléfono
-                  </p>
-                  <p>{inquiry.phone || "-"}</p>
-                </div>
-              </div>
               <AdminInquiryMeetingPanel inquiry={inquiry} />
-              {leadAttribution.length > 0 ? (
+              {leadSource ? (
                 <section className="space-y-5 border-t border-border pt-5">
                   <h2 className="text-2xl font-display text-primary-strong">
                     Origen de la consulta
                   </h2>
                   <div className="space-y-4 type-body-compact text-foreground">
-                    {leadAttribution.map((item) => (
-                      <div className="space-y-1" key={item.label}>
-                        <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
-                          {item.label}
-                        </p>
-                        <p className="break-words">{item.value}</p>
-                      </div>
-                    ))}
+                    <div className="space-y-1">
+                      <p className="type-meta font-semibold uppercase tracking-[0.16em] text-muted">
+                        Origen
+                      </p>
+                      <p className="break-words">{leadSource}</p>
+                    </div>
                   </div>
                 </section>
               ) : null}

@@ -1,11 +1,19 @@
 "use client";
 
+import { useRef } from "react";
 import { useRouter } from "next/navigation";
+import { updateInquiryStatusInlineAction } from "@/features/inquiries/inquiries.actions";
 import type { Inquiry } from "@/types/inquiry";
 
 interface AdminInquiriesTableProps {
   inquiries: Inquiry[];
 }
+
+const INQUIRY_STATUS_OPTIONS: Array<{ label: string; value: Inquiry["status"] }> = [
+  { label: "Nueva", value: "new" },
+  { label: "Contactada", value: "contacted" },
+  { label: "Cerrada", value: "closed" },
+];
 
 function formatInquiryDate(value: string) {
   const date = new Date(value);
@@ -26,6 +34,40 @@ function getRelatedEntityLabel(inquiry: Inquiry) {
   }
 
   return inquiry.relatedTitle || "-";
+}
+
+function InquiryStatusSelect({
+  inquiryId,
+  status,
+}: {
+  inquiryId: string;
+  status: Inquiry["status"];
+}) {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  return (
+    <form
+      action={updateInquiryStatusInlineAction}
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+      ref={formRef}
+    >
+      <input name="id" type="hidden" value={inquiryId} />
+      <select
+        aria-label="Estado de consulta"
+        className="admin-input-base h-10 min-w-[150px] rounded-none px-3 py-2 text-sm"
+        defaultValue={status}
+        name="status"
+        onChange={() => formRef.current?.requestSubmit()}
+      >
+        {INQUIRY_STATUS_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </form>
+  );
 }
 
 export function AdminInquiriesTable({
@@ -61,7 +103,7 @@ export function AdminInquiriesTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {["Fecha", "Nombre", "Telefono", "Propiedad/Proyecto"].map(
+              {["Fecha", "Nombre", "Telefono", "Propiedad/Proyecto", "Estado"].map(
                 (column) => (
                   <th
                     key={column}
@@ -100,6 +142,9 @@ export function AdminInquiriesTable({
                 </td>
                 <td className="admin-note px-6 py-4">
                   {getRelatedEntityLabel(inquiry)}
+                </td>
+                <td className="admin-note px-6 py-4">
+                  <InquiryStatusSelect inquiryId={inquiry.id} status={inquiry.status} />
                 </td>
               </tr>
             ))}

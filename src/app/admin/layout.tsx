@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     <div className="min-h-dvh bg-surface">
       <div className="flex min-h-dvh flex-col lg:flex-row">
         <AdminSidebar newInquiriesCount={newInquiriesCount} profile={session.profile} />
-        <main className="admin-panel min-h-0 flex-1 lg:ml-72">
+        <main className="admin-panel min-h-0 flex-1 pt-20 lg:ml-72 lg:pt-0">
           <div className="shell py-8 lg:py-10">{children}</div>
         </main>
       </div>

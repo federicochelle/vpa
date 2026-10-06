@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import logoVpa from "../../../logovpa.webp";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
+import { OwnerLeadModal } from "@/features/inquiries/owner-lead-modal";
 import { PublicLocaleSwitcher } from "@/i18n/public/locale-switcher";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import { publicNavigation } from "@/lib/navigation";
@@ -18,24 +19,27 @@ const mobileNavigation = [
 function OwnerLeadStrip({
   className = "",
   isVisible,
+  onOpen,
 }: {
   className?: string;
   isVisible: boolean;
+  onOpen: () => void;
 }) {
   const { t } = usePublicLocale();
 
   return (
     <div className={`overflow-hidden ${className}`}>
-      <Link
+      <button
         aria-label={t("ownerStrip.label")}
         aria-hidden={!isVisible}
-        className={`group block cursor-pointer border-b border-primary/12 bg-surface-strong text-center shadow-[0_1px_0_rgba(161,14,40,0.08)] transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none ${
+        className={`group block w-full cursor-pointer border-b border-primary/12 bg-surface-strong text-center shadow-[0_1px_0_rgba(161,14,40,0.08)] transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none ${
           isVisible
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none -translate-y-full opacity-0"
         }`}
-        href="/asesoramiento#propietarios"
+        onClick={onOpen}
         tabIndex={isVisible ? undefined : -1}
+        type="button"
       >
         <div className="shell flex min-h-9 items-center justify-center px-4 py-2">
           <p className="type-body-compact text-foreground">
@@ -45,7 +49,7 @@ function OwnerLeadStrip({
             </span>
           </p>
         </div>
-      </Link>
+      </button>
     </div>
   );
 }
@@ -60,6 +64,7 @@ export function Navbar() {
     width: number;
   } | null>(null);
   const [isOwnerStripVisible, setIsOwnerStripVisible] = useState(true);
+  const [isOwnerLeadModalOpen, setIsOwnerLeadModalOpen] = useState(false);
   const lastScrollYRef = useRef(0);
   const frameRef = useRef<number | null>(null);
 
@@ -186,7 +191,11 @@ export function Navbar() {
           </nav>
         }
       />
-      <OwnerLeadStrip className="sticky top-20 z-30 md:hidden" isVisible={isOwnerStripVisible} />
+      <OwnerLeadStrip
+        className="sticky top-20 z-30 md:hidden"
+        isVisible={isOwnerStripVisible}
+        onOpen={() => setIsOwnerLeadModalOpen(true)}
+      />
 
       <header className="sticky top-0 z-50 hidden border-b border-white/15 bg-primary backdrop-blur md:block">
         <div className="shell flex h-20 items-center justify-between gap-6">
@@ -241,7 +250,15 @@ export function Navbar() {
           <PublicLocaleSwitcher />
         </div>
       </header>
-      <OwnerLeadStrip className="sticky top-20 z-30 hidden md:block" isVisible={isOwnerStripVisible} />
+      <OwnerLeadStrip
+        className="sticky top-20 z-30 hidden md:block"
+        isVisible={isOwnerStripVisible}
+        onOpen={() => setIsOwnerLeadModalOpen(true)}
+      />
+      <OwnerLeadModal
+        onClose={() => setIsOwnerLeadModalOpen(false)}
+        open={isOwnerLeadModalOpen}
+      />
     </>
   );
 }

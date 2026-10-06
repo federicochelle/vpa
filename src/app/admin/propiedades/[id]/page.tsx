@@ -82,13 +82,13 @@ export default async function AdminPropertyDetailPage({
     <div>
       <div className="panel overflow-hidden">
         <div className="border-b border-border brand-panel-header px-6 py-10 sm:px-8 lg:px-12">
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
             <div className="min-w-0 flex-1 space-y-4">
               <h4 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
                 {result.data.title}
               </h4>
             </div>
-            <div className="flex shrink-0 flex-wrap items-start gap-3">
+            <div className="flex w-full flex-wrap items-start gap-3 sm:w-auto sm:shrink-0">
               <Link
                 className="admin-button-secondary text-primary-strong"
                 href="/admin/propiedades"

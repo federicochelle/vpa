@@ -42,7 +42,7 @@ export function AdvisoryServicesSection() {
     {
       title: t("advisory.serviceSellTitle"),
       description: t("advisory.serviceSellDescription"),
-      cta: t("advisory.serviceSellTitle"),
+      cta: t("advisory.conversation"),
       icon: Handshake,
       intent: "sell",
       modalTitle: t("advisory.serviceSellModalTitle"),
@@ -80,7 +80,7 @@ export function AdvisoryServicesSection() {
       id="propietarios"
     >
       <div className="shell">
-        <div className="mx-auto max-w-5xl space-y-10">
+        <div className="space-y-10">
           <div className="mx-auto max-w-3xl space-y-4 text-center">
             <h2 className="section-title">
               {t("advisory.servicesTitle")}

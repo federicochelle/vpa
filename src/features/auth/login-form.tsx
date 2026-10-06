@@ -28,7 +28,7 @@ export function LoginForm() {
           />
         </label>
         <label className="flex flex-col gap-2" htmlFor="password">
-          <span className="type-body-compact font-medium text-white">Contrasena</span>
+          <span className="type-body-compact font-medium text-white">Contraseña</span>
           <input
             className="type-input w-full rounded-2xl border border-white bg-white px-4 py-3 text-foreground outline-none transition placeholder:text-muted focus:border-white focus:ring-4 focus:ring-white/20"
             id="password"

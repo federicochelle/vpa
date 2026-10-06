@@ -82,6 +82,7 @@ export default async function AdminProjectDetailPage({
             </form>
           </>
         }
+        stackActionsOnMobile
         title={result.data.name}
       >
         <ProjectReadOnlyDetails

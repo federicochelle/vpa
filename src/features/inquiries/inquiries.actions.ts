@@ -58,6 +58,25 @@ export async function updateInquiryStatusAction(formData: FormData) {
   );
 }
 
+export async function updateInquiryStatusInlineAction(formData: FormData) {
+  await requireAdminSession();
+  const id = toRequiredString(formData.get("id"));
+  const statusValue = toRequiredString(formData.get("status"));
+
+  if (!id || !isInquiryStatus(statusValue)) {
+    return;
+  }
+
+  const result = await updateInquiryStatus(id, statusValue);
+
+  revalidatePath("/admin/consultas");
+  revalidatePath(`/admin/consultas/${id}`);
+
+  if (!result.ok) {
+    console.error("Error updating inquiry status from list", result.error);
+  }
+}
+
 export async function saveInquiryMeetingAction(input: {
   date: string;
   durationMinutes: number;
