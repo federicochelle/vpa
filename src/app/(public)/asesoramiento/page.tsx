@@ -5,7 +5,6 @@ import { AdvisoryServicesSection } from "@/features/inquiries/advisory-services-
 import { getPublicLocale } from "@/i18n/public/locale.server";
 import { getPublicMessage } from "@/i18n/public/messages";
 import virginiaImage from "../../../../virginia.jpeg";
-import virginiaSecondaryImage from "../../../../virgina2.jpeg";
 
 export const metadata = createSeoMetadata({
   title: "Asesoramiento",
@@ -62,39 +61,6 @@ export default async function AdvisoryPage() {
       </section>
 
       <section className="bg-surface-strong py-18 sm:py-24">
-        <div className="shell">
-          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.95fr)] lg:gap-14">
-            <div className="space-y-6 text-center lg:text-left">
-              <div className="space-y-3">
-                <h2 className="section-title">
-                  {t("advisory.personalTitle")}
-                </h2>
-              </div>
-
-              <div className="section-copy max-w-2xl space-y-6">
-                <p>
-                  {t("advisory.personalParagraphOne")}
-                </p>
-                <p>
-                  {t("advisory.personalParagraphTwo")}
-                </p>
-              </div>
-            </div>
-
-            <div className="relative min-h-[320px] overflow-hidden border border-border bg-surface-muted sm:min-h-[420px]">
-              <Image
-                src={virginiaSecondaryImage}
-                alt={t("advisory.personalAlt")}
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 48vw, 100vw"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white py-18 sm:py-24">
         <div className="shell">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)] lg:items-start lg:gap-14">
             <div className="space-y-6 text-center lg:text-left">

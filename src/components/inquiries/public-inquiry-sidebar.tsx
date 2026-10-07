@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, Phone, Send } from "lucide-react";
 import { useState } from "react";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
@@ -249,7 +249,7 @@ export function PublicInquirySidebar({
           disabled={submitState === "submitting"}
           type="submit"
         >
-          <Phone className="h-4 w-4" />
+          <Send className="h-4 w-4" />
           {submitState === "submitting" ? t("inquiry.submitting") : t("inquiry.submit")}
         </button>
 

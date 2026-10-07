@@ -24,6 +24,15 @@ interface HomeHeroCarouselProps {
 
 const AUTOPLAY_DELAY = 8000;
 const SWIPE_THRESHOLD = 50;
+
+interface HeroMessageSegment {
+  text: string;
+  isBlack?: boolean;
+  desktopBreakAfter?: boolean;
+}
+
+type HeroMessage = HeroMessageSegment[];
+
 function normalizeSlideIndex(index: number, totalSlides: number) {
   if (totalSlides <= 1) {
     return 0;
@@ -41,7 +50,7 @@ function normalizeSlideIndex(index: number, totalSlides: number) {
 }
 
 export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
-  const { t } = usePublicLocale();
+  const { locale, t } = usePublicLocale();
   const [currentSlide, setCurrentSlide] = useState(slides.length > 1 ? 1 : 0);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(slides.length > 1);
   const [isDocumentVisible, setIsDocumentVisible] = useState(true);
@@ -57,13 +66,44 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     activeSlide?.entityType === "property"
       ? t("home.featuredProperty")
       : t("home.featuredProject");
-  const heroMessages = [
-    [t("home.heroMessageOneLineOne"), t("home.heroMessageOneLineTwo")],
-    [t("home.heroMessageTwo")],
-    [t("home.heroMessageThree")],
-  ];
+  const heroMessages: HeroMessage[] =
+    locale === "es"
+      ? [
+          [
+            { text: t("home.heroMessageTwoLineOne"), desktopBreakAfter: true },
+            { text: t("home.heroMessageTwoLineTwo"), desktopBreakAfter: true },
+            { text: t("home.heroMessageTwoLineThree"), isBlack: true },
+          ],
+          [
+            {
+              text: t("home.heroMessageOneLineOne"),
+              isBlack: true,
+              desktopBreakAfter: true,
+            },
+            { text: t("home.heroMessageOneLineTwo") },
+          ],
+          [
+            { text: t("home.heroMessageThreeLineOne"), desktopBreakAfter: true },
+            { text: t("home.heroMessageThreeLineTwo"), desktopBreakAfter: true },
+            { text: t("home.heroMessageThreeLineThree"), isBlack: true },
+          ],
+        ]
+      : [
+          [
+            { text: t("home.heroMessageTwoLead") },
+            { text: t("home.heroMessageTwoBlack"), isBlack: true },
+          ],
+          [
+            { text: t("home.heroMessageOneLineOne"), isBlack: true },
+            { text: t("home.heroMessageOneLineTwo") },
+          ],
+          [
+            { text: t("home.heroMessageThreeLead") },
+            { text: t("home.heroMessageThreeBlack"), isBlack: true },
+          ],
+        ];
   const activeHeroMessage = heroMessages[activeSlideIndex % heroMessages.length] ?? heroMessages[0];
-  const activeHeroMessageLabel = activeHeroMessage.join(" ");
+  const activeHeroMessageLabel = activeHeroMessage.map((segment) => segment.text).join(" ");
 
   const renderSlideContent = (slide: HomeHeroCarouselSlide, index: number) => (
     <>
@@ -233,11 +273,29 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         <div className="w-full max-w-[min(88vw,820px)] pt-8 sm:pt-0">
           <h1
             aria-label={activeHeroMessageLabel}
-            className="mx-auto max-w-[18ch] font-display text-[clamp(1.25rem,6vw,1.75rem)] uppercase leading-[1.08] text-white [text-shadow:0_5px_24px_rgba(0,0,0,0.44)] sm:max-w-[28ch] sm:text-[clamp(1.75rem,2.8vw,2.55rem)] sm:leading-[1.05]"
+            className="mx-auto max-w-[18ch] font-normal [font-family:var(--font-display)] text-[clamp(1.2rem,5.8vw,1.68rem)] uppercase leading-[1.08] text-white/86 [text-shadow:0_5px_24px_rgba(0,0,0,0.44)] sm:max-w-[28ch] sm:text-[clamp(1.68rem,2.65vw,2.45rem)] sm:leading-[1.05]"
           >
-            {activeHeroMessage.map((line) => (
-              <span aria-hidden="true" className="block" key={line}>
-                {line}
+            {activeHeroMessage.map((segment, index) => (
+              <span aria-hidden="true" key={`${segment.text}-${index}`}>
+                <span className={segment.isBlack ? "font-black text-white" : undefined}>
+                  {segment.text}
+                </span>
+                {(() => {
+                  const nextSegment = activeHeroMessage[index + 1];
+                  const hasWeightChange =
+                    nextSegment !== undefined && segment.isBlack !== nextSegment.isBlack;
+
+                  if (segment.desktopBreakAfter || hasWeightChange) {
+                    return (
+                      <>
+                        <br />
+                        {hasWeightChange ? <br /> : null}
+                      </>
+                    );
+                  }
+
+                  return index < activeHeroMessage.length - 1 ? " " : null;
+                })()}
               </span>
             ))}
           </h1>
