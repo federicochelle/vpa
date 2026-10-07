@@ -70,17 +70,17 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     locale === "es"
       ? [
           [
-            { text: t("home.heroMessageTwoLineOne"), desktopBreakAfter: true },
-            { text: t("home.heroMessageTwoLineTwo"), desktopBreakAfter: true },
-            { text: t("home.heroMessageTwoLineThree"), isBlack: true },
-          ],
-          [
             {
               text: t("home.heroMessageOneLineOne"),
               isBlack: true,
               desktopBreakAfter: true,
             },
             { text: t("home.heroMessageOneLineTwo") },
+          ],
+          [
+            { text: t("home.heroMessageTwoLineOne"), desktopBreakAfter: true },
+            { text: t("home.heroMessageTwoLineTwo"), desktopBreakAfter: true },
+            { text: t("home.heroMessageTwoLineThree"), isBlack: true },
           ],
           [
             { text: t("home.heroMessageThreeLineOne"), desktopBreakAfter: true },
@@ -90,12 +90,12 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         ]
       : [
           [
-            { text: t("home.heroMessageTwoLead") },
-            { text: t("home.heroMessageTwoBlack"), isBlack: true },
-          ],
-          [
             { text: t("home.heroMessageOneLineOne"), isBlack: true },
             { text: t("home.heroMessageOneLineTwo") },
+          ],
+          [
+            { text: t("home.heroMessageTwoLead") },
+            { text: t("home.heroMessageTwoBlack"), isBlack: true },
           ],
           [
             { text: t("home.heroMessageThreeLead") },
