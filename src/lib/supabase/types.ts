@@ -358,7 +358,7 @@ export type Database = {
         Row: {
           address: string | null;
           advisor_id: string | null;
-          construction_status: "presale" | "construction" | "immediate_occupancy";
+          construction_status: "presale" | "construction" | "ready_delivery" | "immediate_occupancy";
           created_at: string;
           department: string | null;
           description: string | null;
@@ -385,7 +385,7 @@ export type Database = {
         Insert: {
           address?: string | null;
           advisor_id?: string | null;
-          construction_status?: "presale" | "construction" | "immediate_occupancy";
+          construction_status?: "presale" | "construction" | "ready_delivery" | "immediate_occupancy";
           created_at?: string;
           department?: string | null;
           description?: string | null;
@@ -412,7 +412,7 @@ export type Database = {
         Update: {
           address?: string | null;
           advisor_id?: string | null;
-          construction_status?: "presale" | "construction" | "immediate_occupancy";
+          construction_status?: "presale" | "construction" | "ready_delivery" | "immediate_occupancy";
           created_at?: string;
           department?: string | null;
           description?: string | null;

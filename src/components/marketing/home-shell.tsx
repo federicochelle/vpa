@@ -197,13 +197,13 @@ export async function HomeShell() {
                 </h2>
               </div>
 
-              <div className="section-copy w-full max-w-full min-w-0 space-y-5">
-                <p>{t("home.strategyParagraphOne")}</p>
-                <p className="font-semibold text-foreground">
+              <p className="section-copy w-full max-w-full min-w-0">
+                {t("home.strategyParagraphOne")}{" "}
+                <span className="font-semibold text-foreground">
                   {t("home.strategyParagraphTwo")}
-                </p>
-                <p>{t("home.strategyParagraphThree")}</p>
-              </div>
+                </span>{" "}
+                {t("home.strategyParagraphThree")}
+              </p>
 
               <p className="font-display text-[clamp(0.95rem,3.8vw,1.15rem)] leading-tight text-primary-strong sm:text-[1.25rem]">
                 {t("home.strategyClosing")}

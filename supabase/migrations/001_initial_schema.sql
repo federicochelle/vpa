@@ -85,7 +85,7 @@ create table if not exists public.projects (
   description text,
   developer_name text,
   construction_status text not null default 'presale' check (
-    construction_status in ('presale', 'construction', 'immediate_occupancy')
+    construction_status in ('presale', 'construction', 'ready_delivery', 'immediate_occupancy')
   ),
   estimated_delivery_date date,
   address text,

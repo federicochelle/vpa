@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { FormField } from "@/components/ui/form-field";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
@@ -21,6 +22,7 @@ export function ContactFormShell() {
     "idle" | "submitting" | "success" | "error"
   >("idle");
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   return (
     <form
@@ -73,10 +75,9 @@ export function ContactFormShell() {
           }
 
           formRef.current?.reset();
-          setSubmitState("success");
-          setFeedbackMessage(
-            locale !== "es" ? t("inquiry.success") : body?.message ?? t("inquiry.success"),
-          );
+          setSubmitState("idle");
+          setFeedbackMessage(null);
+          setShowSuccessModal(true);
         } catch (error) {
           console.error("Error submitting contact inquiry", error);
           setSubmitState("error");
@@ -138,13 +139,17 @@ export function ContactFormShell() {
         </button>
       </div>
       {feedbackMessage ? (
-        <p
-          className={`type-body-compact mt-4 ${
-            submitState === "success" ? "text-primary-strong" : "text-muted"
-          }`}
-        >
+        <p className="type-body-compact mt-4 text-muted">
           {feedbackMessage}
         </p>
+      ) : null}
+      {showSuccessModal ? (
+        <AdminFeedbackModal
+          message={t("advisory.successMessage")}
+          onClose={() => setShowSuccessModal(false)}
+          title={t("advisory.successTitle")}
+          variant="success"
+        />
       ) : null}
     </form>
   );

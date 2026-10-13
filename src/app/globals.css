@@ -273,6 +273,14 @@ textarea {
   line-height: 1.45;
 }
 
+.public-site .type-body,
+.public-site .section-copy,
+.public-site .home-section-subtitle {
+  color: var(--foreground);
+  font-size: clamp(1.05rem, 3.8vw, 1.25rem);
+  line-height: 1.45;
+}
+
 .detail-hero-title {
   font-family: var(--font-display);
   font-size: 15px;

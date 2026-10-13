@@ -49,9 +49,10 @@ const enumLabels = {
     southwest: { de: "Südwesten", es: "Suroeste", en: "Southwest" },
   },
   construction: {
-    presale: { de: "In Planung", es: "En pozo", en: "Pre-construction" },
+    presale: { de: "Vorverkauf", es: "Pozo", en: "Presale" },
     construction: { de: "Im Bau", es: "Construcción", en: "Under construction" },
-    immediate_occupancy: { de: "Sofort bezugsfertig", es: "Ocupación inmediata", en: "Immediate occupancy" },
+    ready_delivery: { de: "Kurz vor Übergabe", es: "Pronta Entrega", en: "Near delivery" },
+    immediate_occupancy: { de: "Sofortige Übergabe", es: "Entrega Inmediata", en: "Immediate delivery" },
   },
   unitStatus: {
     available: { de: "Verfügbar", es: "Disponible", en: "Available" },

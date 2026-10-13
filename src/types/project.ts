@@ -3,6 +3,7 @@ import type { Currency } from "@/types/property";
 export const PROJECT_CONSTRUCTION_STATUS_VALUES = [
   "presale",
   "construction",
+  "ready_delivery",
   "immediate_occupancy",
 ] as const;
 
@@ -13,9 +14,10 @@ export const PROJECT_CONSTRUCTION_STATUS_LABELS: Record<
   ConstructionStatus,
   string
 > = {
-  presale: "En pozo",
+  presale: "Pozo",
   construction: "Construcción",
-  immediate_occupancy: "Ocupación inmediata",
+  ready_delivery: "Pronta Entrega",
+  immediate_occupancy: "Entrega Inmediata",
 };
 
 export type ProjectUnitStatus = "available" | "reserved" | "sold";

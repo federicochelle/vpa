@@ -128,6 +128,36 @@ export async function togglePropertyPublishedAction(formData: FormData) {
   );
 }
 
+export async function setPropertyPublishedInlineAction(
+  id: string,
+  published: boolean,
+) {
+  await requireAdminSession();
+  const result = await setPropertyPublished(id, published);
+
+  revalidatePath("/admin/propiedades");
+  revalidatePath("/");
+  revalidatePath("/comprar");
+  revalidatePath("/alquileres");
+  revalidatePath("/inversion");
+
+  if (result.data?.slug) {
+    revalidatePath(`/comprar/${result.data.slug}`);
+    revalidatePath(`/alquileres/${result.data.slug}`);
+  }
+
+  if (!result.ok || !result.data) {
+    throw new Error(
+      toErrorMessage(result.error, "No se pudo cambiar la publicación."),
+    );
+  }
+
+  return {
+    published: result.data.published,
+    status: result.data.status,
+  };
+}
+
 export async function updatePropertyHeroOrderAction(
   propertyId: string,
   heroOrder: PropertyHeroOrder,

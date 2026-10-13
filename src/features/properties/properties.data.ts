@@ -1034,6 +1034,19 @@ export async function setPropertyPublished(
 
   const supabase = await createSupabaseServerClient();
   const nextStatus = published ? "published" : "draft";
+
+  if (!published) {
+    const heroResult = await setHomeHeroOrder("property", id, null);
+
+    if (!heroResult.ok) {
+      return {
+        ok: false,
+        data: null,
+        error: heroResult.error,
+      };
+    }
+  }
+
   const { data, error } = await supabase
     .from("properties")
     .update({

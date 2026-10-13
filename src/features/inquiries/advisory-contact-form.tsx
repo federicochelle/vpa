@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { InquiryIntent, PublicInquiryPayload } from "@/types/inquiry";
@@ -30,6 +31,7 @@ export function AdvisoryContactForm({
     "idle" | "submitting" | "success" | "error"
   >("idle");
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   return (
     <form
@@ -84,7 +86,11 @@ export function AdvisoryContactForm({
           formRef.current?.reset();
           setSubmitState("idle");
           setFeedbackMessage(null);
-          onSuccess?.();
+          if (onSuccess) {
+            onSuccess();
+          } else {
+            setShowSuccessModal(true);
+          }
         } catch (error) {
           console.error("Error submitting inquiry", error);
           setSubmitState("error");
@@ -171,13 +177,17 @@ export function AdvisoryContactForm({
         </button>
       </div>
       {feedbackMessage ? (
-        <p
-          className={`type-body-compact ${
-            submitState === "success" ? "text-primary-strong" : "text-muted"
-          }`}
-        >
+        <p className="type-body-compact text-muted">
           {feedbackMessage}
         </p>
+      ) : null}
+      {showSuccessModal ? (
+        <AdminFeedbackModal
+          message={t("advisory.successMessage")}
+          onClose={() => setShowSuccessModal(false)}
+          title={t("advisory.successTitle")}
+          variant="success"
+        />
       ) : null}
     </form>
   );

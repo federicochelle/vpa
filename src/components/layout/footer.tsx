@@ -15,7 +15,7 @@ export function Footer() {
           />
         </Link>
 
-        <div className="grid justify-items-center gap-5 text-center type-body text-white/90 lg:justify-items-start lg:text-left">
+        <div className="grid justify-items-center gap-5 text-center type-body !text-white lg:justify-items-start lg:text-left">
           <Link
             className="inline-flex items-center justify-center gap-4 transition-colors hover:text-white lg:justify-start"
             href="tel:+59899297235"

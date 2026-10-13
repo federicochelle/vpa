@@ -55,7 +55,7 @@ function InquiryStatusSelect({
       <input name="id" type="hidden" value={inquiryId} />
       <select
         aria-label="Estado de consulta"
-        className="admin-input-base h-10 min-w-[150px] rounded-none px-3 py-2 text-sm"
+        className="admin-input-base h-12 min-w-[166px] rounded-none py-0 pl-4 pr-10 leading-6"
         defaultValue={status}
         name="status"
         onChange={() => formRef.current?.requestSubmit()}

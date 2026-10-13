@@ -2,7 +2,10 @@
 
 import { Children } from "react";
 import { useRouter } from "next/navigation";
+import { Eye } from "lucide-react";
 import { AdminHeroToggle } from "@/features/home-hero/admin-hero-toggle";
+import { AdminPropertyPublishedToggle } from "@/features/properties/admin-property-published-toggle";
+import { formatPublicPropertyMoney } from "@/features/properties/property-public-format";
 import { AdminSectionOrderSelect } from "@/features/section-order/admin-section-order-select";
 import type { Property } from "@/types/property";
 import type { ReactNode } from "react";
@@ -42,22 +45,32 @@ export function AdminPropertiesTable({
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-surface-muted/70">
             <tr>
-              {["Propiedad", "Operación", "Zona", "ORDEN", "HOME"].map(
-                (column) => (
-                  <th
-                    key={column}
-                    className="admin-table-head px-6 py-4 text-left"
-                  >
-                    {column}
-                  </th>
-                ),
-              )}
+              <th className="admin-table-head w-[22rem] px-6 py-4 text-left">
+                Propiedad
+              </th>
+              <th className="admin-table-head w-32 px-4 py-4 text-left">
+                Precio
+              </th>
+              {["Operación", "Zona", "ORDEN", "HOME"].map((column) => (
+                <th
+                  key={column}
+                  className="admin-table-head px-6 py-4 text-left"
+                >
+                  {column}
+                </th>
+              ))}
+              <th className="admin-table-head px-3 py-4 text-left">
+                <span className="inline-flex size-6 items-center justify-center" title="Publicada">
+                  <Eye aria-hidden="true" className="size-4" />
+                  <span className="sr-only">Publicada</span>
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {properties.length === 0 ? (
               <tr>
-                <td className="admin-note px-6 py-10" colSpan={5}>
+                <td className="admin-note px-6 py-10" colSpan={7}>
                   No hay propiedades visibles para esta sesion.
                 </td>
               </tr>
@@ -77,8 +90,13 @@ export function AdminPropertiesTable({
                   }}
                   tabIndex={0}
                 >
-                  <td className="px-6 py-5">
-                    <p className="font-medium text-foreground">{property.title}</p>
+                  <td className="max-w-[22rem] px-6 py-5">
+                    <p className="truncate font-medium text-foreground" title={property.title}>
+                      {property.title}
+                    </p>
+                  </td>
+                  <td className="admin-note whitespace-nowrap px-4 py-5 font-semibold text-foreground">
+                    {formatAdminPropertyPrice(property)}
                   </td>
                   <td className="admin-note px-6 py-5">
                     <span
@@ -112,6 +130,15 @@ export function AdminPropertiesTable({
                       label={property.title}
                     />
                   </td>
+                  <td className="admin-note px-3 py-5">
+                    <AdminPropertyPublishedToggle
+                      isPublished={Boolean(
+                        property.published && property.status === "published",
+                      )}
+                      label={property.title}
+                      propertyId={property.id}
+                    />
+                  </td>
                 </tr>
               ))
             )}
@@ -120,6 +147,10 @@ export function AdminPropertiesTable({
       </div>
     </section>
   );
+}
+
+function formatAdminPropertyPrice(property: Property) {
+  return formatPublicPropertyMoney(property.price, property.currency, "es") ?? "Sin precio";
 }
 
 function translateOperationType(operationType: Property["operationType"]) {

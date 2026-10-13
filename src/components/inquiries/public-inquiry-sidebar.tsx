@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { MessageCircle, Phone, Send } from "lucide-react";
 import { useState } from "react";
+import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { PublicInquiryPayload } from "@/types/inquiry";
@@ -40,6 +41,7 @@ export function PublicInquirySidebar({
     "idle" | "submitting" | "success" | "error"
   >("idle");
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   function resetForm() {
     setFormData({
@@ -152,10 +154,9 @@ export function PublicInquirySidebar({
             }
 
             resetForm();
-            setSubmitState("success");
-            setFeedbackMessage(
-              locale !== "es" ? t("inquiry.success") : body?.message ?? t("inquiry.success"),
-            );
+            setSubmitState("idle");
+            setFeedbackMessage(null);
+            setShowSuccessModal(true);
           } catch (error) {
             console.error("Error submitting public inquiry", error);
             setSubmitState("error");
@@ -254,15 +255,19 @@ export function PublicInquirySidebar({
         </button>
 
         {feedbackMessage ? (
-          <p
-            className={`type-body-compact ${
-              submitState === "success" ? "text-primary-strong" : "text-muted"
-            }`}
-          >
+          <p className="type-body-compact text-muted">
             {feedbackMessage}
           </p>
         ) : null}
       </form>
+      {showSuccessModal ? (
+        <AdminFeedbackModal
+          message={t("advisory.successMessage")}
+          onClose={() => setShowSuccessModal(false)}
+          title={t("advisory.successTitle")}
+          variant="success"
+        />
+      ) : null}
     </div>
   );
 }

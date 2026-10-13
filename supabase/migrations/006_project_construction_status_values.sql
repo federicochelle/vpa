@@ -14,5 +14,5 @@ alter column construction_status set default 'presale';
 
 alter table public.projects
 add constraint projects_construction_status_check check (
-  construction_status in ('presale', 'construction', 'immediate_occupancy')
+  construction_status in ('presale', 'construction', 'ready_delivery', 'immediate_occupancy')
 );

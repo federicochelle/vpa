@@ -13,7 +13,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <PublicLocaleProvider locale={locale}>
-      <div className="flex min-h-screen flex-col" lang={locale}>
+      <div className="public-site flex min-h-screen flex-col" lang={locale}>
         <Suspense fallback={null}>
           <PublicScrollToTop />
         </Suspense>
