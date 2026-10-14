@@ -15,6 +15,7 @@ export type PropertyType =
   | "land"
   | "office"
   | "commercial-space"
+  | "business-key"
   | "other";
 
 export type Currency = "USD" | "UYU" | "EUR";

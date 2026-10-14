@@ -33,6 +33,7 @@ function isPropertyType(value: string | undefined): value is PropertyType {
     "land",
     "office",
     "commercial-space",
+    "business-key",
     "other",
   ].includes(value ?? "");
 }

@@ -15,7 +15,7 @@ const FOCUSABLE_SELECTOR = [
 ].join(",");
 
 type InvestorResidencyValue = (typeof VALID_RESIDENCY_VALUES)[number];
-type GateState = "checking" | "selection" | "nonResident" | "complete";
+type GateState = "checking" | "selection" | "complete";
 
 function isInvestorResidencyValue(value: string | null): value is InvestorResidencyValue {
   return VALID_RESIDENCY_VALUES.includes(value as InvestorResidencyValue);
@@ -63,8 +63,7 @@ export function InvestorResidencyGate() {
   const firstActionRef = useRef<HTMLButtonElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const [gateState, setGateState] = useState<GateState>("checking");
-  const isOpen = gateState === "selection" || gateState === "nonResident";
-  const isNonResidentState = gateState === "nonResident";
+  const isOpen = gateState === "selection";
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -163,12 +162,8 @@ export function InvestorResidencyGate() {
     return null;
   }
 
-  const title = isNonResidentState
-    ? t("investorResidency.nonResidentTitle")
-    : t("investorResidency.title");
-  const description = isNonResidentState
-    ? t("investorResidency.nonResidentPlaceholder")
-    : t("investorResidency.description");
+  const title = t("investorResidency.title");
+  const description = t("investorResidency.description");
 
   return (
     <div
@@ -197,36 +192,30 @@ export function InvestorResidencyGate() {
             {description}
           </p>
 
-          {isNonResidentState ? (
-            <div className="mt-7 flex justify-center">
-              <button
-                className="button-primary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em] sm:w-auto"
-                onClick={() => completeGate("non_resident")}
-                ref={firstActionRef}
-                type="button"
-              >
-                {t("investorResidency.continue")}
-              </button>
-            </div>
-          ) : (
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
-              <button
-                className="button-primary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em]"
-                onClick={() => completeGate("resident")}
-                ref={firstActionRef}
-                type="button"
-              >
-                {t("investorResidency.resident")}
-              </button>
-              <button
-                className="button-secondary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em]"
-                onClick={() => setGateState("nonResident")}
-                type="button"
-              >
-                {t("investorResidency.nonResident")}
-              </button>
-            </div>
-          )}
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            <button
+              className="button-primary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em]"
+              onClick={() => completeGate("resident")}
+              ref={firstActionRef}
+              type="button"
+            >
+              {t("investorResidency.resident")}
+            </button>
+            <button
+              className="button-secondary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em]"
+              onClick={() => {
+                completeGate("non_resident");
+                window.open(
+                  "/asesoramiento/no-residentes",
+                  "_blank",
+                  "noopener,noreferrer",
+                );
+              }}
+              type="button"
+            >
+              {t("investorResidency.nonResident")}
+            </button>
+          </div>
         </div>
       </div>
     </div>

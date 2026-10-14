@@ -230,6 +230,13 @@ export function OwnerLeadModal({ onClose, open }: OwnerLeadModalProps) {
                   <option value="">{t("ownerLead.selectPlaceholder")}</option>
                   <option value={t("ownerLead.house")}>{t("ownerLead.house")}</option>
                   <option value={t("ownerLead.apartment")}>{t("ownerLead.apartment")}</option>
+                  <option value={t("ownerLead.land")}>{t("ownerLead.land")}</option>
+                  <option value={t("ownerLead.commercialSpace")}>
+                    {t("ownerLead.commercialSpace")}
+                  </option>
+                  <option value={t("ownerLead.businessKey")}>
+                    {t("ownerLead.businessKey")}
+                  </option>
                 </select>
               </div>
 

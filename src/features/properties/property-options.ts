@@ -19,6 +19,7 @@ export const propertyTypeOptions: Array<{ value: PropertyType; label: string }> 
   { value: "land", label: "Terreno" },
   { value: "office", label: "Oficina" },
   { value: "commercial-space", label: "Local comercial" },
+  { value: "business-key", label: "Llave de comercio" },
   { value: "other", label: "Otro" },
 ];
 

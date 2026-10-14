@@ -26,6 +26,7 @@ const enumLabels = {
     land: { de: "Grundstück", es: "Terreno", en: "Land" },
     office: { de: "Büro", es: "Oficina", en: "Office" },
     "commercial-space": { de: "Gewerbefläche", es: "Local comercial", en: "Commercial space" },
+    "business-key": { de: "Geschäftsübernahme", es: "Llave de comercio", en: "Business key" },
     other: { de: "Sonstige", es: "Otro", en: "Other" },
   },
   kitchen: {

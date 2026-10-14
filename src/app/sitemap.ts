@@ -11,6 +11,8 @@ const staticRoutes = [
   "/inversion",
   "/noticias",
   "/asesoramiento",
+  "/asesoramiento/residentes",
+  "/asesoramiento/no-residentes",
   "/contacto",
 ];
 

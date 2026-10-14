@@ -213,9 +213,25 @@ export async function HomeShell() {
         </div>
       </section>
 
+      <section className="bg-primary py-4 text-white sm:py-5">
+        <div className="shell">
+          <div className="mx-auto flex max-w-5xl flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:text-left">
+            <h2 className="font-display text-[clamp(1.15rem,4.5vw,1.65rem)] leading-tight">
+              {t("home.legalSupportTitle")}
+            </h2>
+            <p className="type-body-compact text-white/86 sm:max-w-xl">
+              {t("home.legalSupportDescriptionPrefix")}{" "}
+              <span className="font-semibold text-white">
+                {t("home.legalSupportStudio")}
+              </span>
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
             <SectionHeading
               title={t("home.rentals")}
               description={t("home.rentalsDescription")}
@@ -276,7 +292,7 @@ export async function HomeShell() {
 
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
             <SectionHeading
               title={t("home.sales")}
               description={t("home.salesDescription")}
@@ -381,7 +397,7 @@ export async function HomeShell() {
 
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
             <SectionHeading
               title={t("home.investments")}
               description={t("home.investmentsDescription")}
