@@ -101,6 +101,7 @@ async function generateUserLink(email, type) {
   const { data, error } = await supabase.auth.admin.generateLink({
     type,
     email,
+    // Supabase Auth expects redirectTo inside the type-specific options object.
     options: {
       redirectTo: INVITE_REDIRECT_URL,
     },
@@ -108,6 +109,12 @@ async function generateUserLink(email, type) {
 
   if (error || !data?.user || !data.properties?.action_link) {
     throw new Error(error?.message ?? `Supabase no devolvió un enlace ${type}.`);
+  }
+
+  if (data.properties.redirect_to !== INVITE_REDIRECT_URL) {
+    throw new Error(
+      `Supabase devolvió un redirect_to inesperado (${data.properties.redirect_to ?? "vacío"}). No se imprimió el enlace.`,
+    );
   }
 
   return { user: data.user, actionLink: data.properties.action_link };
