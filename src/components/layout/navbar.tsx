@@ -161,7 +161,6 @@ export function Navbar() {
               }
 
               const isActive = isItemActive(item.href);
-              const isAdvisoryLink = item.href === "/asesoramiento";
 
               return (
                 <Link
@@ -169,13 +168,9 @@ export function Navbar() {
                   ref={(element) => {
                     linkRefs.current[item.href] = element;
                   }}
-                  className={
-                    isAdvisoryLink
-                      ? "type-meta font-display relative ml-2 inline-flex items-center border border-white bg-white px-[18px] py-2.5 font-semibold uppercase tracking-[0.14em] text-primary-strong transition-colors duration-200 hover:bg-white/82"
-                      : `type-meta font-display relative font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
-                          isActive ? "" : "hover:text-white/70"
-                        }`
-                  }
+                  className={`type-meta font-display relative font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
+                    isActive ? "" : "hover:text-white/70"
+                  }`}
                   href={item.href}
                 >
                   {t(item.messageKey)}

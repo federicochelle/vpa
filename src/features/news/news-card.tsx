@@ -34,12 +34,12 @@ export async function NewsCard({ news }: NewsCardProps) {
         </div>
         <div className="space-y-4 p-5">
           <div className="space-y-3">
-            <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors hover:text-primary-strong">
-              {news.title}
-            </h2>
             <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
               {formatNewsDate(news.publishedAt ?? news.createdAt, locale) ?? t("news.pendingDate")}
             </p>
+            <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors hover:text-primary-strong">
+              {news.title}
+            </h2>
             <p className="type-body text-muted">
               {news.excerpt ?? t("news.defaultExcerpt")}
             </p>

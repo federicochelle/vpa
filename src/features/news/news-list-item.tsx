@@ -34,12 +34,12 @@ export async function NewsListItem({ news }: NewsListItemProps) {
         </div>
         <div className="flex min-w-0 flex-col justify-center space-y-4 px-5 py-5 sm:px-6 sm:py-6 md:px-8">
           <div className="space-y-2">
-            <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors group-hover:text-primary-strong sm:text-[1.7rem]">
-              {news.title}
-            </h2>
             <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
               {formatNewsDate(news.publishedAt ?? news.createdAt, locale) ?? t("news.pendingDate")}
             </p>
+            <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors group-hover:text-primary-strong sm:text-[1.7rem]">
+              {news.title}
+            </h2>
           </div>
           <p className="type-body max-w-3xl text-muted">
             {news.excerpt ?? t("news.defaultExcerpt")}

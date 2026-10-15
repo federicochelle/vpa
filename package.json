@@ -8,6 +8,7 @@
     "start": "next start",
     "test": "node --test tests/*.test.mjs",
     "lint": "eslint",
+    "auth:invite": "node --env-file=.env.local scripts/invite-users.mjs",
     "probe:cloudflare-images": "node --env-file=.env.local scripts/probe-cloudflare-images.mjs",
     "translations:backfill:dry": "node --env-file=.env.local scripts/backfill-public-content-translations.mjs --dry-run",
     "translations:backfill": "node --env-file=.env.local scripts/backfill-public-content-translations.mjs --write",

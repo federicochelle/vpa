@@ -143,6 +143,9 @@ function buildHomePropertyTypeOptions(input: {
 export async function HomeShell() {
   const locale = await getPublicLocale();
   const t = (key: Parameters<typeof getPublicMessage>[1]) => getPublicMessage(locale, key);
+  const legalSupportTitle = t("home.legalSupportTitle");
+  const [legalSupportTitleFirstLine, legalSupportTitleSecondLine] =
+    legalSupportTitle.split(" con ");
   const [heroSlidesFromCms, rentProperties, saleProperties, investmentProjects, recentNews] =
     await Promise.all([
       listHomeHeroSlides(locale),
@@ -216,8 +219,15 @@ export async function HomeShell() {
       <section className="bg-primary py-4 text-white sm:py-5">
         <div className="shell">
           <div className="mx-auto flex max-w-5xl flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:text-left">
-            <h2 className="font-display text-[clamp(1.15rem,4.5vw,1.65rem)] leading-tight">
-              {t("home.legalSupportTitle")}
+            <h2 className="max-w-full font-display text-[clamp(1.15rem,4.5vw,1.65rem)] leading-tight sm:max-w-none">
+              {legalSupportTitleSecondLine ? (
+                <>
+                  {legalSupportTitleFirstLine}
+                  <span className="sm:block"> con {legalSupportTitleSecondLine}</span>
+                </>
+              ) : (
+                legalSupportTitle
+              )}
             </h2>
             <p className="type-body-compact text-white/86 sm:max-w-xl">
               {t("home.legalSupportDescriptionPrefix")}{" "}
@@ -452,8 +462,10 @@ export async function HomeShell() {
         </div>
       </section>
 
+      <AdvisoryContactCtaSection />
+
       {recentNews.length > 0 ? (
-        <section className="bg-background py-16 sm:py-20">
+        <section className="bg-white py-16 sm:py-20">
           <div className="shell space-y-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div className="space-y-3">
@@ -492,8 +504,6 @@ export async function HomeShell() {
           </div>
         </section>
       ) : null}
-
-      <AdvisoryContactCtaSection />
     </div>
   );
 }

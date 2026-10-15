@@ -151,7 +151,7 @@ export const publicMessages = {
     "home.strategyParagraphTwo": "Debería comenzar con una conversación.",
     "home.strategyParagraphThree": "En VPA escuchamos qué buscás, cuál es tu presupuesto, qué plazo manejás y qué esperás obtener de la operación.",
     "home.strategyClosing": "Menos opciones. Más análisis. Mejores decisiones.",
-    "home.legalSupportTitle": "Operaciones inmobiliarias con respaldo profesional",
+    "home.legalSupportTitle": "Operaciones inmobiliarias con respaldo profesional.",
     "home.legalSupportDescriptionPrefix": "Acompañados por",
     "home.legalSupportStudio": "Storace SBV - Abogados y Escribanos",
     "home.featuredProjectsEyebrow": "Proyectos destacados",
