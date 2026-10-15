@@ -56,11 +56,16 @@ export function InvitePasswordForm() {
         const tokenHash = url.searchParams.get("token_hash");
         const tokenType = url.searchParams.get("type") as EmailOtpType | null;
 
-        if (tokenHash && tokenType && tokenType !== "invite") {
+        if (
+          tokenHash &&
+          tokenType &&
+          tokenType !== "invite" &&
+          tokenType !== "recovery"
+        ) {
           throw new Error("Invalid invite type");
         }
 
-        if (tokenHash && tokenType === "invite") {
+        if (tokenHash && (tokenType === "invite" || tokenType === "recovery")) {
           const { error } = await supabase.auth.verifyOtp({
             token_hash: tokenHash,
             type: tokenType,
