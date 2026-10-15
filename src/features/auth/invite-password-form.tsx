@@ -18,6 +18,49 @@ function cleanInviteUrl() {
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
+function getInviteUrlDiagnostics(url: URL) {
+  const hashParams = new URLSearchParams(url.hash.replace(/^#/, ""));
+
+  return {
+    hasHash: url.hash.length > 0,
+    hashKeys: [...hashParams.keys()].sort(),
+    queryKeys: [...url.searchParams.keys()].sort(),
+    hasAccessToken: hashParams.has("access_token"),
+    hasRefreshToken: hashParams.has("refresh_token"),
+    hasAuthError: ["error", "error_code", "error_description"].some(
+      (key) => hashParams.has(key) || url.searchParams.has(key),
+    ),
+    type: hashParams.get("type") ?? url.searchParams.get("type"),
+  };
+}
+
+function getSafeAuthError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return { kind: typeof error };
+  }
+
+  const authError = error as Error & {
+    code?: string;
+    status?: number;
+  };
+
+  return {
+    name: authError.name,
+    code: authError.code,
+    status: authError.status,
+    message: authError.message
+      .replace(/(access_token|refresh_token|token_hash|code)=[^\s&]+/gi, "$1=[redacted]")
+      .slice(0, 240),
+  };
+}
+
+function logInviteDiagnostic(
+  stage: string,
+  details: Record<string, unknown> = {},
+) {
+  console.info("[auth/invite]", { stage, ...details });
+}
+
 function getAuthErrorMessage(error: unknown) {
   if (!(error instanceof Error)) {
     return INVALID_LINK_MESSAGE;
@@ -38,6 +81,13 @@ function getAuthErrorMessage(error: unknown) {
 }
 
 export function InvitePasswordForm() {
+  const initialUrlDiagnostics = useMemo(
+    () =>
+      typeof window === "undefined"
+        ? null
+        : getInviteUrlDiagnostics(new URL(window.location.href)),
+    [],
+  );
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const router = useRouter();
   const [state, setState] = useState<InviteState>("loading");
@@ -53,6 +103,8 @@ export function InvitePasswordForm() {
     async function establishInviteSession() {
       try {
         const url = new URL(window.location.href);
+        logInviteDiagnostic("url-at-render", initialUrlDiagnostics ?? {});
+        logInviteDiagnostic("callback-inspected", getInviteUrlDiagnostics(url));
         const tokenHash = url.searchParams.get("token_hash");
         const tokenType = url.searchParams.get("type") as EmailOtpType | null;
 
@@ -66,6 +118,7 @@ export function InvitePasswordForm() {
         }
 
         if (tokenHash && (tokenType === "invite" || tokenType === "recovery")) {
+          logInviteDiagnostic("verifying-query-token", { type: tokenType });
           const { error } = await supabase.auth.verifyOtp({
             token_hash: tokenHash,
             type: tokenType,
@@ -82,8 +135,16 @@ export function InvitePasswordForm() {
         } = await supabase.auth.getSession();
 
         if (sessionError || !session) {
+          logInviteDiagnostic("session-missing", {
+            error: sessionError ? getSafeAuthError(sessionError) : null,
+          });
           throw sessionError ?? new Error("Missing invite session");
         }
+
+        logInviteDiagnostic("session-established", {
+          hasUser: Boolean(session.user),
+          expiresAtPresent: typeof session.expires_at === "number",
+        });
 
         const {
           data: { user },
@@ -91,6 +152,9 @@ export function InvitePasswordForm() {
         } = await supabase.auth.getUser();
 
         if (userError || !user) {
+          logInviteDiagnostic("user-missing", {
+            error: userError ? getSafeAuthError(userError) : null,
+          });
           throw userError ?? new Error("Missing invite user");
         }
 
@@ -100,12 +164,14 @@ export function InvitePasswordForm() {
 
         setEmail(user.email ?? null);
         setState("ready");
+        logInviteDiagnostic("ready", { hasEmail: Boolean(user.email) });
         cleanInviteUrl();
       } catch (error) {
         if (cancelled) {
           return;
         }
 
+        logInviteDiagnostic("failed", { error: getSafeAuthError(error) });
         await supabase.auth.signOut().catch(() => undefined);
         setMessage(getAuthErrorMessage(error));
         setState("error");
@@ -118,7 +184,7 @@ export function InvitePasswordForm() {
     return () => {
       cancelled = true;
     };
-  }, [supabase]);
+  }, [initialUrlDiagnostics, supabase]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
