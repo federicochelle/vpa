@@ -564,9 +564,18 @@ export async function updateInquiryStatus(
     };
   }
 
+  if (!data) {
+    console.error("Inquiry status update did not affect a row", { id, status });
+    return {
+      ok: false,
+      data: null,
+      error: "No se encontró la consulta o no se pudo confirmar el cambio.",
+    };
+  }
+
   return {
     ok: true,
-    data: data ? mapInquiryRow(data) : null,
+    data: mapInquiryRow(data),
     error: null,
   };
 }

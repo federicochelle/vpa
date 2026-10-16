@@ -8,7 +8,7 @@ import {
   saveInquiryMeeting,
   updateInquiryStatus,
 } from "@/features/inquiries/inquiries.data";
-import type { Inquiry } from "@/types/inquiry";
+import { isInquiryStatus } from "@/features/inquiries/inquiry-status";
 
 function toRequiredString(value: FormDataEntryValue | null, fallback = "") {
   if (typeof value !== "string") {
@@ -16,10 +16,6 @@ function toRequiredString(value: FormDataEntryValue | null, fallback = "") {
   }
 
   return value.trim();
-}
-
-function isInquiryStatus(value: string): value is Inquiry["status"] {
-  return value === "new" || value === "contacted" || value === "closed";
 }
 
 function parseMeetingDateTime(date: string, time: string) {
@@ -64,7 +60,7 @@ export async function updateInquiryStatusInlineAction(formData: FormData) {
   const statusValue = toRequiredString(formData.get("status"));
 
   if (!id || !isInquiryStatus(statusValue)) {
-    return;
+    return { ok: false, error: "No se pudo actualizar el estado de la consulta." };
   }
 
   const result = await updateInquiryStatus(id, statusValue);
@@ -75,6 +71,8 @@ export async function updateInquiryStatusInlineAction(formData: FormData) {
   if (!result.ok) {
     console.error("Error updating inquiry status from list", result.error);
   }
+
+  return { ok: result.ok, error: result.error };
 }
 
 export async function saveInquiryMeetingAction(input: {

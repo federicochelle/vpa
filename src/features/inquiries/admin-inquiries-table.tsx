@@ -1,19 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateInquiryStatusInlineAction } from "@/features/inquiries/inquiries.actions";
+import { INQUIRY_STATUS_OPTIONS } from "@/features/inquiries/inquiry-status";
 import type { Inquiry } from "@/types/inquiry";
 
 interface AdminInquiriesTableProps {
   inquiries: Inquiry[];
 }
-
-const INQUIRY_STATUS_OPTIONS: Array<{ label: string; value: Inquiry["status"] }> = [
-  { label: "Nueva", value: "new" },
-  { label: "Contactada", value: "contacted" },
-  { label: "Cerrada", value: "closed" },
-];
 
 function formatInquiryDate(value: string) {
   const date = new Date(value);
@@ -43,22 +38,53 @@ function InquiryStatusSelect({
   inquiryId: string;
   status: Inquiry["status"];
 }) {
-  const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
+  const [selectedStatus, setSelectedStatus] = useState(status);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+
+  function handleChange(nextStatus: Inquiry["status"]) {
+    if (isPending || nextStatus === selectedStatus) {
+      return;
+    }
+
+    const previousStatus = selectedStatus;
+    setSelectedStatus(nextStatus);
+    setError(null);
+    setIsPending(true);
+
+    const formData = new FormData();
+    formData.set("id", inquiryId);
+    formData.set("status", nextStatus);
+
+    startTransition(async () => {
+      try {
+        const result = await updateInquiryStatusInlineAction(formData);
+
+        if (!result.ok) {
+          setSelectedStatus(previousStatus);
+          setError(result.error ?? "No se pudo actualizar el estado.");
+          return;
+        }
+
+        router.refresh();
+      } catch {
+        setSelectedStatus(previousStatus);
+        setError("No se pudo actualizar el estado.");
+      } finally {
+        setIsPending(false);
+      }
+    });
+  }
 
   return (
-    <form
-      action={updateInquiryStatusInlineAction}
-      onClick={(event) => event.stopPropagation()}
-      onKeyDown={(event) => event.stopPropagation()}
-      ref={formRef}
-    >
-      <input name="id" type="hidden" value={inquiryId} />
+    <div onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
       <select
         aria-label="Estado de consulta"
         className="admin-input-base h-12 min-w-[166px] rounded-none py-0 pl-4 pr-10 leading-6"
-        defaultValue={status}
-        name="status"
-        onChange={() => formRef.current?.requestSubmit()}
+        disabled={isPending}
+        onChange={(event) => handleChange(event.target.value as Inquiry["status"])}
+        value={selectedStatus}
       >
         {INQUIRY_STATUS_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
@@ -66,7 +92,8 @@ function InquiryStatusSelect({
           </option>
         ))}
       </select>
-    </form>
+      {error ? <p className="mt-1 text-xs text-red-700">{error}</p> : null}
+    </div>
   );
 }
 
