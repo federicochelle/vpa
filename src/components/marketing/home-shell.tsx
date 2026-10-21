@@ -175,12 +175,8 @@ export async function HomeShell() {
   return (
     <div className="w-full max-w-full min-w-0 overflow-x-clip">
       <HomeHeroCarousel slides={heroSlides} />
-      <SearchSection
-        locationOptions={locationOptions}
-        propertyTypeOptions={searchPropertyTypeOptions}
-      />
 
-      <section className="bg-white pb-16 pt-80 sm:pb-20 sm:pt-32 lg:pt-36">
+      <section className="bg-white pb-6 pt-16 sm:pb-8 sm:pt-20">
         <div className="shell w-full max-w-full min-w-0">
           <div className="grid w-full max-w-full min-w-0 items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
             <div className="relative w-full max-w-full min-w-0 min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
@@ -215,6 +211,11 @@ export async function HomeShell() {
           </div>
         </div>
       </section>
+
+      <SearchSection
+        locationOptions={locationOptions}
+        propertyTypeOptions={searchPropertyTypeOptions}
+      />
 
       <section className="bg-primary py-4 text-white sm:py-5">
         <div className="shell">

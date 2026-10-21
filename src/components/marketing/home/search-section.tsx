@@ -319,7 +319,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
       : "gap-4 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto]";
 
   return (
-    <section className="relative z-20 -mb-64 w-full max-w-full min-w-0 -mt-24 px-4 md:mt-0 md:shell md:-mb-16 md:-mt-20 md:px-0 lg:-mt-24">
+    <section className="relative z-20 w-full max-w-full min-w-0 bg-white px-4 py-8 md:shell md:px-0">
       <div className="md:hidden">
         <div className="mx-auto w-full max-w-full min-w-0 overflow-visible border border-border bg-surface shadow-[0_14px_40px_rgba(39,39,39,0.05)]">
           <div className="bg-white p-5">

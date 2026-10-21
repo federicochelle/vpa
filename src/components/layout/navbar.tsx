@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import logoVpa from "../../../logovpa.webp";
+import logoVpa from "../../../VPA Virginia Pintos & Asociados Logo.webp";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
 import { OwnerLeadModal } from "@/features/inquiries/owner-lead-modal";
 import { PublicLocaleSwitcher } from "@/i18n/public/locale-switcher";
@@ -63,7 +63,7 @@ export function Navbar() {
     <>
       <MobileTopbarMenu
         closeLabel={t("nav.closeMenu")}
-        headerClassName="z-50 md:hidden"
+        headerClassName="z-50 lg:hidden"
         key={pathname}
         logo={
           <Link className="flex min-w-0 flex-1 items-center" href="/">
@@ -119,8 +119,8 @@ export function Navbar() {
         }
       />
 
-      <header className="sticky top-0 z-50 hidden border-b border-white/15 bg-primary backdrop-blur md:block">
-        <div className="shell flex h-20 items-center justify-between gap-6">
+      <header className="sticky top-0 z-50 hidden border-b border-white/15 bg-primary backdrop-blur lg:block">
+        <div className="shell grid h-20 max-w-none grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-6">
           <Link className="flex items-center" href="/">
             <Image
               alt="VPA"
@@ -131,7 +131,7 @@ export function Navbar() {
           </Link>
           <nav
             ref={desktopNavRef}
-            className="relative hidden items-center gap-6 md:flex"
+            className="relative hidden items-center justify-center gap-4 lg:flex lg:gap-5 xl:gap-6"
           >
             {activeIndicator ? (
               <span
@@ -178,9 +178,9 @@ export function Navbar() {
               );
             })}
           </nav>
-        </div>
-        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-          <PublicLocaleSwitcher />
+          <div className="shrink-0">
+            <PublicLocaleSwitcher />
+          </div>
         </div>
       </header>
       <OwnerLeadModal

@@ -18,6 +18,22 @@ interface PublicInquirySidebarProps {
   advisor?: ProjectAdvisor | null;
 }
 
+function normalizeUruguayPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const nationalNumber = digits.startsWith("598")
+    ? digits.slice(3)
+    : digits.replace(/^0/, "");
+
+  if (!nationalNumber) {
+    return null;
+  }
+
+  return {
+    display: `+598 ${nationalNumber}`,
+    href: `598${nationalNumber}`,
+  };
+}
+
 export function PublicInquirySidebar({
   entityId,
   initialMessage,
@@ -27,9 +43,9 @@ export function PublicInquirySidebar({
   advisor,
 }: PublicInquirySidebarProps) {
   const { locale, t } = usePublicLocale();
-  const phoneHref = advisor?.phone ? `tel:${advisor.phone.replace(/\s/g, "")}` : null;
-  const whatsappHref = advisor?.whatsapp
-    ? `https://wa.me/${advisor.whatsapp.replace(/\D/g, "")}`
+  const advisorPhone = advisor?.phone ? normalizeUruguayPhone(advisor.phone) : null;
+  const advisorWhatsapp = advisor?.whatsapp
+    ? normalizeUruguayPhone(advisor.whatsapp)
     : null;
   const [formData, setFormData] = useState(() => ({
     fullName: "",
@@ -77,24 +93,24 @@ export function PublicInquirySidebar({
               {advisor.name}
             </h5>
             <div className="mt-3 flex flex-col items-start gap-2">
-              {phoneHref ? (
+              {advisorPhone ? (
                 <a
                   className="type-body-compact inline-flex items-center gap-2 text-muted transition-colors hover:text-primary-strong"
-                  href={phoneHref}
+                  href={`tel:+${advisorPhone.href}`}
                 >
                   <Phone className="h-4 w-4 text-primary" />
-                  <span>{advisor.phone}</span>
+                  <span>{advisorPhone.display}</span>
                 </a>
               ) : null}
-              {whatsappHref ? (
+              {advisorWhatsapp ? (
                 <a
                   className="type-body-compact inline-flex items-center gap-2 text-muted transition-colors hover:text-primary-strong"
-                  href={whatsappHref}
+                  href={`https://wa.me/${advisorWhatsapp.href}`}
                   rel="noreferrer"
                   target="_blank"
                 >
                   <MessageCircle className="h-4 w-4 text-primary" />
-                  <span>{advisor.whatsapp}</span>
+                  <span>{advisorWhatsapp.display}</span>
                 </a>
               ) : null}
             </div>
