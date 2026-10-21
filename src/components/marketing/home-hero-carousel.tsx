@@ -250,7 +250,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
 
   return (
     <section
-      className="relative h-[74vh] min-h-[560px] w-full max-w-full min-w-0 overflow-hidden sm:h-[72vh] sm:min-h-[540px] lg:h-[78vh]"
+      className="relative h-[84vh] min-h-[560px] max-h-[900px] w-full max-w-full min-w-0 overflow-hidden sm:h-[82vh] sm:min-h-[540px] lg:h-[86vh]"
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}

@@ -3,9 +3,8 @@ import Link from "next/link";
 import {
   BadgeDollarSign,
   ChartNoAxesCombined,
-  CircleCheck,
-  CreditCard,
   Filter,
+  Handshake,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -34,15 +33,39 @@ import { getPublicLocale } from "@/i18n/public/locale.server";
 
 const investmentProcessSteps: Array<{
   labelKey: Parameters<typeof getPublicMessage>[1];
+  descriptionKey: Parameters<typeof getPublicMessage>[1];
   Icon: LucideIcon;
 }> = [
-  { labelKey: "home.investmentStepGoal", Icon: Target },
-  { labelKey: "home.investmentStepBudget", Icon: BadgeDollarSign },
-  { labelKey: "home.investmentStepSelection", Icon: Filter },
-  { labelKey: "home.investmentStepMarketValue", Icon: ChartNoAxesCombined },
-  { labelKey: "home.investmentStepProfitability", Icon: TrendingUp },
-  { labelKey: "home.investmentStepFinancing", Icon: CreditCard },
-  { labelKey: "home.investmentStepDecision", Icon: CircleCheck },
+  {
+    labelKey: "home.investmentStepGoal",
+    descriptionKey: "home.investmentStepGoalDescription",
+    Icon: Target,
+  },
+  {
+    labelKey: "home.investmentStepBudget",
+    descriptionKey: "home.investmentStepBudgetDescription",
+    Icon: BadgeDollarSign,
+  },
+  {
+    labelKey: "home.investmentStepMarketAnalysis",
+    descriptionKey: "home.investmentStepMarketAnalysisDescription",
+    Icon: ChartNoAxesCombined,
+  },
+  {
+    labelKey: "home.investmentStepProfitability",
+    descriptionKey: "home.investmentStepProfitabilityDescription",
+    Icon: TrendingUp,
+  },
+  {
+    labelKey: "home.investmentStepSelection",
+    descriptionKey: "home.investmentStepSelectionDescription",
+    Icon: Filter,
+  },
+  {
+    labelKey: "home.investmentStepPaymentNegotiation",
+    descriptionKey: "home.investmentStepPaymentNegotiationDescription",
+    Icon: Handshake,
+  },
 ];
 
 function EmptyCarouselCard({ message }: { message: string }) {
@@ -374,30 +397,33 @@ export async function HomeShell() {
               </p>
             </div>
 
-            <ol className="relative grid gap-7 lg:grid-cols-7 lg:gap-0">
+            <ol className="relative grid gap-8 md:grid-cols-2 lg:grid-cols-6 lg:gap-0">
               <span
                 aria-hidden="true"
-                className="absolute bottom-3 left-[1.05rem] top-3 w-px bg-primary/24 lg:bottom-auto lg:left-0 lg:right-0 lg:top-[2.15rem] lg:h-px lg:w-auto"
+                className="absolute bottom-3 left-[1.05rem] top-3 w-px bg-primary/24 md:hidden lg:bottom-auto lg:left-0 lg:right-0 lg:top-[2.15rem] lg:block lg:h-px lg:w-auto"
               />
-              {investmentProcessSteps.map(({ labelKey, Icon }, index) => (
+              {investmentProcessSteps.map(({ labelKey, descriptionKey, Icon }, index) => (
                 <li
                   key={labelKey}
-                  className="relative grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 lg:block lg:pr-5"
+                  className="relative grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 md:block lg:pr-4"
                 >
-                  <div className="relative z-10 flex flex-col items-center">
+                  <div className="relative z-10 flex flex-col items-center md:items-start lg:items-center">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/35 bg-background font-display text-[0.7rem] leading-none text-primary shadow-[0_0_0_8px_var(--background)]">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                   </div>
-                  <div className="flex min-w-0 flex-col items-center pt-5 text-center lg:pt-6">
+                  <div className="flex min-w-0 flex-col items-center pt-1 text-center md:items-start md:pt-4 md:text-left lg:items-center lg:pt-6 lg:text-center">
                     <Icon
                       aria-hidden="true"
                       className="mb-3 h-9 w-9 text-primary"
                       strokeWidth={1.65}
                     />
-                    <span className="block break-words font-display text-[0.8rem] leading-snug text-foreground lg:text-[0.72rem] xl:text-[0.78rem]">
+                    <span className="block break-words font-display text-[0.85rem] leading-snug text-foreground lg:text-[0.76rem] xl:text-[0.82rem]">
                       {t(labelKey)}
                     </span>
+                    <p className="type-body-compact mt-2 max-w-xs text-muted lg:text-[0.78rem]">
+                      {t(descriptionKey)}
+                    </p>
                   </div>
                 </li>
               ))}
