@@ -11,9 +11,9 @@ import {
   Newspaper,
   UserRound,
 } from "lucide-react";
-import logoVpa from "../../../logovpa.webp";
-import logoVpaCorto from "../../../logovpacorto.webp";
 import { logoutAction } from "@/features/auth/auth.actions";
+import logoVpa from "@/assets/vpa-logo.webp";
+import logoVpaCorto from "@/assets/vpa-logo-compact.webp";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
 import { adminNavigation } from "@/lib/navigation";
 import type { Database } from "@/lib/supabase/types";

@@ -25,11 +25,12 @@ import { listPublishedPropertiesByOperation } from "@/features/properties/proper
 import { listPublishedProjects } from "@/features/projects/projects.data";
 import type { Property, PropertyType } from "@/types/property";
 import type { Project } from "@/types/project";
-import propiedadHeroImage from "../../../propiedad.jpg";
-import proyectoHeroImage from "../../../proyecto.jpg";
-import virginiaImage from "../../../virginia.jpeg";
 import { getPublicMessage } from "@/i18n/public/messages";
 import { getPublicLocale } from "@/i18n/public/locale.server";
+import virginiaImage from "@/assets/virginia.jpeg";
+
+const propiedadHeroImage = "/propiedad.jpg";
+const proyectoHeroImage = "/proyecto.jpg";
 
 const investmentProcessSteps: Array<{
   labelKey: Parameters<typeof getPublicMessage>[1];

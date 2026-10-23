@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import logoVpa from "../../../logovpa.webp";
+import logoVpa from "@/assets/vpa-logo.webp";
 
 export function Footer() {
   return (

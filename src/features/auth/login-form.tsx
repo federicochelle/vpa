@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { loginAction } from "@/features/auth/auth.actions";
-import logoVpa from "../../../logovpa.webp";
+import logoVpa from "@/assets/vpa-logo.webp";
 
 export function LoginForm() {
   return (

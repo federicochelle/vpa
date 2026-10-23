@@ -8,7 +8,7 @@ import {
 } from "@/features/inquiries/informative-guides-section";
 import { getPublicLocale } from "@/i18n/public/locale.server";
 import { getPublicMessage } from "@/i18n/public/messages";
-import virginiaImage from "../../../../virginia.jpeg";
+import virginiaImage from "@/assets/virginia.jpeg";
 
 const advisoryGuideFiles: Array<{
   descriptionKey: Parameters<typeof getPublicMessage>[1];

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import logoVpa from "../../../VPA Virginia Pintos & Asociados Logo.webp";
+import logoVpa from "@/assets/vpa-logo-long.webp";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
 import { OwnerLeadModal } from "@/features/inquiries/owner-lead-modal";
 import { PublicLocaleSwitcher } from "@/i18n/public/locale-switcher";
