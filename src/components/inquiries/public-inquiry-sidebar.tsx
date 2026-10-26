@@ -5,6 +5,7 @@ import { MessageCircle, Phone, Send } from "lucide-react";
 import { useState } from "react";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
+import { InquiryHoneypotField } from "@/features/inquiries/inquiry-honeypot-field";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { PublicInquiryPayload } from "@/types/inquiry";
 import type { ProjectAdvisor } from "@/types/project";
@@ -146,6 +147,7 @@ export function PublicInquirySidebar({
             projectId: kind === "project" ? entityId : undefined,
             relatedTitle,
             originPath,
+            website: String(new FormData(event.currentTarget).get("website") ?? ""),
           };
 
           try {
@@ -180,6 +182,7 @@ export function PublicInquirySidebar({
           }
         }}
       >
+        <InquiryHoneypotField />
         <div className="space-y-2">
           <label
             className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"

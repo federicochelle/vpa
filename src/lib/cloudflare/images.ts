@@ -8,18 +8,6 @@ interface CloudflareImagesEnv {
 
 const CLOUDFLARE_PUBLIC_VARIANT = "public";
 
-export interface CloudflareImagesProbeResult {
-  ok: boolean;
-  endpoint: string;
-  status: number | null;
-  variablesDetected: {
-    accountId: boolean;
-    accountHash: boolean;
-    apiToken: boolean;
-  };
-  message: string;
-}
-
 export interface CloudflareDirectUploadUrlResult {
   imageId: string;
   uploadURL: string;
@@ -63,21 +51,6 @@ function getCloudflareImagesEnv(): CloudflareImagesEnv {
     accountId,
     accountHash,
     apiToken,
-  };
-}
-
-export function getCloudflareImagesProbeMetadata() {
-  const { accountId, accountHash, apiToken } = getCloudflareImagesEnvState();
-
-  return {
-    endpoint: accountId
-      ? `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`
-      : "https://api.cloudflare.com/client/v4/accounts/{account_id}/images/v1",
-    variablesDetected: {
-      accountId: Boolean(accountId),
-      accountHash: Boolean(accountHash),
-      apiToken: Boolean(apiToken),
-    },
   };
 }
 
@@ -175,62 +148,5 @@ export async function deleteCloudflareImage(imageId: string) {
 
   if (!response.ok || payload?.success === false) {
     throw new Error(getCloudflareErrorMessage(payload, response.status));
-  }
-}
-
-export async function probeCloudflareImagesConnection(): Promise<CloudflareImagesProbeResult> {
-  const metadata = getCloudflareImagesProbeMetadata();
-
-  try {
-    const { accountId, apiToken } = getCloudflareImagesEnv();
-    const endpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`;
-
-    const response = await fetch(endpoint, {
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-      },
-      method: "GET",
-      cache: "no-store",
-    });
-
-    const payload = (await response.json().catch(() => null)) as
-      | {
-          errors?: Array<{ message?: string }>;
-          messages?: Array<{ message?: string }>;
-          success?: boolean;
-        }
-      | null;
-
-    if (!response.ok) {
-      const message =
-        payload?.errors?.[0]?.message ??
-        payload?.messages?.[0]?.message ??
-        `Cloudflare respondió con status ${response.status}.`;
-
-      return {
-        ok: false,
-        endpoint,
-        status: response.status,
-        variablesDetected: metadata.variablesDetected,
-        message,
-      };
-    }
-
-    return {
-      ok: true,
-      endpoint,
-      status: response.status,
-      variablesDetected: metadata.variablesDetected,
-      message: "Cloudflare Images conectado.",
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      endpoint: metadata.endpoint,
-      status: null,
-      variablesDetected: metadata.variablesDetected,
-      message:
-        error instanceof Error ? error.message : "No se pudo verificar Cloudflare Images.",
-    };
   }
 }

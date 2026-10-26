@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { FormField } from "@/components/ui/form-field";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
+import { InquiryHoneypotField } from "@/features/inquiries/inquiry-honeypot-field";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { PublicInquiryPayload } from "@/types/inquiry";
 
@@ -52,6 +53,7 @@ export function ContactFormShell() {
           referrer: attribution.referrer,
           landingPage: attribution.landingPage,
           originPath: getCurrentOriginPath(),
+          website: String(formData.get("website") ?? ""),
         };
 
         try {
@@ -86,6 +88,7 @@ export function ContactFormShell() {
       }}
       ref={formRef}
     >
+      <InquiryHoneypotField />
       <div className="grid gap-6 sm:grid-cols-2">
         <FormField htmlFor="name" label={t("contact.name")}>
           <input
