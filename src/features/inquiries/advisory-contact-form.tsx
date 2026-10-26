@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attribution";
+import { InquiryHoneypotField } from "@/features/inquiries/inquiry-honeypot-field";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { InquiryIntent, PublicInquiryPayload } from "@/types/inquiry";
 
@@ -61,6 +62,7 @@ export function AdvisoryContactForm({
           referrer: attribution.referrer,
           landingPage: attribution.landingPage,
           originPath: getCurrentOriginPath(),
+          website: String(formData.get("website") ?? ""),
         };
 
         try {
@@ -99,6 +101,7 @@ export function AdvisoryContactForm({
       }}
       ref={formRef}
     >
+      <InquiryHoneypotField />
       <div className="space-y-2">
         <label
           className="type-meta font-semibold uppercase tracking-[0.16em] text-muted"

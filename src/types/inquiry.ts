@@ -60,4 +60,5 @@ export interface PublicInquiryPayload {
   projectId?: string;
   relatedTitle?: string | null;
   originPath: string;
+  website?: string;
 }

@@ -8,11 +8,13 @@ import {
 } from "@/features/inquiries/informative-guides-section";
 import { getPublicLocale } from "@/i18n/public/locale.server";
 import { getPublicMessage } from "@/i18n/public/messages";
-import virginiaImage from "@/assets/virginia.jpeg";
+import advisorImage from "@/assets/img_6225.webp";
 
 const advisoryGuideFiles: Array<{
   descriptionKey: Parameters<typeof getPublicMessage>[1];
+  external?: boolean;
   href: string;
+  linkKey?: Parameters<typeof getPublicMessage>[1];
   id: string;
   titleKey: Parameters<typeof getPublicMessage>[1];
 }> = [
@@ -27,6 +29,14 @@ const advisoryGuideFiles: Array<{
     titleKey: "advisory.guidesNonResidentsTitle",
     descriptionKey: "advisory.guidesNonResidentsDescription",
     href: "/asesoramiento/no-residentes",
+  },
+  {
+    id: "profitability-analysis",
+    titleKey: "advisory.guidesProfitabilityTitle",
+    descriptionKey: "advisory.guidesProfitabilityDescription",
+    external: true,
+    href: "/informes/analisis-rentabilidad-uruguay.pdf",
+    linkKey: "advisory.guidesProfitabilityLink",
   },
 ];
 
@@ -44,7 +54,9 @@ export default async function AdvisoryPage() {
     id: guide.id,
     title: t(guide.titleKey),
     description: t(guide.descriptionKey),
+    external: guide.external,
     href: guide.href,
+    link: guide.linkKey ? t(guide.linkKey) : undefined,
   }));
 
   return (
@@ -55,6 +67,7 @@ export default async function AdvisoryPage() {
         guides={guides}
         labels={{
           description: t("advisory.guidesDescription"),
+          externalNote: t("investorResidency.reportNewTab"),
           link: t("advisory.guidesLearnMore"),
           title: t("advisory.guidesTitle"),
         }}
@@ -65,7 +78,7 @@ export default async function AdvisoryPage() {
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
             <div className="relative min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
               <Image
-                src={virginiaImage}
+                src={advisorImage}
                 alt={t("advisory.heroAlt")}
                 fill
                 className="object-cover"

@@ -3,8 +3,12 @@ import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { AdminRecordShell } from "@/components/admin/admin-record-shell";
 import { Notice } from "@/components/ui/notice";
-import { updateInquiryStatusAction } from "@/features/inquiries/inquiries.actions";
+import {
+  deleteInquiryAction,
+  updateInquiryStatusAction,
+} from "@/features/inquiries/inquiries.actions";
 import { AdminInquiryMeetingPanel } from "@/features/inquiries/admin-inquiry-meeting-panel";
+import { DeleteInquiryButton } from "@/features/inquiries/delete-inquiry-button";
 import { AdminInquiryStatusForm } from "@/features/inquiries/admin-inquiry-status-form";
 import { getAdminInquiryById } from "@/features/inquiries/inquiries.data";
 import {
@@ -219,11 +223,17 @@ export default async function AdminInquiryDetailPage({
   return (
     <AdminRecordShell
       actions={
-        <AdminInquiryStatusForm
-          action={updateInquiryStatusAction}
-          inquiryId={inquiry.id}
-          status={inquiry.status}
-        />
+        <>
+          <AdminInquiryStatusForm
+            action={updateInquiryStatusAction}
+            inquiryId={inquiry.id}
+            status={inquiry.status}
+          />
+          <form action={deleteInquiryAction} className="self-end">
+            <input name="id" type="hidden" value={inquiry.id} />
+            <DeleteInquiryButton label="Eliminar" />
+          </form>
+        </>
       }
       stackActionsOnMobile
       subtitle={<p className="type-body-compact text-muted">{formatInquiryDate(inquiry.createdAt)}</p>}

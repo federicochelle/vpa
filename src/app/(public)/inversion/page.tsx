@@ -45,6 +45,33 @@ export default async function InvestmentPage({ searchParams }: InvestmentPagePro
           titleAs="h1"
         />
 
+        <p className="type-body max-w-3xl text-foreground">
+          {t("investmentPage.reportPrefix")}
+          <a
+            className="group inline-flex items-baseline gap-1.5 font-medium text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:text-primary-strong hover:decoration-primary-strong focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/8"
+            href="/informes/analisis-rentabilidad-uruguay.pdf"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 translate-y-[3px]"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.75"
+              viewBox="0 0 24 24"
+            >
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+              <path d="M14 3v5h5M9 13h6M9 17h4" />
+            </svg>
+            <span>{t("investmentPage.reportLink")}</span>
+            <span className="sr-only">{t("investorResidency.reportNewTab")}</span>
+          </a>
+          {t("investmentPage.reportSuffix")}
+        </p>
+
         {hasAnyResults ? (
           <>
             {exactResults.length > 0 ? (

@@ -1,10 +1,47 @@
+import { checkBotId } from "botid/server";
 import { NextResponse } from "next/server";
 import { createPublicInquiry } from "@/features/inquiries/inquiries.data";
 import { validatePublicInquiryPayload } from "@/features/inquiries/inquiries.form";
+import { INQUIRY_HONEYPOT_FIELD_NAME } from "@/features/inquiries/inquiry-honeypot-field";
+
+function isHoneypotFilled(payload: unknown) {
+  if (typeof payload !== "object" || payload === null) {
+    return false;
+  }
+
+  const value = (payload as Record<string, unknown>)[INQUIRY_HONEYPOT_FIELD_NAME];
+  return typeof value === "string" && value.trim() !== "";
+}
 
 export async function POST(request: Request) {
   try {
+    let isBot = false;
+
+    try {
+      const verification = await checkBotId({ advancedOptions: { checkLevel: "basic" } });
+      isBot = verification.isBot;
+    } catch (error) {
+      console.error("[inquiries][route] BotID check failed, allowing request", error);
+    }
+
+    if (isBot) {
+      console.warn("[inquiries][route] bot_blocked");
+      return NextResponse.json(
+        { message: "No pudimos procesar tu consulta. Intentá de nuevo." },
+        { status: 403 },
+      );
+    }
+
     const payload = (await request.json().catch(() => null)) as unknown;
+
+    if (isHoneypotFilled(payload)) {
+      console.warn("[inquiries][route] honeypot_filled");
+      return NextResponse.json(
+        { message: "Consulta enviada correctamente." },
+        { status: 201 },
+      );
+    }
+
     console.info("[inquiries][route] request_received", {
       hasPayload: payload != null,
     });
