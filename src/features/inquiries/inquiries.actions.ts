@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { requireAdminSession } from "@/lib/supabase/auth";
 import {
   cancelInquiryMeeting,
+  deleteInquiry,
+  getAdminInquiryById,
   saveInquiryMeeting,
   updateInquiryStatus,
 } from "@/features/inquiries/inquiries.data";
@@ -73,6 +75,46 @@ export async function updateInquiryStatusInlineAction(formData: FormData) {
   }
 
   return { ok: result.ok, error: result.error };
+}
+
+export async function deleteInquiryAction(formData: FormData) {
+  await requireAdminSession();
+  const id = toRequiredString(formData.get("id"));
+
+  const existingResult = await getAdminInquiryById(id);
+
+  if (!existingResult.ok) {
+    redirect(
+      `/admin/consultas?error=${encodeURIComponent(existingResult.error ?? "No se pudo validar la consulta.")}`,
+    );
+  }
+
+  if (!existingResult.data) {
+    redirect(
+      `/admin/consultas?error=${encodeURIComponent("La consulta que intentás eliminar no existe.")}`,
+    );
+  }
+
+  if (existingResult.data.meetingStatus === "scheduled") {
+    redirect(
+      `/admin/consultas/${id}?error=${encodeURIComponent("Esta consulta tiene una reunión agendada. Cancelala antes de eliminar la consulta.")}`,
+    );
+  }
+
+  const result = await deleteInquiry(id);
+
+  revalidatePath("/admin/consultas");
+  revalidatePath("/admin", "layout");
+
+  if (!result.ok) {
+    redirect(
+      `/admin/consultas/${id}?error=${encodeURIComponent(result.error ?? "No se pudo eliminar la consulta.")}`,
+    );
+  }
+
+  redirect(
+    `/admin/consultas?success=${encodeURIComponent("Consulta eliminada.")}`,
+  );
 }
 
 export async function saveInquiryMeetingAction(input: {

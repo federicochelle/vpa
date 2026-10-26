@@ -580,6 +580,40 @@ export async function updateInquiryStatus(
   };
 }
 
+export async function deleteInquiry(id: string): Promise<InquiryResult> {
+  const supabase = await createSupabaseServerActionClient();
+  const { data, error } = await supabase
+    .from("inquiries")
+    .delete()
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error deleting inquiry", error);
+    return {
+      ok: false,
+      data: null,
+      error: "No se pudo eliminar la consulta.",
+    };
+  }
+
+  if (!data) {
+    console.error("Inquiry delete did not affect a row", { id });
+    return {
+      ok: false,
+      data: null,
+      error: "No se encontró la consulta o no se pudo confirmar la eliminación.",
+    };
+  }
+
+  return {
+    ok: true,
+    data: mapInquiryRow(data),
+    error: null,
+  };
+}
+
 export async function saveInquiryMeeting(
   id: string,
   start: Date,
