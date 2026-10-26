@@ -27,7 +27,7 @@ import type { Property, PropertyType } from "@/types/property";
 import type { Project } from "@/types/project";
 import { getPublicMessage } from "@/i18n/public/messages";
 import { getPublicLocale } from "@/i18n/public/locale.server";
-import virginiaImage from "@/assets/virginia.jpeg";
+import advisorImage from "@/assets/img_6225.webp";
 
 const propiedadHeroImage = "/propiedad.jpg";
 const proyectoHeroImage = "/proyecto.jpg";
@@ -205,7 +205,7 @@ export async function HomeShell() {
           <div className="grid w-full max-w-full min-w-0 items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:gap-14">
             <div className="relative w-full max-w-full min-w-0 min-h-[360px] overflow-hidden border border-border bg-surface-muted sm:min-h-[460px]">
               <Image
-                src={virginiaImage}
+                src={advisorImage}
                 alt={t("advisory.heroAlt")}
                 fill
                 className="object-cover"

@@ -109,8 +109,8 @@ export function validatePublicInquiryPayload(
   }
   const intent = intentRaw && isValidInquiryIntent(intentRaw) ? intentRaw : null;
 
-  if (name.length < 2 || name.length > 120) {
-    return { ok: false, error: "Ingresá un nombre válido." };
+  if (name.length === 0 || name.length > 120) {
+    return { ok: false, error: "Ingresá un nombre (máximo 120 caracteres)." };
   }
 
   if (!isValidEmail(email) || email.length > 160) {
@@ -121,8 +121,8 @@ export function validatePublicInquiryPayload(
     return { ok: false, error: "El teléfono es demasiado largo." };
   }
 
-  if (message.length < 10 || message.length > 2000) {
-    return { ok: false, error: "El mensaje debe tener entre 10 y 2000 caracteres." };
+  if (message.length === 0 || message.length > 2000) {
+    return { ok: false, error: "Ingresá un mensaje (máximo 2000 caracteres)." };
   }
 
   if (

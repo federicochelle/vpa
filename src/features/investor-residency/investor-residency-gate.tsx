@@ -1,5 +1,6 @@
 "use client";
 
+import { ExternalLink, FileText } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 
@@ -191,6 +192,25 @@ export function InvestorResidencyGate() {
           <p className="type-body whitespace-pre-line text-center text-foreground" id={descriptionId}>
             {description}
           </p>
+
+          <a
+            className="group mt-6 flex items-center gap-4 border border-l-[3px] border-border border-l-primary bg-white px-4 py-4 text-left transition-colors hover:border-foreground/40 hover:border-l-primary focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/8 sm:px-5"
+            href="/informes/analisis-rentabilidad-uruguay.pdf"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <FileText aria-hidden="true" className="h-[22px] w-[22px] shrink-0 text-primary" />
+            <span className="min-w-0 flex-1">
+              <span className="type-body-compact block font-medium text-foreground group-hover:underline">
+                {t("investorResidency.reportTitle")}
+              </span>
+              <span className="block text-[13px] leading-5 text-muted">
+                {t("investorResidency.reportSubtitle")}
+              </span>
+            </span>
+            <ExternalLink aria-hidden="true" className="h-4 w-4 shrink-0 text-muted" />
+            <span className="sr-only">{t("investorResidency.reportNewTab")}</span>
+          </a>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
             <button

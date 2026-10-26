@@ -461,3 +461,43 @@ test("legacy general news payload still requires related title", () => {
   assert.equal(validation.ok, false);
   assert.equal(validation.error, "El origen de la consulta no es válido.");
 });
+
+test("name and message accept a single character", () => {
+  const validation = validatePublicInquiryPayload({
+    ...createBasePayload(),
+    name: "A",
+    message: "B",
+  });
+
+  assert.equal(validation.ok, true);
+});
+
+test("name and message are required and reject empty or whitespace-only values", () => {
+  for (const value of ["", "   ", "\n\t "]) {
+    const nameValidation = validatePublicInquiryPayload({
+      ...createBasePayload(),
+      name: value,
+    });
+    const messageValidation = validatePublicInquiryPayload({
+      ...createBasePayload(),
+      message: value,
+    });
+
+    assert.equal(nameValidation.ok, false);
+    assert.equal(messageValidation.ok, false);
+  }
+});
+
+test("message longer than 2000 characters is rejected", () => {
+  const atLimit = validatePublicInquiryPayload({
+    ...createBasePayload(),
+    message: "a".repeat(2000),
+  });
+  const overLimit = validatePublicInquiryPayload({
+    ...createBasePayload(),
+    message: "a".repeat(2001),
+  });
+
+  assert.equal(atLimit.ok, true);
+  assert.equal(overLimit.ok, false);
+});
