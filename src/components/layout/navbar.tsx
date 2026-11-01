@@ -55,8 +55,19 @@ export function Navbar() {
 
     updateIndicator();
 
+    // Las fuentes web cambian el ancho de los links al cargarse: recalcular.
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (!cancelled) {
+        updateIndicator();
+      }
+    });
+
     window.addEventListener("resize", updateIndicator);
-    return () => window.removeEventListener("resize", updateIndicator);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("resize", updateIndicator);
+    };
   }, [isItemActive, pathname]);
 
   return (
@@ -84,7 +95,7 @@ export function Navbar() {
                 return (
                   <Link
                     key={item.action}
-                    className="type-meta font-display relative w-full rounded-2xl px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white/10 hover:text-white/70"
+                    className="font-display relative text-xs w-full rounded-2xl px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white/10 hover:text-white/70"
                     href="#vender"
                     onClick={(event) => {
                       event.preventDefault();
@@ -101,7 +112,7 @@ export function Navbar() {
               return (
                 <Link
                   key={item.href}
-                  className={`type-meta font-display relative w-full rounded-2xl px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
+                  className={`font-display relative text-xs w-full rounded-2xl px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
                     isActive
                       ? ""
                       : "hover:bg-white/10 hover:text-white/70"
@@ -131,7 +142,7 @@ export function Navbar() {
           </Link>
           <nav
             ref={desktopNavRef}
-            className="relative hidden items-center justify-center gap-4 lg:flex lg:gap-5 xl:gap-6"
+            className="relative hidden items-center justify-end gap-4 lg:flex lg:gap-5 lg:pr-4 xl:gap-6 xl:pr-8"
           >
             {activeIndicator ? (
               <span
@@ -148,7 +159,7 @@ export function Navbar() {
                 return (
                   <Link
                     key={item.action}
-                    className="type-meta font-display relative font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:text-white/70"
+                    className="font-display relative text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:text-white/70"
                     href="#vender"
                     onClick={(event) => {
                       event.preventDefault();
@@ -168,7 +179,7 @@ export function Navbar() {
                   ref={(element) => {
                     linkRefs.current[item.href] = element;
                   }}
-                  className={`type-meta font-display relative font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
+                  className={`font-display relative text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
                     isActive ? "" : "hover:text-white/70"
                   }`}
                   href={item.href}
