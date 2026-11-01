@@ -10,33 +10,33 @@ export function Footer() {
         <Link className="flex items-center justify-center lg:justify-start" href="/">
           <Image
             alt="VPA"
-            className="h-auto w-72 sm:w-80 lg:w-[22rem]"
+            className="h-auto w-[220px] sm:w-[240px] lg:w-[260px]"
             src={logoVpa}
           />
         </Link>
 
-        <div className="grid justify-items-center gap-5 text-center type-body !text-white lg:justify-items-start lg:text-left">
+        <div className="grid justify-items-center gap-3 text-center text-sm leading-snug text-white lg:justify-items-start lg:text-left">
           <Link
-            className="inline-flex items-center justify-center gap-4 transition-colors hover:text-white lg:justify-start"
+            className="inline-flex items-center justify-center gap-3 transition-colors hover:text-white lg:justify-start"
             href="tel:+59899297235"
           >
-            <Phone className="h-5 w-5 flex-none" />
+            <Phone className="h-4 w-4 flex-none" />
             <span>+598 99 297 235</span>
           </Link>
           <Link
-            className="inline-flex items-center justify-center gap-4 transition-colors hover:text-white lg:justify-start"
+            className="inline-flex items-center justify-center gap-3 transition-colors hover:text-white lg:justify-start"
             href="mailto:info@vpa.com.uy"
           >
-            <Mail className="h-5 w-5 flex-none" />
+            <Mail className="h-4 w-4 flex-none" />
             <span>info@vpa.com.uy</span>
           </Link>
           <Link
-            className="inline-flex items-start justify-center gap-4 text-center transition-colors hover:text-white lg:justify-start lg:text-left"
+            className="inline-flex items-start justify-center gap-3 text-center transition-colors hover:text-white lg:justify-start lg:text-left"
             href="https://www.google.com.uy/maps/place/of.+904,+26+de+Marzo+3393,+11300+Montevideo,+Departamento+de+Montevideo/@-34.9061421,-56.1419676,17z/data=!3m1!4b1!4m5!3m4!1s0x959f81145bc7f3fb:0x6a8c1b0d02b70b3a!8m2!3d-34.9061421!4d-56.1397789?hl=es-419"
             rel="noreferrer"
             target="_blank"
           >
-            <MapPin className="mt-0.5 h-5 w-5 flex-none" />
+            <MapPin className="mt-0.5 h-4 w-4 flex-none" />
             <span>26 de Marzo 3393 of. 904 - Montevideo Uruguay</span>
           </Link>
         </div>
