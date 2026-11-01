@@ -88,14 +88,14 @@ export async function ProjectCard({
               {deliveryLabel}
             </div>
           ) : null}
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            {project.featured
-              ? t("project.featured")
-              : project.isInvestmentOpportunity
-                ? t("project.investmentOpportunity")
-                : t("project.available")}
-          </div>
+          {project.featured || project.isInvestmentOpportunity ? (
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              {project.featured
+                ? t("project.featured")
+                : t("project.investmentOpportunity")}
+            </div>
+          ) : null}
         </div>
       </div>
     </article>
