@@ -25,7 +25,7 @@ export function AdvisoryContactCtaSection() {
       <div className="shell">
         <div className="mx-auto max-w-5xl space-y-8 text-center">
           <div className="mx-auto max-w-4xl space-y-5">
-            <h2 className="font-display text-[clamp(1.45rem,5.5vw,2rem)] leading-tight text-foreground sm:text-[2.25rem]">
+            <h2 className="heading-section line-clamp-none text-foreground">
               {t("home.advisoryCtaTitleLineOne")}
               <span className="block text-primary-strong">
                 {t("home.advisoryCtaTitleLineTwo")}

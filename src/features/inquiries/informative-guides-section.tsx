@@ -24,7 +24,7 @@ export function InformativeGuidesSection({ guides, labels }: InformativeGuidesSe
     <section className="bg-white py-16 sm:py-20">
       <div className="shell space-y-10">
         <div className="mx-auto max-w-3xl space-y-4 text-center">
-          <h2 className="section-title">{labels.title}</h2>
+          <h2 className="heading-section">{labels.title}</h2>
           <p className="section-copy mx-auto">{labels.description}</p>
         </div>
 

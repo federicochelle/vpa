@@ -246,15 +246,49 @@ textarea {
   line-height: var(--type-micro-line);
 }
 
-.section-title {
-  @apply font-display text-3xl leading-tight text-foreground sm:text-4xl;
-}
+/* Titulares publicos centralizados. Peso 500, maximo 2 renglones.
+   Estan en @layer components para poder sobrescribirse con utilidades
+   (por ejemplo line-clamp-none). */
+@layer components {
+  .heading-section,
+  .heading-feature,
+  .heading-card {
+    font-family: var(--font-display);
+    font-weight: 500;
+    text-transform: uppercase;
+    overflow: hidden;
+    overflow-wrap: normal;
+    word-break: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
 
-.home-section-title {
-  font-size: clamp(1.7rem, 7vw, 2.4rem);
-  line-height: 0.98;
-  overflow-wrap: normal;
-  word-break: normal;
+  .heading-section {
+    font-size: clamp(1.37rem, calc(7vw - 0.33rem), 1.92rem);
+    line-height: 1.2;
+  }
+
+  .heading-feature {
+    font-size: clamp(1.02rem, calc(5vw - 0.33rem), 1.42rem);
+    line-height: 1.2;
+  }
+
+  .heading-card {
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .heading-card-compact {
+    font-size: 0.8125rem;
+  }
+
+  @media (min-width: 640px) {
+    .heading-feature {
+      font-size: 1.57rem;
+    }
+  }
 }
 
 .advisory-hero-title {
@@ -263,11 +297,6 @@ textarea {
 }
 
 @media (min-width: 640px) {
-  .home-section-title {
-    font-size: 36px;
-    line-height: 1.25;
-  }
-
   .advisory-hero-title {
     font-size: 21px;
   }

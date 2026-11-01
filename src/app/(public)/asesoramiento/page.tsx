@@ -88,7 +88,7 @@ export default async function AdvisoryPage() {
 
             <div className="space-y-6 text-center lg:text-left">
               <div className="space-y-3">
-                <h1 className="section-title advisory-hero-title">
+                <h1 className="heading-section line-clamp-none advisory-hero-title">
                   {t("advisory.heroTitle")}
                 </h1>
               </div>
@@ -116,7 +116,7 @@ export default async function AdvisoryPage() {
         <div className="shell">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)] lg:items-start lg:gap-14">
             <div className="space-y-6 text-center lg:text-left">
-              <h2 className="section-title">
+              <h2 className="heading-section">
                 {t("advisory.talkTitle")}
               </h2>
               <p className="section-copy max-w-2xl">

@@ -82,7 +82,7 @@ export function AdvisoryServicesSection() {
       <div className="shell">
         <div className="space-y-10">
           <div className="mx-auto max-w-3xl space-y-4 text-center">
-            <h2 className="section-title">
+            <h2 className="heading-section">
               {t("advisory.servicesTitle")}
             </h2>
           </div>

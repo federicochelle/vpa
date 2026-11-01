@@ -28,7 +28,7 @@ export function SectionHeading({
   return (
     <div className={`flex w-full max-w-3xl min-w-0 flex-col gap-3 ${alignment}`}>
       {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
-      <TitleTag className={`section-title w-full max-w-full min-w-0 ${titleClassName}`}>
+      <TitleTag className={`heading-section w-full max-w-full min-w-0 ${titleClassName}`}>
         {title}
       </TitleTag>
       {description ? (

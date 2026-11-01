@@ -215,7 +215,7 @@ export async function HomeShell() {
 
             <div className="w-full max-w-full min-w-0 space-y-6 text-center sm:text-left">
               <div className="space-y-3">
-                <h2 className="max-w-[18ch] font-display text-[clamp(1.35rem,5vw,1.75rem)] leading-tight text-foreground sm:text-[1.9rem]">
+                <h2 className="heading-feature text-foreground">
                   {t("home.strategyTitle")}
                 </h2>
               </div>
@@ -228,7 +228,7 @@ export async function HomeShell() {
                 {t("home.strategyParagraphThree")}
               </p>
 
-              <p className="font-display text-[clamp(0.95rem,3.8vw,1.15rem)] leading-tight text-primary-strong sm:text-[1.25rem]">
+              <p className="font-display text-[clamp(0.95rem,3.8vw,1.15rem)] font-semibold leading-tight text-primary-strong sm:text-[1.25rem]">
                 {t("home.strategyClosing")}
               </p>
             </div>
@@ -271,7 +271,6 @@ export async function HomeShell() {
               title={t("home.rentals")}
               description={t("home.rentalsDescription")}
               align="mobile-center"
-              titleClassName="home-section-title"
               descriptionClassName="home-section-subtitle"
             />
             <Link
@@ -332,7 +331,6 @@ export async function HomeShell() {
               title={t("home.sales")}
               description={t("home.salesDescription")}
               align="mobile-center"
-              titleClassName="home-section-title"
               descriptionClassName="home-section-subtitle"
             />
             <Link
@@ -389,13 +387,13 @@ export async function HomeShell() {
       <section className="bg-background pt-16 pb-8 sm:pt-20 sm:pb-10">
         <div className="shell">
           <div className="space-y-10 pb-12 sm:space-y-12 sm:pb-14">
-            <div className="mx-auto max-w-4xl space-y-5 text-center">
-              <h3 className="section-title home-section-title text-foreground">
-                {t("home.investmentProcessTitle")}
-              </h3>
-              <p className="type-body mx-auto max-w-2xl text-muted">
-                {t("home.investmentProcessDescription")}
-              </p>
+            <div className="mx-auto max-w-4xl">
+              <SectionHeading
+                align="center"
+                description={t("home.investmentProcessDescription")}
+                title={t("home.investmentProcessTitle")}
+                titleClassName="line-clamp-none text-foreground"
+              />
             </div>
 
             <ol className="relative grid gap-8 md:grid-cols-2 lg:grid-cols-6 lg:gap-0">
@@ -440,7 +438,6 @@ export async function HomeShell() {
               title={t("home.investments")}
               description={t("home.investmentsDescription")}
               align="mobile-center"
-              titleClassName="home-section-title"
               descriptionClassName="home-section-subtitle"
             />
             <Link
@@ -496,11 +493,7 @@ export async function HomeShell() {
         <section className="bg-white py-16 sm:py-20">
           <div className="shell space-y-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div className="space-y-3">
-                <h2 className="section-title home-section-title w-full max-w-full min-w-0">
-                  {t("news.title")}
-                </h2>
-              </div>
+              <SectionHeading title={t("news.title")} />
               <Link
                 className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
                 href="/noticias"

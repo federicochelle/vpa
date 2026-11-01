@@ -117,7 +117,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
 
         <section className="bg-white py-14 sm:py-20">
           <div className="shell max-w-6xl space-y-6">
-            <h2 className="section-title">{content.faqTitle}</h2>
+            <h2 className="heading-section">{content.faqTitle}</h2>
             <div className="divide-y divide-border border-y border-border">
               {content.faq.map((item) => (
                 <details className="group py-5" key={item.question}>
@@ -138,7 +138,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
           <div className="shell">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(340px,1.1fr)] lg:items-start lg:gap-14">
               <div className="space-y-5">
-                <h2 className="section-title">{content.contactTitle}</h2>
+                <h2 className="heading-section">{content.contactTitle}</h2>
                 <p className="section-copy !max-w-6xl">{content.contactDescription}</p>
                 <p className="type-body-compact max-w-6xl text-muted">{content.disclaimer}</p>
               </div>
