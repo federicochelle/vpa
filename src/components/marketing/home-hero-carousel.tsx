@@ -277,7 +277,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
           >
             {activeHeroMessage.map((segment, index) => (
               <span aria-hidden="true" key={`${segment.text}-${index}`}>
-                <span className={segment.isBlack ? "font-black text-white" : undefined}>
+                <span className={segment.isBlack ? "font-semibold text-white" : undefined}>
                   {segment.text}
                 </span>
                 {(() => {
