@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import logoVpa from "@/assets/vpa-logo.webp";
+import logoVpa from "@/assets/vpa-logo-long.webp";
 import { INSTAGRAM_URL, PHONE_HREF } from "@/lib/contact";
 
 export function Footer() {
