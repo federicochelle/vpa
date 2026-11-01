@@ -15,6 +15,7 @@ import { HomeHeroCarousel } from "@/components/marketing/home-hero-carousel";
 import { SearchSection } from "@/components/marketing/home/search-section";
 import { listHomeHeroSlides } from "@/features/home-hero/home-hero.data";
 import { AdvisoryContactCtaSection } from "@/components/marketing/home/advisory-contact-cta-section";
+import { ReviewsSection } from "@/components/marketing/home/reviews-section";
 import { PropertyCard } from "@/components/properties/property-card";
 import { ProjectCard } from "@/components/projects/project-card";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -496,6 +497,8 @@ export async function HomeShell() {
           )}
         </div>
       </section>
+
+      <ReviewsSection />
 
       <AdvisoryContactCtaSection />
 
