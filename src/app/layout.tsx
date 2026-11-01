@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Unbounded } from "next/font/google";
+import { Figtree, Unbounded } from "next/font/google";
 import {
   buildAbsoluteUrl,
   openGraphImage,
@@ -14,6 +14,13 @@ import "./globals.css";
 const unbounded = Unbounded({
   subsets: ["latin"],
   variable: "--font-heading",
+  display: "swap",
+});
+
+const figtree = Figtree({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
   display: "swap",
 });
 
@@ -76,7 +83,7 @@ export default async function RootLayout({
   const locale = await getPublicLocale();
 
   return (
-    <html lang={locale} className={`${unbounded.variable} h-full antialiased`}>
+    <html lang={locale} className={`${unbounded.variable} ${figtree.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
