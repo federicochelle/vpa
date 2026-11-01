@@ -5,6 +5,7 @@ import {
   ChartNoAxesCombined,
   Filter,
   Handshake,
+  Scale,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -66,6 +67,11 @@ const investmentProcessSteps: Array<{
     labelKey: "home.investmentStepPaymentNegotiation",
     descriptionKey: "home.investmentStepPaymentNegotiationDescription",
     Icon: Handshake,
+  },
+  {
+    labelKey: "home.investmentStepClosing",
+    descriptionKey: "home.investmentStepClosingDescription",
+    Icon: Scale,
   },
 ];
 
@@ -396,7 +402,7 @@ export async function HomeShell() {
               />
             </div>
 
-            <ol className="relative grid gap-8 md:grid-cols-2 lg:grid-cols-6 lg:gap-0">
+            <ol className="relative grid gap-8 md:grid-cols-2 lg:grid-cols-7 lg:gap-0">
               <span
                 aria-hidden="true"
                 className="absolute bottom-3 left-[1.05rem] top-3 w-px bg-primary/24 md:hidden lg:bottom-auto lg:left-0 lg:right-0 lg:top-[2.15rem] lg:block lg:h-px lg:w-auto"
@@ -404,7 +410,11 @@ export async function HomeShell() {
               {investmentProcessSteps.map(({ labelKey, descriptionKey, Icon }, index) => (
                 <li
                   key={labelKey}
-                  className="relative grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 md:block lg:pr-4"
+                  className={`relative grid min-w-0 grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 md:block lg:pr-4 ${
+                    index === investmentProcessSteps.length - 1 && investmentProcessSteps.length % 2 === 1
+                      ? "md:col-span-2 md:mx-auto md:w-1/2 lg:col-span-1 lg:mx-0 lg:w-auto"
+                      : ""
+                  }`}
                 >
                   <div className="relative z-10 flex flex-col items-center md:items-start lg:items-center">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/35 bg-background font-display text-[0.7rem] leading-none text-primary shadow-[0_0_0_8px_var(--background)]">
