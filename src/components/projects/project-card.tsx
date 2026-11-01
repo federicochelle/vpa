@@ -5,6 +5,7 @@ import { getPublicLocale } from "@/i18n/public/locale.server";
 import { getLocalizedProjectName } from "@/i18n/public/content";
 import { getConstructionStatusLabel } from "@/i18n/public/formatters";
 import { getPublicMessage } from "@/i18n/public/messages";
+import { CardTitle } from "@/components/ui/card-title";
 import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
@@ -68,15 +69,7 @@ export async function ProjectCard({
         }`}
       >
         <div className={isCompact ? "space-y-3" : "space-y-5"}>
-          <h3
-            className={`overflow-hidden font-display leading-[1.2] text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] ${
-              isCompact
-                ? "text-base [-webkit-line-clamp:2]"
-                : "h-[4.5rem] text-xl [-webkit-line-clamp:3]"
-            }`}
-          >
-            {name}
-          </h3>
+          <CardTitle compact={isCompact}>{name}</CardTitle>
           <div className="type-body-compact flex items-center gap-2 text-muted">
             <MapPin className="h-4 w-4 text-primary" />
             <span>

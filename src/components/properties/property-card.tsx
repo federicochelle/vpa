@@ -7,6 +7,7 @@ import {
 } from "@/i18n/public/formatters";
 import { getLocalizedPropertyTitle } from "@/i18n/public/content";
 import { getPublicMessage } from "@/i18n/public/messages";
+import { CardTitle } from "@/components/ui/card-title";
 import type { Property } from "@/types/property";
 
 interface PropertyCardProps {
@@ -74,15 +75,7 @@ export async function PropertyCard({
           isCompact ? "px-4 pb-3 pt-3" : "px-5 pb-6 pt-5"
         }`}
       >
-        <h3
-          className={`overflow-hidden break-words font-display leading-[1.2] text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] ${
-            isCompact
-              ? "text-base [-webkit-line-clamp:2]"
-              : "h-[4.5rem] text-xl [-webkit-line-clamp:3]"
-          }`}
-        >
-          {title}
-        </h3>
+        <CardTitle compact={isCompact}>{title}</CardTitle>
         <div
           className={`type-body-compact grid gap-3 text-muted ${
             isCompact ? "mt-3 gap-2" : "mt-5"
