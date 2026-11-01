@@ -34,7 +34,7 @@ export async function NewsCard({ news }: NewsCardProps) {
         </div>
         <div className="space-y-4 p-5">
           <div className="space-y-3">
-            <p className="font-display text-[10px] font-medium normal-case tracking-[0.16em] text-foreground">
+            <p className="font-display text-[10px] font-bold normal-case tracking-[0.16em] text-foreground">
               {formatNewsDate(news.publishedAt ?? news.createdAt, locale) ?? t("news.pendingDate")}
             </p>
             <h2 className="font-display text-[1.35rem] leading-tight text-primary transition-colors hover:text-primary-strong">
@@ -44,7 +44,7 @@ export async function NewsCard({ news }: NewsCardProps) {
               {news.excerpt ?? t("news.defaultExcerpt")}
             </p>
           </div>
-          <span className="type-body-compact font-display inline-flex items-center font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:text-primary-strong">
+          <span className="type-body-compact font-display inline-flex items-center font-bold uppercase tracking-[0.14em] text-primary transition-colors hover:text-primary-strong">
             {t("news.readMore")}
           </span>
         </div>

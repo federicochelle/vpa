@@ -294,7 +294,7 @@ export function ImagesPicker({
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
-              <h3 className="type-body-compact font-medium text-primary-strong">{label}</h3>
+              <h3 className="type-body-compact font-bold text-primary-strong">{label}</h3>
               {helperText ? (
                 <p className="type-caption max-w-2xl text-muted">{helperText}</p>
               ) : null}

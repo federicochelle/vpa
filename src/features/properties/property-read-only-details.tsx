@@ -114,7 +114,7 @@ export function PropertyReadOnlyDetails({
         </div>
       </div>
       <div className="mt-6 border-t border-border pt-6">
-        <h3 className="type-body-compact font-medium text-primary-strong">Galería de imágenes</h3>
+        <h3 className="type-body-compact font-bold text-primary-strong">Galería de imágenes</h3>
         {images.length > 0 ? (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {images.slice().sort((left, right) => left.sortOrder - right.sortOrder).map((image) => (

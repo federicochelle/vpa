@@ -71,13 +71,25 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display);
-  font-weight: 700;
   text-transform: uppercase;
 }
 
 .font-display {
-  font-weight: 700;
   text-transform: uppercase;
+}
+
+/* El peso base vive en @layer base para que las utilidades de Tailwind
+   (font-medium, font-semibold...) puedan sobrescribirlo. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-display {
+    font-weight: 700;
+  }
 }
 
 a:not([class]) {

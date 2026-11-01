@@ -820,7 +820,7 @@ export function ProjectForm({
       <div className="mt-6 border-t border-border pt-6">
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="type-body-compact font-medium text-primary-strong">Galería de imágenes</h3>
+            <h3 className="type-body-compact font-bold text-primary-strong">Galería de imágenes</h3>
             {readOnly ? null : (
               <label
                 className="admin-button-secondary inline-flex cursor-pointer items-center gap-2"

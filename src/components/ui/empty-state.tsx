@@ -12,7 +12,7 @@ export function EmptyState({ title, description }: EmptyStateProps) {
         <Blocks className="h-6 w-6" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-primary-strong">{title}</h3>
+        <h3 className="text-lg font-bold text-primary-strong">{title}</h3>
         <p className="type-body-compact mx-auto max-w-lg text-muted">{description}</p>
       </div>
     </div>

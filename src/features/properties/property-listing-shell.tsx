@@ -53,7 +53,7 @@ export async function PropertyListingShell({
         <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_280px]">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-primary-strong">
+              <h2 className="text-lg font-bold text-primary-strong">
                 {t("common.results")}
               </h2>
               <p className="type-body-compact text-muted">
@@ -78,7 +78,7 @@ export async function PropertyListingShell({
             )}
           </div>
           <aside className="panel p-6">
-            <h3 className="text-lg font-semibold text-primary-strong">
+            <h3 className="text-lg font-bold text-primary-strong">
               {t("common.pagination")}
             </h3>
             <p className="type-body-compact mt-3 text-muted">
