@@ -54,7 +54,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
             {content.sections.map((section) => (
               <section className="border border-border bg-white p-6 sm:p-9" key={section.title}>
                 <div className="max-w-6xl space-y-6">
-                  <h2 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
+                  <h2 className="heading-feature text-foreground">
                     {section.title}
                   </h2>
 

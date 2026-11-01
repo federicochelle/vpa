@@ -90,7 +90,7 @@ export function PublicInquirySidebar({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h5 className="text-xl font-display leading-tight text-primary-strong sm:text-[1.35rem]">
+            <h5 className="heading-card text-primary-strong">
               {advisor.name}
             </h5>
             <div className="mt-3 flex flex-col items-start gap-2">

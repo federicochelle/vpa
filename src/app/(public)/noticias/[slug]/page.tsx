@@ -59,7 +59,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         <div className="-mx-4 space-y-4 sm:mx-0">
           <div className="panel overflow-hidden !rounded-none">
             <div className="space-y-5 brand-panel-header px-6 py-6 sm:px-8 lg:px-12">
-              <h1 className="max-w-4xl font-display text-[1.75rem] leading-tight text-foreground sm:text-4xl">
+              <h1 className="heading-section max-w-4xl text-foreground">
                 {news.title}
               </h1>
               {news.excerpt ? (

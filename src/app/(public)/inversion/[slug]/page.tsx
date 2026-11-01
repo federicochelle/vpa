@@ -74,7 +74,7 @@ export default async function InvestmentDetailPage({
           <div className="panel overflow-hidden !rounded-none">
             <div className="flex flex-col gap-6 brand-panel-header px-6 py-6 sm:px-8 lg:flex-row lg:items-start lg:justify-between lg:px-12">
               <div className="min-w-0 space-y-4">
-                <h1 className="detail-hero-title text-foreground">
+                <h1 className="heading-detail text-foreground">
                   {name}
                 </h1>
                 {hasHeaderDetails ? (

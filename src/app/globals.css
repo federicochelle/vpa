@@ -252,7 +252,9 @@ textarea {
 @layer components {
   .heading-section,
   .heading-feature,
-  .heading-card {
+  .heading-title,
+  .heading-card,
+  .heading-detail {
     font-family: var(--font-display);
     font-weight: 500;
     text-transform: uppercase;
@@ -275,8 +277,18 @@ textarea {
     line-height: 1.2;
   }
 
+  .heading-title {
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+
   .heading-card {
     font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .heading-detail {
+    font-size: 0.8125rem;
     line-height: 1.2;
   }
 
@@ -287,6 +299,20 @@ textarea {
   @media (min-width: 640px) {
     .heading-feature {
       font-size: 1.57rem;
+    }
+
+    .heading-title {
+      font-size: 1.37rem;
+    }
+
+    .heading-detail {
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .heading-detail {
+      font-size: 1.1875rem;
     }
   }
 }
@@ -322,14 +348,6 @@ textarea {
   line-height: 1.45;
 }
 
-.detail-hero-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-
 .detail-hero-price {
   font-family: var(--font-display);
   font-size: 28px;
@@ -339,20 +357,12 @@ textarea {
 }
 
 @media (min-width: 640px) {
-  .detail-hero-title {
-    font-size: 20px;
-  }
-
   .detail-hero-price {
     font-size: 34px;
   }
 }
 
 @media (min-width: 1024px) {
-  .detail-hero-title {
-    font-size: 24px;
-  }
-
   .detail-hero-price {
     font-size: 40px;
   }

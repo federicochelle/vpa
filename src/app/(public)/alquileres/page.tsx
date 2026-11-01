@@ -76,7 +76,7 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
             )}
             {suggestedResults.length > 0 ? (
               <section className="space-y-6">
-                <h2 className="text-xl font-display text-primary-strong">
+                <h2 className="heading-card text-primary-strong">
                   {t("common.youMayAlsoLike")}
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

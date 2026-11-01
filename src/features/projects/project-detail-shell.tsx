@@ -122,7 +122,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {parsedVideo ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">{t("common.video")}</h2>
+                <h2 className="heading-card text-primary-strong">{t("common.video")}</h2>
                 <div
                   className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
@@ -145,7 +145,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {facts.length > 0 ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">{t("common.mainInformation")}</h2>
+                <h2 className="heading-card text-primary-strong">{t("common.mainInformation")}</h2>
                 <div className="mt-8 grid w-full max-w-full min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
                   {facts.map((fact) => {
                     const Icon = fact.icon;
@@ -167,7 +167,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {description ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">{t("common.description")}</h2>
+                <h2 className="heading-card text-primary-strong">{t("common.description")}</h2>
                 <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
                   {description}
                 </p>
@@ -177,7 +177,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {features.length > 0 ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">{t("common.amenities")}</h2>
+                <h2 className="heading-card text-primary-strong">{t("common.amenities")}</h2>
                 <div className="mt-4">
                   <FeatureChipList features={features} locale={locale} />
                 </div>
@@ -186,7 +186,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           ) : null}
           <div className={mobileFullBleedClassName}>
             <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-              <h2 className="text-xl font-display text-primary-strong">{t("common.location")}</h2>
+              <h2 className="heading-card text-primary-strong">{t("common.location")}</h2>
               <PublicLocationMap
                 fallbackLabel={t("common.mapFallback")}
                 latitude={project.latitude}
@@ -198,7 +198,7 @@ export async function ProjectDetailShell({ project }: ProjectDetailShellProps) {
           {projectProperties.length > 0 ? (
             <div className={mobileFullBleedClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">
+                <h2 className="heading-card text-primary-strong">
                   {t("property.availableProperties")}
                 </h2>
                 <div className="mt-6 grid gap-4">

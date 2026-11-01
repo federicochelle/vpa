@@ -103,7 +103,7 @@ export function AdvisoryServicesSection() {
                   </span>
 
                   <span className="flex min-w-0 flex-col">
-                    <span className="font-display text-xl leading-tight text-foreground">
+                    <span className="heading-card text-foreground">
                       {service.title}
                     </span>
                     <span className="type-body-compact mt-4 text-muted">

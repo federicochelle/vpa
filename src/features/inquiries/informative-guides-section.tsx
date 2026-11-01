@@ -35,7 +35,7 @@ export function InformativeGuidesSection({ guides, labels }: InformativeGuidesSe
             const content = (
               <>
                 <div className="flex-1 space-y-4">
-                  <h3 className="font-display text-2xl leading-tight text-foreground lg:text-[1.375rem] xl:text-2xl">
+                  <h3 className="heading-title text-foreground">
                     {guide.title}
                   </h3>
                   <p className="type-body-compact font-medium text-foreground">{guide.description}</p>

@@ -261,7 +261,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           {parsedVideo ? (
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">{t("common.video")}</h2>
+                <h2 className="heading-card text-primary-strong">{t("common.video")}</h2>
                 <div
                   className="mt-6 w-full max-w-full min-w-0 overflow-hidden border border-border bg-surface-muted"
                 >
@@ -284,7 +284,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           {facts.length > 0 ? (
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">{t("common.mainInformation")}</h2>
+                <h2 className="heading-card text-primary-strong">{t("common.mainInformation")}</h2>
                 <div className="mt-8 grid w-full max-w-full min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
                   {facts.map((fact) => {
                     const Icon = fact.icon;
@@ -315,7 +315,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
                 {description ? (
                   <>
-                    <h2 className="text-xl font-display text-primary-strong">{t("common.description")}</h2>
+                    <h2 className="heading-card text-primary-strong">{t("common.description")}</h2>
                     <p className="type-body mt-4 whitespace-pre-wrap break-words text-muted [overflow-wrap:anywhere]">
                       {description}
                     </p>
@@ -323,7 +323,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                 ) : null}
                 {features.length > 0 ? (
                   <div className={description ? "mt-8 space-y-4" : "space-y-4"}>
-                    <h2 className="text-xl font-display text-primary-strong">{t("common.amenities")}</h2>
+                    <h2 className="heading-card text-primary-strong">{t("common.amenities")}</h2>
                     <FeatureChipList features={features} locale={locale} />
                   </div>
                 ) : null}
@@ -332,7 +332,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           ) : null}
           <div className={mobileSectionClassName}>
             <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-              <h2 className="text-xl font-display text-primary-strong">{t("common.location")}</h2>
+              <h2 className="heading-card text-primary-strong">{t("common.location")}</h2>
               <PublicLocationMap
                 fallbackLabel={t("common.mapFallback")}
                 latitude={property.latitude}
@@ -344,7 +344,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
           {associatedProject ? (
             <div className={mobileSectionClassName}>
               <div className="panel w-full max-w-full min-w-0 !rounded-none p-6 sm:p-8">
-                <h2 className="text-xl font-display text-primary-strong">
+                <h2 className="heading-card text-primary-strong">
                   {t("property.associatedProject")}
                 </h2>
                 <div className="mt-6 max-w-2xl">

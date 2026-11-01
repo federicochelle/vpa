@@ -50,7 +50,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           <p className="type-body-compact font-semibold uppercase tracking-[0.28em] text-primary">
             {t("news.nav")}
           </p>
-          <h1 className="font-display text-3xl text-foreground sm:text-4xl">
+          <h1 className="heading-section text-foreground">
             {t("news.title")}
           </h1>
         </div>

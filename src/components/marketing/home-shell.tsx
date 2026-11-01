@@ -250,7 +250,7 @@ export async function HomeShell() {
       <section className="bg-primary py-4 text-white sm:py-5">
         <div className="shell">
           <div className="mx-auto flex max-w-5xl flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:text-left">
-            <h2 className="max-w-full font-display text-[clamp(1.15rem,4.5vw,1.65rem)] leading-tight sm:max-w-none">
+            <h2 className="heading-feature line-clamp-none max-w-full sm:max-w-none">
               {legalSupportTitleSecondLine ? (
                 <>
                   {legalSupportTitleFirstLine}

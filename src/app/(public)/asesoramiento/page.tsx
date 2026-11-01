@@ -103,7 +103,7 @@ export default async function AdvisoryPage() {
                 <p>
                   {t("advisory.heroParagraphThree")}
                 </p>
-                <p className="font-display advisory-hero-title text-primary-strong">
+                <p className="font-display advisory-hero-title font-medium text-primary-strong">
                   {t("advisory.heroParagraphFour")}
                 </p>
               </div>
