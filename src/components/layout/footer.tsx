@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import logoVpa from "@/assets/vpa-logo.webp";
+import { INSTAGRAM_URL, PHONE_HREF } from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -18,7 +19,7 @@ export function Footer() {
         <div className="grid justify-items-center gap-3 text-center text-sm leading-snug text-white lg:justify-items-start lg:text-left">
           <Link
             className="inline-flex items-center justify-center gap-3 transition-colors hover:text-white lg:justify-start"
-            href="tel:+59899297235"
+            href={PHONE_HREF}
           >
             <Phone className="h-4 w-4 flex-none" />
             <span>+598 99 297 235</span>
@@ -62,7 +63,7 @@ export function Footer() {
           <Link
             aria-label="Instagram"
             className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
-            href="https://www.instagram.com/vpa.negocios.inmobiliarios?igsh=MXk4NzFwNWpreWEy"
+            href={INSTAGRAM_URL}
             rel="noreferrer"
             target="_blank"
             title="Instagram"

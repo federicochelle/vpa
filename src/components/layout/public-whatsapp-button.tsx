@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { INSTAGRAM_URL, WHATSAPP_URL } from "@/lib/contact";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 
-const INSTAGRAM_URL = "https://www.instagram.com/vpa.negocios.inmobiliarios?igsh=MXk4NzFwNWpreWEy";
-const WHATSAPP_URL = "https://wa.me/59899297235";
 
 export function PublicWhatsAppButton() {
   const { t } = usePublicLocale();
