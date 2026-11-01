@@ -37,7 +37,7 @@ export async function NewsCard({ news }: NewsCardProps) {
             <p className="font-display text-[10px] font-bold normal-case tracking-[0.16em] text-foreground">
               {formatNewsDate(news.publishedAt ?? news.createdAt, locale) ?? t("news.pendingDate")}
             </p>
-            <h2 className="heading-title text-primary transition-colors hover:text-primary-strong">
+            <h2 className="heading-title line-clamp-3 text-primary transition-colors hover:text-primary-strong sm:line-clamp-2">
               {news.title}
             </h2>
             <p className="type-body text-muted">

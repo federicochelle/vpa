@@ -294,7 +294,7 @@ textarea {
   }
 
   .heading-detail {
-    font-size: 0.8125rem;
+    font-size: 0.9375rem;
     line-height: 1.2;
   }
 
@@ -313,10 +313,6 @@ textarea {
 
     .heading-title {
       font-size: 1.37rem;
-    }
-
-    .heading-detail {
-      font-size: 0.9375rem;
     }
   }
 

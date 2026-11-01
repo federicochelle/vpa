@@ -76,7 +76,7 @@ export default async function BuyDetailPage({ params }: BuyDetailPageProps) {
             <div className="brand-panel-header px-6 py-6 sm:px-8 lg:px-12">
               <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 flex-1 space-y-4">
-                  <h1 className="heading-detail text-foreground">
+                  <h1 className="heading-detail line-clamp-3 text-foreground sm:line-clamp-2">
                     {title}
                   </h1>
                   {hasHeaderDetails ? (
