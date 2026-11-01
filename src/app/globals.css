@@ -272,6 +272,12 @@ textarea {
     line-height: 1.2;
   }
 
+  /* Titulares largos que pueden ocupar hasta 3 renglones en movil y 2 desde sm.
+     Debe ir despues de .heading-section para pisar su tamaño. */
+  .heading-long {
+    font-size: clamp(1.125rem, calc(6.67vw - 6px), 1.25rem);
+  }
+
   .heading-feature {
     font-size: clamp(1.02rem, calc(5vw - 0.33rem), 1.42rem);
     line-height: 1.2;
@@ -297,6 +303,10 @@ textarea {
   }
 
   @media (min-width: 640px) {
+    .heading-long {
+      font-size: clamp(1.35rem, 3.4vw, 1.92rem);
+    }
+
     .heading-feature {
       font-size: 1.57rem;
     }

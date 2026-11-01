@@ -399,7 +399,7 @@ export async function HomeShell() {
                 align="center"
                 description={t("home.investmentProcessDescription")}
                 title={t("home.investmentProcessTitle")}
-                titleClassName="line-clamp-none text-foreground"
+                titleClassName="heading-long line-clamp-3 text-foreground max-sm:text-[1.25rem] sm:line-clamp-2"
               />
             </div>
 
