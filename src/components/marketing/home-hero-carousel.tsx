@@ -115,8 +115,8 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         className="object-cover object-center"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/14" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/28 via-transparent to-black/14" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/55 to-black/45" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-black/25" />
     </>
   );
 
@@ -273,7 +273,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         <div className="w-full max-w-[min(88vw,820px)] pt-8 sm:pt-0">
           <h1
             aria-label={activeHeroMessageLabel}
-            className="mx-auto max-w-[18ch] font-normal [font-family:var(--font-display)] text-[clamp(1rem,4.8vw,1.4rem)] uppercase leading-[1.08] text-white [text-shadow:0_5px_24px_rgba(0,0,0,0.44)] sm:max-w-[28ch] sm:text-[clamp(1.4rem,2.2vw,2.05rem)] sm:leading-[1.05]"
+            className="mx-auto max-w-[18ch] font-normal [font-family:var(--font-display)] text-[clamp(1rem,4.8vw,1.4rem)] uppercase leading-[1.05] text-white sm:max-w-[28ch] sm:text-[clamp(1.4rem,2.2vw,2.05rem)] sm:leading-[1.02]"
           >
             {activeHeroMessage.map((segment, index) => (
               <span aria-hidden="true" key={`${segment.text}-${index}`}>
@@ -287,10 +287,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
 
                   if (segment.desktopBreakAfter || hasWeightChange) {
                     return (
-                      <>
-                        <br />
-                        {hasWeightChange ? <br /> : null}
-                      </>
+                      <br />
                     );
                   }
 
