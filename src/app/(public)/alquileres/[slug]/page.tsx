@@ -84,7 +84,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                       {headerLocation ? (
                         <div className="flex w-full min-w-0 items-center gap-3 text-primary-strong">
                           <MapPin className="h-5 w-5 flex-none text-primary" />
-                          <span className="min-w-0 truncate text-lg font-medium whitespace-nowrap sm:text-xl">
+                          <span className="min-w-0 truncate text-base font-medium whitespace-nowrap sm:text-lg">
                             {headerLocation}
                           </span>
                         </div>
@@ -95,7 +95,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                             <p className="detail-hero-price whitespace-nowrap text-primary-strong">{price}</p>
                           ) : null}
                           {expenses ? (
-                            <p className="mt-1 text-sm font-medium text-muted">
+                            <p className="mt-1 text-[13px] font-medium text-muted">
                               {t("property.commonExpenses")}: {expenses}
                             </p>
                           ) : null}
@@ -108,7 +108,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                       {headerLocation ? (
                         <div className="flex min-w-0 items-center gap-3 text-primary-strong">
                           <MapPin className="h-5 w-5 flex-none text-primary" />
-                          <span className="min-w-0 text-xl font-medium break-words [overflow-wrap:anywhere]">
+                          <span className="min-w-0 text-lg font-medium break-words [overflow-wrap:anywhere]">
                             {headerLocation}
                           </span>
                         </div>
@@ -119,7 +119,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                             <p className="detail-hero-price text-primary-strong">{price}</p>
                           ) : null}
                           {expenses ? (
-                            <p className="mt-1 text-sm font-medium text-muted">
+                            <p className="mt-1 text-[13px] font-medium text-muted">
                               {t("property.commonExpenses")}: {expenses}
                             </p>
                           ) : null}

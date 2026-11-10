@@ -43,7 +43,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
         <section className="bg-white py-14 sm:py-20">
           <div className="shell">
             <h1 className="sr-only">{content.title}</h1>
-            <p className="mx-auto max-w-6xl text-center font-display text-2xl leading-relaxed text-primary-strong sm:text-3xl">
+            <p className="mx-auto max-w-6xl text-center font-display text-[22px] leading-relaxed text-primary-strong sm:text-[28px]">
               {content.introduction}
             </p>
           </div>
@@ -65,13 +65,13 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
                   ))}
 
                   {section.callout ? (
-                    <p className="border-l-4 border-primary bg-primary/6 px-5 py-4 font-display text-lg leading-relaxed text-primary-strong">
+                    <p className="border-l-4 border-primary bg-primary/6 px-5 py-4 font-display text-base leading-relaxed text-primary-strong">
                       {section.callout}
                     </p>
                   ) : null}
 
                   {section.bullets ? (
-                    <ul className="grid gap-3 text-base leading-relaxed text-foreground sm:grid-cols-2">
+                    <ul className="grid gap-3 text-[15px] leading-relaxed text-foreground sm:grid-cols-2">
                       {section.bullets.map((bullet) => (
                         <li className="flex gap-3" key={bullet}>
                           <span aria-hidden="true" className="mt-2 h-2 w-2 flex-none bg-primary" />
@@ -83,7 +83,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
 
                   {section.table ? (
                     <div className="overflow-x-auto border border-border">
-                      <table className="min-w-full border-collapse text-left text-sm leading-relaxed">
+                      <table className="min-w-full border-collapse text-left text-[13px] leading-relaxed">
                         <thead className="bg-primary text-white">
                           <tr>
                             {section.table.headers.map((header) => (
@@ -121,7 +121,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
             <div className="divide-y divide-border border-y border-border">
               {content.faq.map((item) => (
                 <details className="group py-5" key={item.question}>
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-display text-lg text-foreground marker:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-display text-base text-foreground marker:hidden">
                     <span>{item.question}</span>
                     <span aria-hidden="true" className="text-2xl font-light text-primary-strong transition-transform group-open:rotate-45">
                       +

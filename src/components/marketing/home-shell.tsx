@@ -235,7 +235,7 @@ export async function HomeShell() {
                 {t("home.strategyParagraphThree")}
               </p>
 
-              <p className="font-display text-[clamp(0.95rem,3.8vw,1.15rem)] font-semibold leading-tight text-primary-strong sm:text-[1.25rem]">
+              <p className="font-display text-[clamp(0.95rem,3.8vw,1.025rem)] font-semibold leading-tight text-primary-strong sm:text-[1.125rem]">
                 {t("home.strategyClosing")}
               </p>
             </div>
@@ -261,7 +261,7 @@ export async function HomeShell() {
                 legalSupportTitle
               )}
             </h2>
-            <p className="type-body-compact text-white/86 sm:max-w-xl">
+            <p className="type-body-compact text-white/86 sm:max-w-2xl">
               {t("home.legalSupportDescriptionPrefix")}{" "}
               <span className="font-semibold text-white">
                 {t("home.legalSupportStudio")}
@@ -273,13 +273,15 @@ export async function HomeShell() {
 
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
-            <SectionHeading
-              title={t("home.rentals")}
-              description={t("home.rentalsDescription")}
-              align="mobile-center"
-              descriptionClassName="home-section-subtitle"
-            />
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10 lg:mx-12">
+            <div className="min-w-0 sm:max-w-3xl">
+              <SectionHeading
+                title={t("home.rentals")}
+                description={t("home.rentalsDescription")}
+                align="mobile-center"
+                descriptionClassName="home-section-subtitle"
+              />
+            </div>
             <Link
               href="/alquileres"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
@@ -333,13 +335,15 @@ export async function HomeShell() {
 
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
-            <SectionHeading
-              title={t("home.sales")}
-              description={t("home.salesDescription")}
-              align="mobile-center"
-              descriptionClassName="home-section-subtitle"
-            />
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10 lg:mx-12">
+            <div className="min-w-0 sm:max-w-3xl">
+              <SectionHeading
+                title={t("home.sales")}
+                description={t("home.salesDescription")}
+                align="mobile-center"
+                descriptionClassName="home-section-subtitle"
+              />
+            </div>
             <Link
               href="/comprar"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
@@ -399,7 +403,7 @@ export async function HomeShell() {
                 align="center"
                 description={t("home.investmentProcessDescription")}
                 title={t("home.investmentProcessTitle")}
-                titleClassName="heading-long line-clamp-3 text-foreground max-sm:text-[1.25rem] sm:line-clamp-2"
+                titleClassName="heading-long line-clamp-3 text-foreground max-sm:text-[1.125rem] sm:line-clamp-2"
               />
             </div>
 
@@ -431,7 +435,7 @@ export async function HomeShell() {
                     <span className="block break-words font-display text-[0.85rem] leading-snug text-foreground lg:text-[0.76rem] xl:text-[0.82rem]">
                       {t(labelKey)}
                     </span>
-                    <p className="type-body-compact mt-2 max-w-xs text-muted lg:text-[0.78rem]">
+                    <p className="type-body-compact mt-2 max-w-sm text-muted lg:text-[0.78rem]">
                       {t(descriptionKey)}
                     </p>
                   </div>
@@ -444,13 +448,15 @@ export async function HomeShell() {
 
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
-            <SectionHeading
-              title={t("home.investments")}
-              description={t("home.investmentsDescription")}
-              align="mobile-center"
-              descriptionClassName="home-section-subtitle"
-            />
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10 lg:mx-12">
+            <div className="min-w-0 sm:max-w-3xl">
+              <SectionHeading
+                title={t("home.investments")}
+                description={t("home.investmentsDescription")}
+                align="mobile-center"
+                descriptionClassName="home-section-subtitle"
+              />
+            </div>
             <Link
               href="/inversion"
               className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
@@ -505,8 +511,10 @@ export async function HomeShell() {
       {recentNews.length > 0 ? (
         <section className="bg-white py-16 sm:py-20">
           <div className="shell space-y-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <SectionHeading title={t("news.title")} />
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10">
+              <div className="min-w-0 sm:max-w-3xl">
+                <SectionHeading title={t("news.title")} />
+              </div>
               <Link
                 className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
                 href="/noticias"

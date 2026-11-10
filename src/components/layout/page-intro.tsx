@@ -14,7 +14,7 @@ export function PageIntro({ eyebrow, title, description, actions }: PageIntroPro
         <div className="grid gap-8 brand-panel-header px-6 py-10 sm:px-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:px-12">
           <div className="space-y-4">
             <span className="eyebrow">{eyebrow}</span>
-            <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
+            <h1 className="font-display text-[28px] leading-tight text-foreground sm:text-[34px]">
               {title}
             </h1>
             <p className="section-copy">{description}</p>

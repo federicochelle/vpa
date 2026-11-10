@@ -16,7 +16,7 @@ export function Footer() {
           />
         </Link>
 
-        <div className="grid justify-items-center gap-3 text-center text-sm leading-snug text-white lg:justify-items-start lg:text-left">
+        <div className="grid justify-items-center gap-3 text-center text-[13px] leading-snug text-white lg:justify-items-start lg:text-left">
           <Link
             className="inline-flex items-center justify-center gap-3 transition-colors hover:text-white lg:justify-start"
             href={PHONE_HREF}

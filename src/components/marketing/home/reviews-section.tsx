@@ -84,7 +84,7 @@ function ReviewDialog({ onClose, review }: { onClose: () => void; review: Review
         </div>
         <div className="overflow-y-auto px-5 py-6 sm:px-7 sm:py-8">
           <Quote aria-hidden="true" className="mb-4 h-9 w-9 text-primary" strokeWidth={1.5} />
-          <blockquote className="text-base leading-7 text-foreground" lang="es">
+          <blockquote className="text-[15px] leading-7 text-foreground" lang="es">
             {review.text}
           </blockquote>
         </div>
