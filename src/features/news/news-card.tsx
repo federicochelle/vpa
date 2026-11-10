@@ -27,6 +27,9 @@ export async function NewsCard({ news }: NewsCardProps) {
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               src={news.imageUrl}
+              // TODO: migrar a un loader de Cloudflare Images (flexible variants) para
+              // recuperar srcset/tamaños responsivos sin pasar por el optimizador de Vercel
+              // (hoy `images.unoptimized: true` global en next.config.ts).
             />
           ) : (
             <div className="h-full w-full brand-media-fallback" />

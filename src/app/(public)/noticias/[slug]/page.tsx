@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { PublicInquirySidebar } from "@/components/inquiries/public-inquiry-sidebar";
@@ -73,10 +74,18 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             </div>
           </div>
 
-          <div
-            className="aspect-[16/9] overflow-hidden border-y border-border brand-media-fallback bg-cover bg-center sm:border"
-            style={news.imageUrl ? { backgroundImage: `url(${news.imageUrl})` } : undefined}
-          />
+          <div className="relative aspect-[16/9] overflow-hidden border-y border-border brand-media-fallback sm:border">
+            {news.imageUrl ? (
+              <Image
+                alt={news.title}
+                className="object-cover object-center"
+                fill
+                preload
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                src={news.imageUrl}
+              />
+            ) : null}
+          </div>
 
           <div className="panel !rounded-none px-6 py-8 sm:px-8 lg:px-12">
             <article>
