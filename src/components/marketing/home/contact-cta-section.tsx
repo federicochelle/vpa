@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getPublicMessage } from "@/i18n/public/messages";
 import { getPublicLocale } from "@/i18n/public/locale.server";
@@ -16,12 +16,9 @@ export async function ContactCtaSection() {
           description={t("home.contactCtaDescription")}
         />
         <div className="mt-8">
-          <Link
-            className="type-button inline-flex bg-white px-5 py-3 text-primary-strong transition-transform hover:-translate-y-0.5"
-            href="/contacto"
-          >
+          <Button href="/contacto">
             {t("home.contactCtaButton")}
-          </Link>
+          </Button>
         </div>
       </div>
     </section>

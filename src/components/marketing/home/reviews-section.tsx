@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Quote, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -197,10 +198,9 @@ export function ReviewsSection() {
                         {review.text}
                       </p>
                     </blockquote>
-                    <div className="mt-3 h-6">
+                    <div className="mt-3 h-12">
                       {isLong ? (
-                        <button
-                          className="type-button inline-flex items-center border-b border-primary/30 leading-5 text-primary-strong transition-colors hover:border-primary hover:text-primary"
+                        <Button
                           onClick={(event) => {
                             triggerRef.current = event.currentTarget;
                             setOpenReview(review);
@@ -208,7 +208,7 @@ export function ReviewsSection() {
                           type="button"
                         >
                           {t("reviews.readMore")}
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                     <figcaption className="mt-4 border-t border-border pt-4 font-semibold text-foreground">

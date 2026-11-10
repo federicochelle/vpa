@@ -6,6 +6,7 @@ import {
   type AdvisoryContactOrigin,
 } from "@/features/inquiries/advisory-contact-modal";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
+import { Button } from "@/components/ui/button";
 
 const ctaButtons: Array<{
   labelKey: "advisory.wantAdvice" | "advisory.conversation" | "advisory.investment";
@@ -38,14 +39,13 @@ export function AdvisoryContactCtaSection() {
 
           <div className="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
             {ctaButtons.map((button) => (
-              <button
-                className="button-primary inline-flex min-h-12 items-center justify-center px-6"
+              <Button className="min-h-12"
                 key={button.origin}
                 onClick={() => setModalOrigin(button.origin)}
                 type="button"
               >
                 {t(button.labelKey)}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

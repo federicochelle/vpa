@@ -7,6 +7,7 @@ import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attrib
 import { InquiryHoneypotField } from "@/features/inquiries/inquiry-honeypot-field";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { PublicInquiryPayload } from "@/types/inquiry";
+import { Button } from "@/components/ui/button";
 
 function getCurrentOriginPath() {
   if (typeof window === "undefined") {
@@ -133,13 +134,12 @@ export function ContactFormShell() {
         </div>
       </div>
       <div className="mt-6">
-        <button
-          className="button-primary"
+        <Button
           disabled={submitState === "submitting"}
           type="submit"
         >
           {submitState === "submitting" ? t("inquiry.submitting") : t("contact.send")}
-        </button>
+        </Button>
       </div>
       {feedbackMessage ? (
         <p className="type-body-compact mt-4 text-muted">

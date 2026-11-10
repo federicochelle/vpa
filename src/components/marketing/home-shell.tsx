@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   BadgeDollarSign,
@@ -282,12 +283,12 @@ export async function HomeShell() {
                 descriptionClassName="home-section-subtitle"
               />
             </div>
-            <Link
+            <Button
               href="/alquileres"
-              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="hidden sm:inline-flex"
             >
               {t("common.viewMore")}
-            </Link>
+            </Button>
           </div>
 
           {rentProperties.length > 0 ? (
@@ -305,12 +306,12 @@ export async function HomeShell() {
               </div>
 
               <div className="sm:hidden">
-                <Link
+                <Button
                   href="/alquileres"
-                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="w-full"
                 >
                   {t("common.viewMore")}
-                </Link>
+                </Button>
               </div>
 
               <div className="hidden sm:block">
@@ -344,12 +345,12 @@ export async function HomeShell() {
                 descriptionClassName="home-section-subtitle"
               />
             </div>
-            <Link
+            <Button
               href="/comprar"
-              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="hidden sm:inline-flex"
             >
               {t("common.viewMore")}
-            </Link>
+            </Button>
           </div>
 
           {saleProperties.length > 0 ? (
@@ -367,12 +368,12 @@ export async function HomeShell() {
               </div>
 
               <div className="sm:hidden">
-                <Link
+                <Button
                   href="/comprar"
-                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="w-full"
                 >
                   {t("common.viewMore")}
-                </Link>
+                </Button>
               </div>
 
               <div className="hidden sm:block">
@@ -457,12 +458,12 @@ export async function HomeShell() {
                 descriptionClassName="home-section-subtitle"
               />
             </div>
-            <Link
+            <Button
               href="/inversion"
-              className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              className="hidden sm:inline-flex"
             >
               {t("common.viewMore")}
-            </Link>
+            </Button>
           </div>
 
           {investmentProjects.length > 0 ? (
@@ -476,12 +477,12 @@ export async function HomeShell() {
               </div>
 
               <div className="sm:hidden">
-                <Link
+                <Button
                   href="/inversion"
-                  className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+                  className="w-full"
                 >
                   {t("common.viewMore")}
-                </Link>
+                </Button>
               </div>
 
               <div className="hidden sm:block">
@@ -515,12 +516,12 @@ export async function HomeShell() {
               <div className="min-w-0 sm:max-w-3xl">
                 <SectionHeading title={t("news.title")} />
               </div>
-              <Link
-                className="type-button font-display hidden items-center justify-center bg-primary px-5 py-2 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong sm:inline-flex"
+              <Button
+                className="hidden sm:inline-flex"
                 href="/noticias"
               >
                 {t("news.all")}
-              </Link>
+              </Button>
             </div>
 
             <div className="grid gap-6 sm:hidden">
@@ -530,12 +531,12 @@ export async function HomeShell() {
             </div>
 
             <div className="sm:hidden">
-              <Link
-                className="type-button font-display inline-flex w-full items-center justify-center bg-primary px-5 py-3 uppercase tracking-[0.18em] text-white transition-colors hover:bg-primary-strong"
+              <Button
+                className="w-full"
                 href="/noticias"
               >
                 {t("news.all")}
-              </Link>
+              </Button>
             </div>
 
             <div className="hidden gap-8 sm:grid">

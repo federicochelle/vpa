@@ -1,9 +1,9 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type TouchEvent } from "react";
+import { Button } from "@/components/ui/button";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 
 export interface HomeHeroCarouselSlide {
@@ -298,15 +298,15 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
           </h1>
           {activeSlide?.title ? (
             activeSlide.href ? (
-              <Link
+              <Button
                 aria-label={`${t("common.viewMore")}: ${activeSlide.title}`}
-                className="pointer-events-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] transition-colors hover:border-primary/60 hover:bg-primary/88 sm:mt-10 sm:px-6 sm:py-3"
+                className="pointer-events-auto mt-8 max-w-full sm:mt-10"
                 href={activeSlide.href}
               >
-                <span className="truncate text-[0.76rem] leading-5 sm:text-[0.82rem]">
+                <span className="truncate">
                   {activeSlide.title} · {activeSlideLabel}
                 </span>
-              </Link>
+              </Button>
             ) : (
               <p className="mx-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] sm:mt-10 sm:px-6 sm:py-3">
                 <span className="truncate text-[0.76rem] leading-5 sm:text-[0.82rem]">

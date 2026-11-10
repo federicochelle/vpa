@@ -9,6 +9,7 @@ import { InquiryHoneypotField } from "@/features/inquiries/inquiry-honeypot-fiel
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { PublicInquiryPayload } from "@/types/inquiry";
 import type { ProjectAdvisor } from "@/types/project";
+import { Button } from "@/components/ui/button";
 
 interface PublicInquirySidebarProps {
   entityId?: string;
@@ -264,14 +265,13 @@ export function PublicInquirySidebar({
           />
         </div>
 
-        <button
-          className="button-primary inline-flex w-full items-center justify-center gap-2"
+        <Button className="w-full"
           disabled={submitState === "submitting"}
           type="submit"
         >
           <Send className="h-4 w-4" />
           {submitState === "submitting" ? t("inquiry.submitting") : t("inquiry.submit")}
-        </button>
+        </Button>
 
         {feedbackMessage ? (
           <p className="type-body-compact text-muted">
