@@ -43,7 +43,7 @@ export async function PropertyListingShell({
             ].map((item) => (
               <div
                 key={item}
-                className="type-body-compact rounded-2xl border border-border bg-white/70 px-4 py-3 text-muted"
+                className="type-body-compact border border-border bg-white/70 px-4 py-3 text-muted"
               >
                 {item}
               </div>

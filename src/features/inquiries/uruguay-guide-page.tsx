@@ -74,7 +74,7 @@ export function UruguayGuidePage({ content }: { content: UruguayGuidePageContent
                     <ul className="grid gap-3 text-base leading-relaxed text-foreground sm:grid-cols-2">
                       {section.bullets.map((bullet) => (
                         <li className="flex gap-3" key={bullet}>
-                          <span aria-hidden="true" className="mt-2 h-2 w-2 flex-none rounded-full bg-primary" />
+                          <span aria-hidden="true" className="mt-2 h-2 w-2 flex-none bg-primary" />
                           <span>{bullet}</span>
                         </li>
                       ))}

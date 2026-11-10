@@ -45,7 +45,7 @@ export function Footer() {
         <div className="flex items-center justify-center gap-4 self-center lg:self-auto">
           <Link
             aria-label="Facebook"
-            className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
+            className="inline-flex h-14 w-14 items-center justify-center border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
             href="https://www.facebook.com/profile.php?id=100083640788969#"
             rel="noreferrer"
             target="_blank"
@@ -62,7 +62,7 @@ export function Footer() {
           </Link>
           <Link
             aria-label="Instagram"
-            className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
+            className="inline-flex h-14 w-14 items-center justify-center border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
             href={INSTAGRAM_URL}
             rel="noreferrer"
             target="_blank"

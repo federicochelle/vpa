@@ -76,7 +76,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                     {t("news.previous")}
                   </a>
                 ) : (
-                  <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
+                  <span className="type-button inline-flex min-w-24 items-center justify-center border border-border bg-surface px-4 py-2 text-muted">
                     {t("news.previous")}
                   </span>
                 )}
@@ -85,7 +85,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                   <a
                     key={page}
                     aria-current={page === result.page ? "page" : undefined}
-                    className={`type-button inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+                    className={`type-button inline-flex h-11 w-11 items-center justify-center border transition-colors ${
                       page === result.page
                         ? "border-primary bg-primary text-white"
                         : "border-border bg-white text-foreground hover:border-primary/20 hover:text-primary-strong"
@@ -104,7 +104,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                     {t("news.next")}
                   </a>
                 ) : (
-                  <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
+                  <span className="type-button inline-flex min-w-24 items-center justify-center border border-border bg-surface px-4 py-2 text-muted">
                     {t("news.next")}
                   </span>
                 )}

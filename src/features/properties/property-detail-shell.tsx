@@ -292,7 +292,7 @@ export async function PropertyDetailShell({ property }: PropertyDetailShellProps
                     return (
                       <div
                         key={fact.key}
-                        className="flex min-w-0 items-center gap-4 rounded-2xl border border-border px-4 py-3 text-foreground"
+                        className="flex min-w-0 items-center gap-4 border border-border px-4 py-3 text-foreground"
                       >
                         <Icon className="h-6 w-6 flex-none text-primary" />
                         <div className="min-w-0">

@@ -399,6 +399,18 @@ textarea {
     linear-gradient(180deg, #d8d1c8, #efeae3);
 }
 
+/* Sitio publico: logica recta, sin bordes redondeados en ningun elemento.
+   Se acota a .public-site para que el panel admin quede igual. */
+.public-site .panel,
+.public-site .input-base,
+.public-site .search-field,
+.public-site .status-pill,
+.public-site .button-primary,
+.public-site .button-secondary,
+.public-site [class*="rounded-"] {
+  border-radius: 0;
+}
+
 .button-primary {
   @apply rounded-full bg-primary px-6 py-3 text-white transition-colors hover:bg-primary-strong;
   font-size: var(--type-button-size);

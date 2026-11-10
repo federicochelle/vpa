@@ -38,7 +38,7 @@ function FlagIcon({ locale, size = "default" }: { locale: PublicLocale; size?: "
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex ${className} items-center justify-center overflow-hidden rounded-full border border-white/45 bg-white shadow-sm ring-1 ring-black/10`}
+      className={`inline-flex ${className} items-center justify-center overflow-hidden border border-white/45 bg-white shadow-sm ring-1 ring-black/10`}
     >
       <svg className="h-full w-full" focusable="false" viewBox="0 0 36 36">
         {locale === "es" ? (

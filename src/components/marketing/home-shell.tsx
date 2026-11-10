@@ -418,7 +418,7 @@ export async function HomeShell() {
                   }`}
                 >
                   <div className="relative z-10 flex flex-col items-center md:items-start lg:items-center">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/35 bg-background font-display text-[0.7rem] leading-none text-primary shadow-[0_0_0_8px_var(--background)]">
+                    <span className="flex h-9 w-9 items-center justify-center border border-primary/35 bg-background font-display text-[0.7rem] leading-none text-primary shadow-[0_0_0_8px_var(--background)]">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                   </div>

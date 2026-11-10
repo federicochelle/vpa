@@ -373,7 +373,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
               </div>
 
               <button
-                className="button-primary inline-flex items-center justify-center gap-2 rounded-2xl"
+                className="button-primary inline-flex items-center justify-center gap-2"
                 type="submit"
               >
                 <Search className="h-4 w-4" />
@@ -439,7 +439,7 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
             </div>
 
             <button
-              className="button-primary inline-flex items-center justify-center gap-2 rounded-2xl xl:self-end"
+              className="button-primary inline-flex items-center justify-center gap-2 xl:self-end"
               type="submit"
             >
               <Search className="h-4 w-4" />
