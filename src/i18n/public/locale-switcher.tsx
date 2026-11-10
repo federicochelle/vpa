@@ -38,7 +38,7 @@ function FlagIcon({ locale, size = "default" }: { locale: PublicLocale; size?: "
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex ${className} items-center justify-center overflow-hidden border border-white/45 bg-white shadow-sm ring-1 ring-black/10`}
+      className={`inline-flex ${className} items-center justify-center overflow-hidden border border-white/45 bg-white ring-1 ring-black/10`}
     >
       <svg className="h-full w-full" focusable="false" viewBox="0 0 36 36">
         {locale === "es" ? (
@@ -123,7 +123,7 @@ export function PublicLocaleSwitcher() {
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={t("locale.label")}
-        className="inline-flex min-h-9 items-center gap-1.5 border border-white/35 bg-black/10 px-2 py-1.5 text-white shadow-sm transition-colors duration-200 hover:bg-white/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-9 items-center gap-1.5 border border-white/35 bg-black/10 px-2 py-1.5 text-white transition-colors duration-200 hover:bg-white/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isPending}
         onClick={() => setIsOpen((current) => !current)}
         type="button"

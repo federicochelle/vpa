@@ -12,7 +12,7 @@ export function PublicWhatsAppButton() {
     <div className="fixed bottom-6 right-0 z-50 flex flex-col items-end gap-1">
       <Link
         aria-label={t("social.openInstagram")}
-        className="inline-flex h-12 w-12 items-center justify-center bg-primary text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-transform duration-200 hover:scale-105 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-14 md:w-14"
+        className="inline-flex h-12 w-12 items-center justify-center bg-primary text-white transition-transform duration-200 hover:scale-105 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-14 md:w-14"
         href={INSTAGRAM_URL}
         rel="noreferrer"
         target="_blank"
@@ -32,7 +32,7 @@ export function PublicWhatsAppButton() {
 
       <Link
         aria-label={t("social.openWhatsApp")}
-        className="inline-flex h-12 w-12 items-center justify-center bg-primary text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-transform duration-200 hover:scale-105 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-14 md:w-14"
+        className="inline-flex h-12 w-12 items-center justify-center bg-primary text-white transition-transform duration-200 hover:scale-105 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:h-14 md:w-14"
         href={WHATSAPP_URL}
         rel="noreferrer"
         target="_blank"
