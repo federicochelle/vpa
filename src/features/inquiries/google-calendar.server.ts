@@ -1,7 +1,8 @@
 import "server-only";
 
 interface GoogleCalendarEventInput {
-  attendeeEmail: string;
+  /** Sin email no se invita a nadie: el evento y el link de Meet se crean igual. */
+  attendeeEmail: string | null;
   attendeeName: string;
   description: string;
   end: Date;
@@ -113,7 +114,9 @@ function createEventPayload(input: GoogleCalendarEventInput, includeConference: 
     ].join("\n"),
     start: { dateTime: input.start.toISOString(), timeZone },
     end: { dateTime: input.end.toISOString(), timeZone },
-    attendees: [{ displayName: input.attendeeName, email: input.attendeeEmail }],
+    attendees: input.attendeeEmail
+      ? [{ displayName: input.attendeeName, email: input.attendeeEmail }]
+      : [],
     ...(includeConference
       ? {
           conferenceData: {

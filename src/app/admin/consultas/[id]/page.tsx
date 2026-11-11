@@ -331,7 +331,10 @@ export default async function AdminInquiryDetailPage({
         <div className="space-y-8 lg:border-l lg:border-border lg:pl-8">
           <section className="space-y-5">
             <div className="space-y-5">
-              <AdminInquiryMeetingPanel inquiry={inquiry} />
+              <AdminInquiryMeetingPanel
+                inquiry={inquiry}
+                isOwnerLead={isOwnerLeadTechnicalEmail(inquiry)}
+              />
               {leadSource ? (
                 <section className="space-y-5 border-t border-border pt-5">
                   <h2 className="text-2xl font-display text-primary-strong">

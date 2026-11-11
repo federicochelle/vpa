@@ -11,6 +11,7 @@ import {
   createGoogleCalendarEvent,
   updateGoogleCalendarEvent,
 } from "@/features/inquiries/google-calendar.server";
+import { isOwnerLeadTechnicalEmail } from "@/features/inquiries/inquiry-contact";
 import type { Inquiry, InquiryKind } from "@/types/inquiry";
 import type { ParsedPublicInquiryInput } from "@/features/inquiries/inquiries.form";
 
@@ -618,6 +619,7 @@ export async function saveInquiryMeeting(
   id: string,
   start: Date,
   end: Date,
+  guestEmail?: string | null,
 ): Promise<InquiryResult> {
   const supabase = await createSupabaseServerActionClient();
   const { data: inquiryRow, error: inquiryError } = await supabase
@@ -635,8 +637,10 @@ export async function saveInquiryMeeting(
   }
 
   const inquiry = mapInquiryRow(inquiryRow);
+  // En consultas de propietarios el email guardado es un placeholder: nunca se invita a
+  // esa casilla; solo se invita si la clienta cargó un email a mano.
   const eventInput = {
-    attendeeEmail: inquiry.email,
+    attendeeEmail: isOwnerLeadTechnicalEmail(inquiry) ? guestEmail || null : inquiry.email,
     attendeeName: inquiry.name,
     description: inquiry.message,
     end,

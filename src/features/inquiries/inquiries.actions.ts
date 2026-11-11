@@ -120,6 +120,7 @@ export async function deleteInquiryAction(formData: FormData) {
 export async function saveInquiryMeetingAction(input: {
   date: string;
   durationMinutes: number;
+  guestEmail?: string;
   inquiryId: string;
   time: string;
 }) {
@@ -139,8 +140,14 @@ export async function saveInquiryMeetingAction(input: {
     return { ok: false, message: "Ingresá una fecha, hora y duración válidas." };
   }
 
+  const guestEmail = (input.guestEmail ?? "").trim().toLowerCase();
+
+  if (guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+    return { ok: false, message: "Ingresá un email válido para el invitado." };
+  }
+
   const end = new Date(start.getTime() + durationMinutes * 60_000);
-  const result = await saveInquiryMeeting(inquiryId, start, end);
+  const result = await saveInquiryMeeting(inquiryId, start, end, guestEmail || null);
 
   if (!result.ok) {
     return { ok: false, message: result.error ?? "No se pudo guardar la reunión." };

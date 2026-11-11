@@ -15,6 +15,8 @@ interface AdminInquiryMeetingPanelProps {
     Inquiry,
     "email" | "id" | "meetUrl" | "meetingEnd" | "meetingStart" | "meetingStatus" | "name"
   >;
+  /** Consulta de propietarios: su email es un placeholder, no se puede invitar a esa casilla. */
+  isOwnerLead?: boolean;
 }
 
 const TIME_ZONE = "America/Montevideo";
@@ -58,7 +60,10 @@ function getInitialDuration(start: string | null, end: string | null) {
   return DURATION_OPTIONS.includes(duration) ? duration : 30;
 }
 
-export function AdminInquiryMeetingPanel({ inquiry }: AdminInquiryMeetingPanelProps) {
+export function AdminInquiryMeetingPanel({
+  inquiry,
+  isOwnerLead = false,
+}: AdminInquiryMeetingPanelProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -73,6 +78,7 @@ export function AdminInquiryMeetingPanel({ inquiry }: AdminInquiryMeetingPanelPr
     const date = String(formData.get("date") ?? "");
     const time = String(formData.get("time") ?? "");
     const durationMinutes = Number(formData.get("durationMinutes"));
+    const guestEmail = String(formData.get("guestEmail") ?? "");
 
     setIsSaving(true);
     startTransition(async () => {
@@ -80,6 +86,7 @@ export function AdminInquiryMeetingPanel({ inquiry }: AdminInquiryMeetingPanelPr
         const result = await saveInquiryMeetingAction({
           date,
           durationMinutes,
+          guestEmail,
           inquiryId: inquiry.id,
           time,
         });
@@ -185,9 +192,22 @@ export function AdminInquiryMeetingPanel({ inquiry }: AdminInquiryMeetingPanelPr
               {isScheduled ? "Reprogramar reunión" : "Coordinar reunión"}
             </h2>
             <p className="type-body-compact mt-2 text-muted">
-              La invitación se enviará a {inquiry.name} ({inquiry.email}).
+              {isOwnerLead
+                ? "Esta consulta no tiene email. Podés cargar uno para enviar la invitación o dejarlo vacío para crear la reunión con el link de Meet, sin invitación."
+                : `La invitación se enviará a ${inquiry.name} (${inquiry.email}).`}
             </p>
             <div className="mt-6 grid gap-4">
+              {isOwnerLead ? (
+                <label className="grid gap-2">
+                  <span className="admin-label">Email del invitado (opcional)</span>
+                  <input
+                    className="admin-input-base"
+                    name="guestEmail"
+                    placeholder="cliente@email.com"
+                    type="email"
+                  />
+                </label>
+              ) : null}
               <label className="grid gap-2">
                 <span className="admin-label">Fecha</span>
                 <input className="admin-input-base" defaultValue={initialDateTime.date} name="date" required type="date" />
