@@ -453,6 +453,14 @@ textarea {
   transition: background-color 0.2s;
 }
 
+/* Variante compacta (size="sm"): mismo botón con menos padding y texto más chico. */
+.btn.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.12em;
+}
+
 .btn:hover,
 .public-site .button-primary:hover,
 .public-site .button-secondary:hover {

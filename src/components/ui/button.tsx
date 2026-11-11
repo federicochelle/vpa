@@ -7,14 +7,17 @@ import type { ComponentProps, ReactNode } from "react";
  * Los estilos viven en `.btn` (globals.css). `className` solo debe aportar
  * layout (ancho, margen, visibilidad responsive), no color ni forma.
  */
-type ButtonAsButton = ComponentProps<"button"> & { href?: undefined };
+type ButtonSize = "default" | "sm";
+type ButtonAsButton = ComponentProps<"button"> & { href?: undefined; size?: ButtonSize };
 type ButtonAsLink = Omit<ComponentProps<typeof Link>, "className"> & {
   className?: string;
+  size?: ButtonSize;
 };
 
 export function Button(props: ButtonAsButton | ButtonAsLink) {
-  const { className = "", ...rest } = props;
-  const classes = `btn inline-flex items-center justify-center gap-2 ${className}`.trim();
+  const { className = "", size = "default", ...rest } = props;
+  // `sm`: variante compacta (menos padding y texto más chico), misma forma y color.
+  const classes = `btn ${size === "sm" ? "btn-sm " : ""}inline-flex items-center justify-center gap-2 ${className}`.trim();
 
   if ("href" in rest && rest.href !== undefined) {
     return <Link {...(rest as Omit<ButtonAsLink, "className">)} className={classes} />;

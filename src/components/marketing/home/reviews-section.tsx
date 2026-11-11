@@ -188,8 +188,9 @@ export function ReviewsSection() {
                     key={review.id}
                   >
                     <Quote aria-hidden="true" className="h-8 w-8 text-primary" strokeWidth={1.5} />
-                    {/* Alto fijo de 6 renglones (6 x 1.5rem): todas las tarjetas miden lo mismo. */}
-                    <blockquote className="mt-4 flex h-36 items-center" lang="es">
+                    {/* Alto fijo de 6 renglones (6 x 1.5rem): todas las tarjetas miden lo mismo.
+                        El texto arranca arriba (items-start) para que quede a la misma altura. */}
+                    <blockquote className="mt-4 flex h-36 items-start" lang="es">
                       <p
                         className={`text-[0.95rem] leading-6 text-foreground ${
                           isLong ? "line-clamp-6" : ""
@@ -198,13 +199,15 @@ export function ReviewsSection() {
                         {review.text}
                       </p>
                     </blockquote>
-                    <div className="mt-3 h-12">
+                    {/* Alto fijo: sin "VER MÁS" el espacio queda vacío y el pie no se mueve. */}
+                    <div className="mt-3 h-10">
                       {isLong ? (
                         <Button
                           onClick={(event) => {
                             triggerRef.current = event.currentTarget;
                             setOpenReview(review);
                           }}
+                          size="sm"
                           type="button"
                         >
                           {t("reviews.readMore")}
