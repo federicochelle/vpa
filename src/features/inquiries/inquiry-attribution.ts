@@ -87,7 +87,12 @@ export function getFirstTouchInquiryAttribution(
   environment: AttributionEnvironment,
   storage?: AttributionStorage | null,
 ): InquiryAttribution {
-  if (storage) {
+  const attribution = createInquiryAttribution(environment);
+  // Last-touch con UTM: si la URL trae utm_*, pisa lo guardado. Sin UTM se conserva
+  // la atribución previa de la sesión (first-touch).
+  const hasUtm = Boolean(attribution.source || attribution.medium || attribution.campaign);
+
+  if (storage && !hasUtm) {
     try {
       const storedAttribution = readStoredInquiryAttribution(storage);
 
@@ -98,8 +103,6 @@ export function getFirstTouchInquiryAttribution(
       // Storage can be unavailable in private modes or blocked browsers.
     }
   }
-
-  const attribution = createInquiryAttribution(environment);
 
   if (storage) {
     try {

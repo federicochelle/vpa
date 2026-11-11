@@ -6,6 +6,10 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import logoVpa from "@/assets/vpa-logo-long.webp";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
+import {
+  FormLinkTrigger,
+  useClearFormParam,
+} from "@/features/inquiries/form-link-trigger";
 import { OwnerLeadModal } from "@/features/inquiries/owner-lead-modal";
 import { PublicLocaleSwitcher } from "@/i18n/public/locale-switcher";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
@@ -23,6 +27,7 @@ const mobileNavigation = [
 export function Navbar() {
   const { t } = usePublicLocale();
   const pathname = usePathname();
+  const clearFormParam = useClearFormParam();
   const desktopNavRef = useRef<HTMLElement | null>(null);
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [activeIndicator, setActiveIndicator] = useState<{
@@ -194,8 +199,12 @@ export function Navbar() {
           </div>
         </div>
       </header>
+      <FormLinkTrigger host="navbar" onOpen={() => setIsOwnerLeadModalOpen(true)} />
       <OwnerLeadModal
-        onClose={() => setIsOwnerLeadModalOpen(false)}
+        onClose={() => {
+          setIsOwnerLeadModalOpen(false);
+          clearFormParam();
+        }}
         open={isOwnerLeadModalOpen}
       />
     </>

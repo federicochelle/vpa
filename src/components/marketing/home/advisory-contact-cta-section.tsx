@@ -5,6 +5,10 @@ import {
   AdvisoryContactModal,
   type AdvisoryContactOrigin,
 } from "@/features/inquiries/advisory-contact-modal";
+import {
+  FormLinkTrigger,
+  useClearFormParam,
+} from "@/features/inquiries/form-link-trigger";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 
 const ctaButtons: Array<{
@@ -18,6 +22,7 @@ const ctaButtons: Array<{
 
 export function AdvisoryContactCtaSection() {
   const { t } = usePublicLocale();
+  const clearFormParam = useClearFormParam();
   const [modalOrigin, setModalOrigin] = useState<AdvisoryContactOrigin | null>(null);
 
   return (
@@ -51,8 +56,12 @@ export function AdvisoryContactCtaSection() {
         </div>
       </div>
 
+      <FormLinkTrigger host="home-cta" onOpen={(link) => setModalOrigin(link.origin)} />
       <AdvisoryContactModal
-        onClose={() => setModalOrigin(null)}
+        onClose={() => {
+          setModalOrigin(null);
+          clearFormParam();
+        }}
         open={modalOrigin !== null}
         origin={modalOrigin}
       />

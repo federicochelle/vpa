@@ -10,6 +10,10 @@ import {
 } from "lucide-react";
 import { AdminFeedbackModal } from "@/components/admin/admin-feedback-modal";
 import { AdvisoryContactModal } from "@/features/inquiries/advisory-contact-modal";
+import {
+  FormLinkTrigger,
+  useClearFormParam,
+} from "@/features/inquiries/form-link-trigger";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { InquiryIntent } from "@/types/inquiry";
 
@@ -26,6 +30,7 @@ interface AdvisoryServiceConfig {
 
 export function AdvisoryServicesSection() {
   const { t } = usePublicLocale();
+  const clearFormParam = useClearFormParam();
   const [activeService, setActiveService] = useState<AdvisoryServiceConfig | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const advisoryServices: AdvisoryServiceConfig[] = [
@@ -120,12 +125,26 @@ export function AdvisoryServicesSection() {
         </div>
       </div>
 
+      <FormLinkTrigger
+        host="advisory-services"
+        onOpen={(link) => {
+          const service = advisoryServices.find((item) => item.intent === link.intent);
+
+          if (service) {
+            openService(service);
+          }
+        }}
+      />
       <AdvisoryContactModal
         description={activeService?.modalDescription}
         intent={activeService?.intent}
-        onClose={() => setActiveService(null)}
+        onClose={() => {
+          setActiveService(null);
+          clearFormParam();
+        }}
         onSuccess={() => {
           setActiveService(null);
+          clearFormParam();
           setShowSuccessModal(true);
         }}
         open={activeService !== null}
