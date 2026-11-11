@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Quote, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -84,7 +85,7 @@ function ReviewDialog({ onClose, review }: { onClose: () => void; review: Review
         </div>
         <div className="overflow-y-auto px-5 py-6 sm:px-7 sm:py-8">
           <Quote aria-hidden="true" className="mb-4 h-9 w-9 text-primary" strokeWidth={1.5} />
-          <blockquote className="text-base leading-7 text-foreground" lang="es">
+          <blockquote className="text-[15px] leading-7 text-foreground" lang="es">
             {review.text}
           </blockquote>
         </div>
@@ -197,10 +198,9 @@ export function ReviewsSection() {
                         {review.text}
                       </p>
                     </blockquote>
-                    <div className="mt-3 h-6">
+                    <div className="mt-3 h-12">
                       {isLong ? (
-                        <button
-                          className="type-button inline-flex items-center border-b border-primary/30 leading-5 text-primary-strong transition-colors hover:border-primary hover:text-primary"
+                        <Button
                           onClick={(event) => {
                             triggerRef.current = event.currentTarget;
                             setOpenReview(review);
@@ -208,7 +208,7 @@ export function ReviewsSection() {
                           type="button"
                         >
                           {t("reviews.readMore")}
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                     <figcaption className="mt-4 border-t border-border pt-4 font-semibold text-foreground">

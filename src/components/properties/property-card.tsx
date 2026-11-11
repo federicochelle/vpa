@@ -111,7 +111,7 @@ export async function PropertyCard({
             <MapPin className="h-4 w-4 flex-none text-primary" />
             <span className="truncate">{property.neighborhood ?? t("property.pendingLocation")}</span>
           </div>
-          <p className="shrink-0 text-right text-lg font-semibold text-primary-strong">
+          <p className="shrink-0 text-right text-base font-semibold text-primary-strong">
             {price ?? t("property.pendingPrice")}
           </p>
         </div>

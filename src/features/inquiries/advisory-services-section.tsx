@@ -122,7 +122,7 @@ export function AdvisoryServicesSection() {
                     <span className="type-body-compact mt-4 text-muted">
                       {service.description}
                     </span>
-                    <span className="type-button mt-7 inline-flex w-fit items-center border-b border-primary/30 pb-1 text-primary-strong transition-colors group-hover:border-primary group-hover:text-primary">
+                    <span className="btn mt-7 inline-flex w-fit items-center group-hover:bg-primary-strong">
                       {service.cta}
                     </span>
                   </span>

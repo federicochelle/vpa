@@ -3,6 +3,7 @@
 import { ExternalLink, FileText } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
+import { Button } from "@/components/ui/button";
 
 const INVESTOR_RESIDENCY_STORAGE_KEY = "vpa:investor-residency:session";
 const VALID_RESIDENCY_VALUES = ["resident", "non_resident"] as const;
@@ -213,16 +214,14 @@ export function InvestorResidencyGate() {
           </a>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            <button
-              className="button-primary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em]"
+            <Button className="min-h-12 w-full"
               onClick={() => completeGate("resident")}
               ref={firstActionRef}
               type="button"
             >
               {t("investorResidency.resident")}
-            </button>
-            <button
-              className="button-secondary inline-flex min-h-12 w-full items-center justify-center text-center uppercase tracking-[0.14em]"
+            </Button>
+            <Button className="min-h-12 w-full"
               onClick={() => {
                 completeGate("non_resident");
                 window.open(
@@ -234,7 +233,7 @@ export function InvestorResidencyGate() {
               type="button"
             >
               {t("investorResidency.nonResident")}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

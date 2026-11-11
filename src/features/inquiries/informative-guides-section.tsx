@@ -40,7 +40,7 @@ export function InformativeGuidesSection({ guides, labels }: InformativeGuidesSe
                   </h3>
                   <p className="type-body-compact font-medium text-foreground">{guide.description}</p>
                 </div>
-                <span className="button-primary mt-8 inline-flex min-h-12 w-full items-center justify-center text-center sm:w-fit sm:px-8">
+                <span className="btn mt-8 inline-flex min-h-12 w-full items-center justify-center sm:w-fit">
                   {guide.link ?? labels.link}
                 </span>
               </>

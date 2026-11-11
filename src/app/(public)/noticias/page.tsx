@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listPublishedNewsPage } from "@/features/news/news.data";
 import { NewsListItem } from "@/features/news/news-list-item";
@@ -69,14 +70,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                 className="flex flex-wrap items-center justify-center gap-3 pt-2"
               >
                 {result.page > 1 ? (
-                  <a
-                    className="button-secondary inline-flex min-w-24 items-center justify-center px-4 py-2"
-                    href={buildNewsPageHref(result.page - 1)}
-                  >
+                  <Button className="min-w-24" href={buildNewsPageHref(result.page - 1)}>
                     {t("news.previous")}
-                  </a>
+                  </Button>
                 ) : (
-                  <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
+                  <span className="type-button inline-flex min-w-24 items-center justify-center border border-border bg-surface px-4 py-2 text-muted">
                     {t("news.previous")}
                   </span>
                 )}
@@ -85,7 +83,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                   <a
                     key={page}
                     aria-current={page === result.page ? "page" : undefined}
-                    className={`type-button inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+                    className={`type-button inline-flex h-11 w-11 items-center justify-center border transition-colors ${
                       page === result.page
                         ? "border-primary bg-primary text-white"
                         : "border-border bg-white text-foreground hover:border-primary/20 hover:text-primary-strong"
@@ -97,14 +95,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                 ))}
 
                 {result.page < result.totalPages ? (
-                  <a
-                    className="button-secondary inline-flex min-w-24 items-center justify-center px-4 py-2"
-                    href={buildNewsPageHref(result.page + 1)}
-                  >
+                  <Button className="min-w-24" href={buildNewsPageHref(result.page + 1)}>
                     {t("news.next")}
-                  </a>
+                  </Button>
                 ) : (
-                  <span className="type-button inline-flex min-w-24 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-muted">
+                  <span className="type-button inline-flex min-w-24 items-center justify-center border border-border bg-surface px-4 py-2 text-muted">
                     {t("news.next")}
                   </span>
                 )}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { PropertyType } from "@/types/property";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
+import { Button } from "@/components/ui/button";
 
 const searchOperationOptions = [
   { value: "sale", labelKey: "search.buy" },
@@ -372,13 +373,12 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
                 />
               </div>
 
-              <button
-                className="button-primary inline-flex items-center justify-center gap-2 rounded-2xl"
+              <Button
                 type="submit"
               >
                 <Search className="h-4 w-4" />
                 {t("common.search")}
-              </button>
+              </Button>
             </form>
           </div>
         </div>
@@ -438,13 +438,12 @@ export function SearchSection({ locationOptions, propertyTypeOptions }: SearchSe
               />
             </div>
 
-            <button
-              className="button-primary inline-flex items-center justify-center gap-2 rounded-2xl xl:self-end"
+            <Button className="xl:self-end"
               type="submit"
             >
               <Search className="h-4 w-4" />
               {t("common.search")}
-            </button>
+            </Button>
           </form>
         </div>
       </div>

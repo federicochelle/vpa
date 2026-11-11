@@ -8,7 +8,7 @@ interface EmptyStateProps {
 export function EmptyState({ title, description }: EmptyStateProps) {
   return (
     <div className="panel flex min-h-56 flex-col items-center justify-center gap-4 border-dashed px-6 py-10 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="flex h-12 w-12 items-center justify-center bg-primary/10 text-primary">
         <Blocks className="h-6 w-6" />
       </div>
       <div className="space-y-2">

@@ -1,9 +1,9 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type TouchEvent } from "react";
+import { Button } from "@/components/ui/button";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 
 export interface HomeHeroCarouselSlide {
@@ -115,8 +115,8 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         className="object-cover object-center"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/14" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/28 via-transparent to-black/14" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/55 to-black/45" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-black/25" />
     </>
   );
 
@@ -273,7 +273,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         <div className="w-full max-w-[min(88vw,820px)] pt-8 sm:pt-0">
           <h1
             aria-label={activeHeroMessageLabel}
-            className="mx-auto max-w-[18ch] font-normal [font-family:var(--font-display)] text-[clamp(1rem,4.8vw,1.4rem)] uppercase leading-[1.08] text-white [text-shadow:0_5px_24px_rgba(0,0,0,0.44)] sm:max-w-[28ch] sm:text-[clamp(1.4rem,2.2vw,2.05rem)] sm:leading-[1.05]"
+            className="mx-auto max-w-[18ch] font-normal [font-family:var(--font-display)] text-[clamp(1rem,4.8vw,1.4rem)] uppercase leading-[1.05] text-white sm:max-w-[28ch] sm:text-[clamp(1.4rem,2.2vw,1.925rem)] sm:leading-[1.02]"
           >
             {activeHeroMessage.map((segment, index) => (
               <span aria-hidden="true" key={`${segment.text}-${index}`}>
@@ -287,10 +287,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
 
                   if (segment.desktopBreakAfter || hasWeightChange) {
                     return (
-                      <>
-                        <br />
-                        {hasWeightChange ? <br /> : null}
-                      </>
+                      <br />
                     );
                   }
 
@@ -301,17 +298,17 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
           </h1>
           {activeSlide?.title ? (
             activeSlide.href ? (
-              <Link
+              <Button
                 aria-label={`${t("common.viewMore")}: ${activeSlide.title}`}
-                className="pointer-events-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white shadow-[0_16px_38px_rgba(0,0,0,0.28)] backdrop-blur-[2px] transition-colors hover:border-primary/60 hover:bg-primary/88 sm:mt-10 sm:px-6 sm:py-3"
+                className="pointer-events-auto mt-8 max-w-full sm:mt-10"
                 href={activeSlide.href}
               >
-                <span className="truncate text-[0.76rem] leading-5 sm:text-[0.82rem]">
+                <span className="truncate">
                   {activeSlide.title} · {activeSlideLabel}
                 </span>
-              </Link>
+              </Button>
             ) : (
-              <p className="mx-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white shadow-[0_16px_38px_rgba(0,0,0,0.28)] backdrop-blur-[2px] sm:mt-10 sm:px-6 sm:py-3">
+              <p className="mx-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] sm:mt-10 sm:px-6 sm:py-3">
                 <span className="truncate text-[0.76rem] leading-5 sm:text-[0.82rem]">
                   {activeSlide.title} · {activeSlideLabel}
                 </span>

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import logoVpa from "@/assets/vpa-logo-long.webp";
+import logoVpa from "@/assets/vpa-logo-blanco.png";
 import { MobileTopbarMenu } from "@/components/layout/mobile-topbar-menu";
 import {
   FormLinkTrigger,
@@ -100,7 +100,7 @@ export function Navbar() {
                 return (
                   <Link
                     key={item.action}
-                    className="font-display relative text-xs w-full rounded-2xl px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white/10 hover:text-white/70"
+                    className="font-display relative text-xs w-full px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white/10 hover:text-white/70"
                     href="#vender"
                     onClick={(event) => {
                       event.preventDefault();
@@ -117,7 +117,7 @@ export function Navbar() {
               return (
                 <Link
                   key={item.href}
-                  className={`font-display relative text-xs w-full rounded-2xl px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
+                  className={`font-display relative text-xs w-full px-4 py-3 text-center font-semibold uppercase tracking-[0.14em] text-white transition-colors ${
                     isActive
                       ? ""
                       : "hover:bg-white/10 hover:text-white/70"
@@ -152,7 +152,7 @@ export function Navbar() {
             {activeIndicator ? (
               <span
                 aria-hidden="true"
-                className="absolute -bottom-2 h-0.5 rounded-full bg-white transition-all duration-300 ease-out"
+                className="absolute -bottom-2 h-0.5 bg-white transition-all duration-300 ease-out"
                 style={{
                   left: `${activeIndicator.left}px`,
                   width: `${activeIndicator.width}px`,

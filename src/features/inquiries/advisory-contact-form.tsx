@@ -6,6 +6,7 @@ import { getClientInquiryAttribution } from "@/features/inquiries/inquiry-attrib
 import { InquiryHoneypotField } from "@/features/inquiries/inquiry-honeypot-field";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { InquiryIntent, PublicInquiryPayload } from "@/types/inquiry";
+import { Button } from "@/components/ui/button";
 
 function getCurrentOriginPath() {
   if (typeof window === "undefined") {
@@ -169,15 +170,14 @@ export function AdvisoryContactForm({
       </div>
 
       <div className="pt-2">
-        <button
-          className="button-primary inline-flex w-full items-center justify-center"
+        <Button className="w-full"
           disabled={submitState === "submitting"}
           type="submit"
         >
           {submitState === "submitting"
             ? t("inquiry.submitting")
             : submitLabel ?? t("advisory.schedule")}
-        </button>
+        </Button>
       </div>
       {feedbackMessage ? (
         <p className="type-body-compact text-muted">

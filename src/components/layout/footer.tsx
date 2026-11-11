@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import logoVpa from "@/assets/vpa-logo-long.webp";
+import logoVpa from "@/assets/vpa-logo-blanco.png";
 import { INSTAGRAM_URL, PHONE_HREF } from "@/lib/contact";
 
 export function Footer() {
@@ -16,7 +16,7 @@ export function Footer() {
           />
         </Link>
 
-        <div className="grid justify-items-center gap-3 text-center text-sm leading-snug text-white lg:justify-items-start lg:text-left">
+        <div className="grid justify-items-center gap-3 text-center text-[13px] leading-snug text-white lg:justify-items-start lg:text-left">
           <Link
             className="inline-flex items-center justify-center gap-3 transition-colors hover:text-white lg:justify-start"
             href={PHONE_HREF}
@@ -45,7 +45,7 @@ export function Footer() {
         <div className="flex items-center justify-center gap-4 self-center lg:self-auto">
           <Link
             aria-label="Facebook"
-            className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
+            className="icon-box h-14 w-14 border border-white/40 transition-colors hover:bg-primary-strong"
             href="https://www.facebook.com/profile.php?id=100083640788969#"
             rel="noreferrer"
             target="_blank"
@@ -62,7 +62,7 @@ export function Footer() {
           </Link>
           <Link
             aria-label="Instagram"
-            className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors hover:bg-white hover:text-primary"
+            className="icon-box h-14 w-14 border border-white/40 transition-colors hover:bg-primary-strong"
             href={INSTAGRAM_URL}
             rel="noreferrer"
             target="_blank"
