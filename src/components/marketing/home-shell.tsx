@@ -274,15 +274,13 @@ export async function HomeShell() {
 
       <section className="bg-background py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10 lg:mx-12">
-            <div className="min-w-0 sm:max-w-3xl">
-              <SectionHeading
-                title={t("home.rentals")}
-                description={t("home.rentalsDescription")}
-                align="mobile-center"
-                descriptionClassName="home-section-subtitle"
-              />
-            </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
+            <SectionHeading
+              title={t("home.rentals")}
+              description={t("home.rentalsDescription")}
+              align="mobile-center"
+              descriptionClassName="home-section-subtitle"
+            />
             <Button
               href="/alquileres"
               className="hidden sm:inline-flex"
@@ -336,15 +334,13 @@ export async function HomeShell() {
 
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10 lg:mx-12">
-            <div className="min-w-0 sm:max-w-3xl">
-              <SectionHeading
-                title={t("home.sales")}
-                description={t("home.salesDescription")}
-                align="mobile-center"
-                descriptionClassName="home-section-subtitle"
-              />
-            </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
+            <SectionHeading
+              title={t("home.sales")}
+              description={t("home.salesDescription")}
+              align="mobile-center"
+              descriptionClassName="home-section-subtitle"
+            />
             <Button
               href="/comprar"
               className="hidden sm:inline-flex"
@@ -449,15 +445,13 @@ export async function HomeShell() {
 
       <section className="bg-white py-16 sm:py-20">
         <div className="shell space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10 lg:mx-12">
-            <div className="min-w-0 sm:max-w-3xl">
-              <SectionHeading
-                title={t("home.investments")}
-                description={t("home.investmentsDescription")}
-                align="mobile-center"
-                descriptionClassName="home-section-subtitle"
-              />
-            </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mx-12">
+            <SectionHeading
+              title={t("home.investments")}
+              description={t("home.investmentsDescription")}
+              align="mobile-center"
+              descriptionClassName="home-section-subtitle"
+            />
             <Button
               href="/inversion"
               className="hidden sm:inline-flex"
@@ -512,10 +506,8 @@ export async function HomeShell() {
       {recentNews.length > 0 ? (
         <section className="bg-white py-16 sm:py-20">
           <div className="shell space-y-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-10">
-              <div className="min-w-0 sm:max-w-3xl">
-                <SectionHeading title={t("news.title")} />
-              </div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading title={t("news.title")} />
               <Button
                 className="hidden sm:inline-flex"
                 href="/noticias"
