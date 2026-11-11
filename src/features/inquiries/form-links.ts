@@ -20,7 +20,9 @@ export const FORM_LINKS = {
   conversemos: { host: "home-cta", origin: "conversation", path: "/" },
   invertir: { host: "home-cta", origin: "investment", path: "/" },
   tasacion: { host: "advisory-services", intent: "valuation", path: "/asesoramiento" },
-  "venta-asesorada": { host: "advisory-services", intent: "sell", path: "/asesoramiento" },
+  // Alias de `vender`: el formulario de venta es el OwnerLeadModal (la tarjeta de
+  // /asesoramiento lo abre también). Se mantiene el slug para no romper links ya compartidos.
+  "venta-asesorada": { host: "navbar", path: "/asesoramiento" },
   consultoria: { host: "advisory-services", intent: "investment", path: "/asesoramiento" },
   informes: {
     host: "advisory-services",

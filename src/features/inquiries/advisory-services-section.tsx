@@ -14,6 +14,7 @@ import {
   FormLinkTrigger,
   useClearFormParam,
 } from "@/features/inquiries/form-link-trigger";
+import { OwnerLeadModal } from "@/features/inquiries/owner-lead-modal";
 import { usePublicLocale } from "@/i18n/public/locale-provider";
 import type { InquiryIntent } from "@/types/inquiry";
 
@@ -33,6 +34,7 @@ export function AdvisoryServicesSection() {
   const clearFormParam = useClearFormParam();
   const [activeService, setActiveService] = useState<AdvisoryServiceConfig | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isOwnerLeadOpen, setIsOwnerLeadOpen] = useState(false);
   const advisoryServices: AdvisoryServiceConfig[] = [
     {
       title: t("advisory.serviceValuationTitle"),
@@ -76,6 +78,12 @@ export function AdvisoryServicesSection() {
     },
   ];
   const openService = (service: AdvisoryServiceConfig) => {
+    // "Quiero vender" usa el formulario corto de propietarios, no el de asesoramiento.
+    if (service.intent === "sell") {
+      setIsOwnerLeadOpen(true);
+      return;
+    }
+
     setActiveService(service);
   };
 
@@ -134,6 +142,13 @@ export function AdvisoryServicesSection() {
             openService(service);
           }
         }}
+      />
+      <OwnerLeadModal
+        onClose={() => {
+          setIsOwnerLeadOpen(false);
+          clearFormParam();
+        }}
+        open={isOwnerLeadOpen}
       />
       <AdvisoryContactModal
         description={activeService?.modalDescription}
