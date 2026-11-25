@@ -273,7 +273,7 @@ export function PublicImageGallery({
                   </button>
               <button
                 aria-label={t("common.nextSlide")}
-                className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
+                className="absolute right-3 top-1/2 [@media(max-height:480px)]:right-10 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/40 text-white transition-colors hover:bg-black/60"
                     onClick={showNextImage}
                     type="button"
                   >

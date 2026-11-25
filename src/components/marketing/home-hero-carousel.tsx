@@ -300,7 +300,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
             activeSlide.href ? (
               <Link
                 aria-label={`${t("common.viewMore")}: ${activeSlide.title}`}
-                className="pointer-events-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] transition-colors hover:border-primary/60 hover:bg-primary/88 sm:mt-10 sm:px-6 sm:py-3"
+                className="pointer-events-auto mt-8 inline-flex max-w-full max-md:[@media(max-height:620px)]:max-w-[calc(100%-4rem)] items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] transition-colors hover:border-primary/60 hover:bg-primary/88 sm:mt-10 sm:px-6 sm:py-3"
                 href={activeSlide.href}
               >
                 <span className="truncate text-[0.76rem] leading-5 sm:text-[0.82rem]">
@@ -308,7 +308,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
                 </span>
               </Link>
             ) : (
-              <p className="mx-auto mt-8 inline-flex max-w-full items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] sm:mt-10 sm:px-6 sm:py-3">
+              <p className="mx-auto mt-8 inline-flex max-w-full max-md:[@media(max-height:620px)]:max-w-[calc(100%-4rem)] items-center justify-center border border-white/32 bg-black/42 px-5 py-2.5 font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-[2px] sm:mt-10 sm:px-6 sm:py-3">
                 <span className="truncate text-[0.76rem] leading-5 sm:text-[0.82rem]">
                   {activeSlide.title} · {activeSlideLabel}
                 </span>
