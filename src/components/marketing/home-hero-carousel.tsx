@@ -270,10 +270,10 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 text-center sm:px-8">
-        <div className="w-full max-w-[min(88vw,820px)] pt-8 sm:pt-0">
+        <div className="w-full max-w-[min(88vw,820px)] pt-8 max-sm:max-w-none sm:pt-0">
           <h1
             aria-label={activeHeroMessageLabel}
-            className="mx-auto max-w-[18ch] font-normal [font-family:var(--font-display)] text-[clamp(1rem,4.8vw,1.4rem)] uppercase leading-[1.05] text-white sm:max-w-[28ch] sm:text-[clamp(1.4rem,2.2vw,1.925rem)] sm:leading-[1.02]"
+            className="mx-auto font-normal [font-family:var(--font-display)] text-[clamp(1rem,4.8vw,1.4rem)] uppercase leading-[1.05] text-white max-sm:min-h-[3lh] max-sm:text-balance sm:max-w-[28ch] sm:text-[clamp(1.4rem,2.2vw,1.925rem)] sm:leading-[1.02]"
           >
             {activeHeroMessage.map((segment, index) => (
               <span aria-hidden="true" key={`${segment.text}-${index}`}>
